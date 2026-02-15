@@ -7,8 +7,12 @@ import {
 	GatewayIntentBits,
 	MessageFlags,
 } from "discord.js";
+import "dotenv/config";
+import { fileURLToPath } from "node:url";
 
-require("dotenv").config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const token = process.env.token;
 // not used, will save for later
 // const clientId = process.env.clientId;
@@ -36,7 +40,9 @@ for (const folder of commandFolders) {
 		.filter((file) => file.endsWith(".js"));
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
+		const commandModule = await import(filePath);
+		const command = commandModule.default || commandModule;
+
 		if ("data" in command && "execute" in command) {
 			client.commands.set(command.data.name, command);
 		} else {

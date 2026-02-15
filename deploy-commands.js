@@ -2,7 +2,12 @@ import { REST, Routes } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
 
-import "dotenv/config";const token = process.env.token;
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import "dotenv/config"; const token = process.env.token;
 const clientId = process.env.clientId;
 const guildId = process.env.guildId;
 
@@ -16,7 +21,9 @@ for (const folder of commandFolders) {
 	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
+		const commandModule = await import(filePath);
+		const command = commandModule.default || commandModule;
+
 		if ('data' in command && 'execute' in command) {
 			commands.push(command.data.toJSON());
 		} else {

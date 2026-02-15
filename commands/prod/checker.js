@@ -1,5 +1,4 @@
-export default {
-	check: async (url) => {
+export const check = async (url) => {
 		let unblocked = [];
 		const list = await fetch(
 			`http://40.160.3.200:8000/api?link=${url}&blocker=all`,
@@ -23,7 +22,7 @@ export default {
 				} else if (list[i].blocker == "iboss") {
 					unblocked.push("<@&1434414803387941037>");
 				} else if (list[i].blocker == "lanschool") {
-					unblocked.push("<@&1434414260452065310>");
+					unblocked.push("<@&1434414206452065310>");
 				} else if (list[i].blocker == "lightspeed") {
 					unblocked.push("<@&1434413800794230865>");
 				} else if (list[i].blocker == "linewize") {
@@ -39,5 +38,4 @@ export default {
 			}
 		}
 		return unblocked;
-	},
-};
+	};

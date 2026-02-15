@@ -35,7 +35,7 @@ export const addLink = async (url, site, userId, blocker) => {
 	await client.execute({
 		sql: `INSERT INTO links (url, site, userId, timestamp, blocker) 
           VALUES (:url, :site, :userId, :timestamp, :blocker)`,
-		args: { url, site, userId, timestamp, blocker },
+		args: { url, site, userId, timestamp, blocker: JSON.stringify(blocker) },
 	});
 };
 
@@ -47,6 +47,6 @@ export const getLinks = async () => {
 		site: row.site,
 		userId: row.userId,
 		timestamp: row.timestamp,
-		blocker: row.blocker,
+		blocker: JSON.parse(row.blocker),
 	}));
 };
