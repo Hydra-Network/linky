@@ -23,6 +23,19 @@ module.exports = {
         ),
     ),
   async execute(interaction) {
+    const allowedRoles = ["1446283390327324692", "1307886745534332978"];
+
+    if (
+      !interaction.member.roles.cache.some((role) =>
+        allowedRoles.includes(role.id),
+      )
+    ) {
+      return interaction.reply({
+        content: "You don't have permission.",
+        ephemeral: true,
+      });
+    }
+
     function httpscheck(url) {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
         return "https://" + url;
