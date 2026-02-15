@@ -2,8 +2,7 @@ import { REST, Routes } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
 
-require("dotenv").config();
-const token = process.env.token;
+import "dotenv/config";const token = process.env.token;
 const clientId = process.env.clientId;
 const guildId = process.env.guildId;
 
