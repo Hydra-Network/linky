@@ -4,7 +4,10 @@ const { getLinks } = require("../../db.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("showlinks")
-    .setDescription("Shows all links in the database for today."),
+    .setDescription("Shows all links in the database for today.")
+    .addBooleanOption((option) =>
+      option.setName("ping").setDescription("Ping roles it's unblocked for?"),
+    ),
 
   async execute(interaction) {
     const allowedRoles = ["1446283390327324692", "1307886745534332978"];
@@ -19,9 +22,8 @@ module.exports = {
         ephemeral: true,
       });
     }
-
+    const shouldPing = interaction.options.getBoolean("ping") ?? false;
     const links = await getLinks();
-
     const today = new Date();
     const options = { month: "short", day: "numeric" };
     const todayStr = today.toLocaleDateString("en-US", options);
@@ -35,9 +37,13 @@ module.exports = {
 
       if (link.timestamp !== todayStr) continue;
 
-      const entry = `**${link.url}**
-${link.blocker.join(" ")}
-Created by: <@${link.userId}>`;
+      let entry = "";
+
+      if (shouldPing) {
+        entry = `**${link.url}**\n${link.blocker.join(" ")}\nCreated by: <@${link.userId}>`;
+      } else {
+        entry = `**${link.url}**\nCreated by: <@${link.userId}>`;
+      }
 
       if (link.site === "galaxy") {
         galaxy.push(entry);
@@ -49,18 +55,15 @@ Created by: <@${link.userId}>`;
     }
 
     await interaction.reply({
-      content: `## Galaxy Links
-${galaxy.length ? galaxy.join("\n\n") : "No links found"}`,
+      content: `## Galaxy Links\n${galaxy.length ? galaxy.join("\n\n") : "No links found"}`,
     });
 
     await interaction.followUp({
-      content: `## Glint Links
-${glint.length ? glint.join("\n\n") : "No links found"}`,
+      content: `## Glint Links\n${glint.length ? glint.join("\n\n") : "No links found"}`,
     });
 
     await interaction.followUp({
-      content: `## Bromine Links
-${bromine.length ? bromine.join("\n\n") : "No links found"}`,
+      content: `## Bromine Links\n${bromine.length ? bromine.join("\n\n") : "No links found"}`,
     });
   },
 };
