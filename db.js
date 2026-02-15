@@ -1,31 +1,52 @@
-const fs = require("fs");
-const path = require("path");
-const db = path.join(__dirname, "data/database.json");
+import { createClient } from "@libsql/client";
+import path from "path";
+import { fileURLToPath } from "url";
 
-if (!fs.existsSync(db)) {
-  fs.writeFileSync(db, JSON.stringify({ links: [] }, null, 2));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const dbPath = path.join(__dirname, "data/database.db");
+
+const client = createClient({
+	url: `file:${dbPath}`,
+});
+
+try {
+	await client.execute(`
+    CREATE TABLE IF NOT EXISTS links (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      url TEXT,
+      site TEXT,
+      userId TEXT,
+      timestamp TEXT,
+      blocker TEXT
+    )
+  `);
+} catch (error) {
+	console.error("Database initialization failed:", error);
 }
 
-module.exports = {
-  addLink: (url, site, userId, blocker) => {
-    const data = JSON.parse(fs.readFileSync(db, "utf8"));
+export const addLink = async (url, site, userId, blocker) => {
+	const timestamp = new Date().toLocaleDateString("en-US", {
+		month: "short",
+		day: "numeric",
+	});
 
-    data.links.push({
-      url,
-      site,
-      userId,
-      timestamp: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
-      blocker,
-    });
+	await client.execute({
+		sql: `INSERT INTO links (url, site, userId, timestamp, blocker) 
+          VALUES (:url, :site, :userId, :timestamp, :blocker)`,
+		args: { url, site, userId, timestamp, blocker },
+	});
+};
 
-    fs.writeFileSync(db, JSON.stringify(data, null, 2));
-  },
+export const getLinks = async () => {
+	const result = await client.execute("SELECT * FROM links");
 
-  getLinks: () => {
-    const data = JSON.parse(fs.readFileSync(db, "utf8"));
-    return data.links;
-  },
+	return result.rows.map((row) => ({
+		url: row.url,
+		site: row.site,
+		userId: row.userId,
+		timestamp: row.timestamp,
+		blocker: row.blocker,
+	}));
 };
