@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require('discord.js');
+import { SlashCommandBuilder } from 'discord.js';
 
-module.exports = {
+export default {
 	data: new SlashCommandBuilder().setName('whosthebest').setDescription('Who is the best?'),
 	async execute(interaction) {
 		await interaction.reply('Rogo is the best!');
