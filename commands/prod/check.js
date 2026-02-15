@@ -21,12 +21,12 @@ export default {
 		const blocked = results.filter(r => r.blocked);
 
 		const fmt = (list) => list.length
-			? list.map(r => `${r.name} (${r.category})`).join(", ").slice(0, 1024)
+			? list.map(r => `${r.emoji} **${r.name}** (${r.category})`).join("\n")
 			: "None";
 
 		await interaction.editReply({
 			embeds: [{
-				color: blocked.length > 0 ? 0xff0000 : 0x00ff00,
+				color: 0x0099ff,
 				title: `Results for ${url}`,
 				timestamp: new Date().toISOString(),
 				fields: [

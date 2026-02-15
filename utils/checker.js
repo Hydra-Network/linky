@@ -34,8 +34,28 @@ const BLOCKER_NAMES = {
 	senso: "Senso Cloud",
 };
 
+const BLOCKER_EMOJIS = {
+	aristotle: ":flying_disc:",
+	blocksi: ":bricks:",
+	blocksi_ai: ":bricks:",
+	cisco: ":cloud:",
+	contentkeeper: ":broom:",
+	deledao: ":smiling_imp:",
+	fortiguard: ":shield:",
+	goguardian: ":lock:",
+	iboss: ":briefcase:",
+	lanschool: ":school:",
+	lightspeed: ":vertical_traffic_light:",
+	linewize: ":globe_with_meridians:",
+	paloalto: ":fire:",
+	securly: ":atom:",
+	senso: ":deciduous_tree:",
+}
 export const getBlockerRole = (blocker) => {
 	return BLOCKERS[blocker.toLowerCase()] || null;
+};
+export const getBlockerEmoji = (blocker) => {
+	return BLOCKER_EMOJIS[blocker.toLowerCase()] || null;
 };
 
 export const getBlockerName = (blocker) => {
@@ -74,10 +94,11 @@ export const checkWithDetails = async (url, blockerFilter = "all") => {
 		const blocker = list[i].blocker.toLowerCase();
 		results.push({
 			blocker: blocker,
+			emoji: BLOCKER_EMOJIS[blocker],
 			category: list[i].category,
-			name: BLOCKER_NAMES[blocker] || blocker,
+			name: BLOCKER_NAMES[blocker],
 			blocked: list[i].blocked,
-			roleId: BLOCKERS[blocker] || null,
+			roleId: BLOCKERS[blocker],
 		});
 	}
 	return results;
