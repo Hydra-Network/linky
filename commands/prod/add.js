@@ -23,7 +23,7 @@ module.exports = {
         ),
     ),
   async execute(interaction) {
-    const allowedRoles = ["1446283390327324692", "1307886745534332978"];
+    const allowedRoles = ["1432018926103167038"];
 
     if (
       !interaction.member.roles.cache.some((role) =>
