@@ -18,15 +18,15 @@ const BLOCKERS = {
 
 const BLOCKER_NAMES = {
 	aristotle: "Aristotle",
-	blocksi: "BlockSI",
-	blocksi_ai: "BlockSI AI",
+	blocksi: "Blocksi",
+	blocksi_ai: "Blocksi AI",
 	cisco: "Cisco",
 	contentkeeper: "ContentKeeper",
-	deledao: "DeLedao",
+	deledao: "Deledao",
 	fortiguard: "FortiGuard",
 	goguardian: "GoGuardian",
 	iboss: "iBoss",
-	lanschool: "LANSchool",
+	lanschool: "LanSchool",
 	lightspeed: "LightSpeed",
 	linewize: "Linewize",
 	paloalto: "Palo Alto",
@@ -74,6 +74,7 @@ export const checkWithDetails = async (url, blockerFilter = "all") => {
 		const blocker = list[i].blocker.toLowerCase();
 		results.push({
 			blocker: blocker,
+			category: list[i].category,
 			name: BLOCKER_NAMES[blocker] || blocker,
 			blocked: list[i].blocked,
 			roleId: BLOCKERS[blocker] || null,
