@@ -50,17 +50,17 @@ Created by: <@${link.userId}>`;
 
     await interaction.reply({
       content: `## Galaxy Links
-${galaxy.length ? galaxy.join("\n\n") : ""}`,
+${galaxy.length ? galaxy.join("\n\n") : "No links found"}`,
     });
 
     await interaction.followUp({
       content: `## Glint Links
-${glint.length ? glint.join("\n\n") : ""}`,
+${glint.length ? glint.join("\n\n") : "No links found"}`,
     });
 
     await interaction.followUp({
       content: `## Bromine Links
-${bromine.length ? bromine.join("\n\n") : ""}`,
+${bromine.length ? bromine.join("\n\n") : "No links found"}`,
     });
   },
 };
