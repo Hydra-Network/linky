@@ -1,6 +1,7 @@
 import {
 	SlashCommandBuilder,
 	ApplicationIntegrationType,
+	MessageFlags,
 	InteractionContextType,
 } from "discord.js";
 import { getLinks } from "../../db.js";
@@ -25,7 +26,7 @@ export default {
 		if (interaction.guildId !== "1307867835237793893") {
 			return interaction.reply({
 				content: "This command is exclusive to a specific server.",
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 		const allowedRoles = [
@@ -44,7 +45,7 @@ export default {
 		) {
 			return interaction.reply({
 				content: "You don't have permission.",
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 		const shouldPing = interaction.options.getBoolean("ping") ?? false;
@@ -86,7 +87,9 @@ export default {
 		if (bromine.length) messages.push(`## Bromine Links\n${bromine.join("\n\n")}`);
 
 		if (messages.length === 0) {
-			await interaction.reply({ content: "No links found.", ephemeral: true });
+			await interaction.reply({
+				content: "No links found.", flags: MessageFlags.Ephemeral,
+			});
 		} else {
 			await interaction.reply({ content: messages[0] });
 

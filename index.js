@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import "dotenv/config";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { getSticky, setSticky } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +20,11 @@ const token = process.env.token;
 // const guildId = process.env.guildId;
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
   allowedMentions: {
     parse: ["roles", "users"],
     repliedUser: true,
@@ -75,5 +80,39 @@ client.on(Events.InteractionCreate, async (interaction) => {
         flags: MessageFlags.Ephemeral,
       });
     }
+  }
+});
+
+const processingSticky = new Set();
+
+client.on(Events.MessageCreate, async (message) => {
+  if (message.author.bot) return;
+
+  const sticky = getSticky(message.channelId);
+  if (!sticky) return;
+
+  if (processingSticky.has(message.channelId)) return;
+  processingSticky.add(message.channelId);
+
+  try {
+    // Attempt to delete the previous sticky message
+    if (sticky.lastMessageId) {
+      try {
+        const lastMessage = await message.channel.messages.fetch(sticky.lastMessageId);
+        if (lastMessage) {
+          await lastMessage.delete();
+        }
+      } catch (e) {
+        // Message might already be deleted or not found
+      }
+    }
+
+    // Send the new sticky message
+    const newStickyMessage = await message.channel.send(sticky.content);
+    setSticky(message.guildId, message.channelId, sticky.content, newStickyMessage.id);
+  } catch (error) {
+    console.error("Error in sticky message logic:", error);
+  } finally {
+    processingSticky.delete(message.channelId);
   }
 });

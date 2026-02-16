@@ -2,6 +2,7 @@ import {
 	SlashCommandBuilder,
 	ApplicationIntegrationType,
 	InteractionContextType,
+	MessageFlags
 } from "discord.js";
 import { addLink, getLinks } from "../../db.js";
 import { check } from "../../utils/checker.js";
@@ -40,7 +41,7 @@ export default {
 		if (interaction.guildId !== "1307867835237793893") {
 			return interaction.reply({
 				content: "This command is exclusive to a specific server.",
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 		let link = interaction.options.getString("linkinput");
@@ -63,7 +64,7 @@ export default {
 		) {
 			return interaction.reply({
 				content: "You don't have permission.",
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 		}
 		for (let i = 0; i < list.length; i++) {
@@ -79,7 +80,7 @@ export default {
 			) {
 				return interaction.reply({
 					content: `Link with the same parent domain already added for ${site}. Try again tomorrow.`,
-					ephemeral: true,
+					flags: MessageFlags.Ephemeral,
 				});
 			}
 		}
@@ -103,7 +104,7 @@ export default {
 
 		await interaction.reply({
 			content: `${link} has been added, ty :heart:`,
-			ephemeral: true,
+			flags: MessageFlags.Ephemeral,
 		});
 		var unblocked = await check(link);
 		addLink(httpscheck(link), site, interaction.user.id, unblocked);
