@@ -69,7 +69,7 @@ export const getAllBlockers = () => {
 export const check = async (url, blockerFilter = "all") => {
 	let unblocked = [];
 	const list = await fetch(
-		`http://40.160.3.200:8000/api?link=${url}&blocker=${blockerFilter}`,
+		`http://5.188.124.60:8000/api?link=${url}&blocker=${blockerFilter}`,
 	).then((res) => res.json());
 
 	for (let i = 0; i < list.length; i++) {
@@ -87,7 +87,7 @@ export const check = async (url, blockerFilter = "all") => {
 export const checkWithDetails = async (url, blockerFilter = "all") => {
 	const results = [];
 	const list = await fetch(
-		`http://40.160.3.200:8000/api?link=${url}&blocker=${blockerFilter}`,
+		`http://5.188.124.60:8000/api?link=${url}&blocker=${blockerFilter}`,
 	).then((res) => res.json());
 
 	for (let i = 0; i < list.length; i++) {
