@@ -37,6 +37,12 @@ export default {
 				),
 		),
 	async execute(interaction) {
+		if (interaction.guildId !== "1307867835237793893") {
+			return interaction.reply({
+				content: "This command is exclusive to a specific server.",
+				ephemeral: true,
+			});
+		}
 		let link = interaction.options.getString("linkinput");
 		let site = interaction.options.getString("proxysite");
 		let userId = interaction.user.id;
