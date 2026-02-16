@@ -1,10 +1,19 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType } from "discord.js";
 import { checkWithDetails } from "../../utils/checker.js";
 
 export default {
 	data: new SlashCommandBuilder()
 		.setName("check")
 		.setDescription("Check blockers for a link")
+		.setIntegrationTypes([
+			ApplicationIntegrationType.GuildInstall,
+			ApplicationIntegrationType.UserInstall,
+		])
+		.setContexts([
+			InteractionContextType.Guild,
+			InteractionContextType.BotDM,
+			InteractionContextType.PrivateChannel,
+		])
 		.addStringOption(o => o.setName("blockers").addChoices(
 			{ name: "All", value: "all" },
 			{ name: "Aristotle", value: "aristotle" },

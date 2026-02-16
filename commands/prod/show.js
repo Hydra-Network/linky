@@ -1,10 +1,19 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType } from "discord.js";
 import { getLinks } from "../../db.js";
 
 export default {
 	data: new SlashCommandBuilder()
 		.setName("showlinks")
 		.setDescription("Shows all links in the database for today.")
+		.setIntegrationTypes([
+			ApplicationIntegrationType.GuildInstall,
+			ApplicationIntegrationType.UserInstall,
+		])
+		.setContexts([
+			InteractionContextType.Guild,
+			InteractionContextType.BotDM,
+			InteractionContextType.PrivateChannel,
+		])
 		.addBooleanOption((option) =>
 			option.setName("ping").setDescription("Ping roles it's unblocked for?"),
 		),
@@ -13,7 +22,7 @@ export default {
 		const allowedRoles = ["1446283390327324692", "1307886745534332978"];
 
 		if (
-			!interaction.member.roles.cache.some((role) =>
+			!interaction.member || !interaction.member.roles.cache.some((role) =>
 				allowedRoles.includes(role.id),
 			)
 		) {

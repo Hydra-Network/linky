@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, ApplicationIntegrationType, InteractionContextType } from "discord.js";
 import { addLink, getLinks } from "../../db.js";
 import { check } from "../../utils/checker.js";
 import { filterURL } from "../../utils/urlfilter.js";
@@ -6,6 +6,15 @@ export default {
 	data: new SlashCommandBuilder()
 		.setName("add")
 		.setDescription("Add a link to the database.")
+		.setIntegrationTypes([
+			ApplicationIntegrationType.GuildInstall,
+			ApplicationIntegrationType.UserInstall,
+		])
+		.setContexts([
+			InteractionContextType.Guild,
+			InteractionContextType.BotDM,
+			InteractionContextType.PrivateChannel,
+		])
 		.addStringOption((option) =>
 			option
 				.setName("linkinput")
@@ -30,7 +39,7 @@ export default {
 		const allowedRoles = ["1446283390327324692", "1307886745534332978"];
 		const list = getLinks();
 		if (
-			!interaction.member.roles.cache.some((role) =>
+			!interaction.member || !interaction.member.roles.cache.some((role) =>
 				allowedRoles.includes(role.id),
 			)
 		) {
