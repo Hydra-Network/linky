@@ -9,7 +9,7 @@ import { ROLES } from "../../utils/roles.js";
 
 export default {
 	data: new SlashCommandBuilder()
-		.setName("showlinks")
+		.setName("showdaily")
 		.setDescription("Shows all links in the database for today.")
 		.setIntegrationTypes([
 			ApplicationIntegrationType.GuildInstall,
