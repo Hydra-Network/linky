@@ -64,7 +64,7 @@ export const ROLES = {
 	BLOCKERS: {
 		aristotle: "1469494085327786024",
 		blocksi: "1434414053450715176",
-		blocksi_ai: "1434414053450715176",
+		blocksi_ai: "1473431505106899016",
 		cisco: "1434414716712783953",
 		contentkeeper: "1434414349828751511",
 		deledao: "1454329323220897977",
