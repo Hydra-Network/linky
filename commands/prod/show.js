@@ -23,30 +23,32 @@ export default {
 		),
 
 	async execute(interaction) {
-		if (interaction.guildId !== "1307867835237793893") {
+		if (interaction.guildId !== "1307867835237793893" && interaction.guildId !== process.env.guildId) {
 			return interaction.reply({
 				content: "This command is exclusive to a specific server.",
 				flags: MessageFlags.Ephemeral,
 			});
 		}
-		const allowedRoles = [
-			ROLES.galaxy,
-			ROLES.multiverse,
-			ROLES.LINK_BOTS.head,
-			ROLES.LINK_BOTS.elite,
-			ROLES.LINK_BOTS.honorary,
-		];
+		if (interaction.guildId == "1307867835237793893") {
+			const allowedRoles = [
+				ROLES.galaxy,
+				ROLES.multiverse,
+				ROLES.LINK_BOTS.head,
+				ROLES.LINK_BOTS.elite,
+				ROLES.LINK_BOTS.honorary,
+			];
 
-		if (
-			!interaction.member ||
-			!interaction.member.roles.cache.some((role) =>
-				allowedRoles.includes(role.id),
-			)
-		) {
-			return interaction.reply({
-				content: "You don't have permission.",
-				flags: MessageFlags.Ephemeral,
-			});
+			if (
+				!interaction.member ||
+				!interaction.member.roles.cache.some((role) =>
+					allowedRoles.includes(role.id),
+				)
+			) {
+				return interaction.reply({
+					content: "You don't have permission.",
+					flags: MessageFlags.Ephemeral,
+				});
+			}
 		}
 		const shouldPing = interaction.options.getBoolean("ping") ?? false;
 		const links = await getLinks();
@@ -66,9 +68,9 @@ export default {
 			let entry = "";
 
 			if (shouldPing) {
-				entry = `**${link.url}**\n${link.blocker.join(" ")}\nCreated by: <@${link.userId}>`;
+				entry = `**${link.url}**\n${link.roles.join(" ")}\nCreated by: <@${link.userId}>`;
 			} else {
-				entry = `**${link.url}**\nCreated by: <@${link.userId}>`;
+				entry = `**${link.url}**\n${link.blocker.join(", ")}\nCreated by: <@${link.userId}>`;
 			}
 
 			if (link.site === "galaxy") {

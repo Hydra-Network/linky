@@ -38,7 +38,7 @@ export default {
 				),
 		),
 	async execute(interaction) {
-		if (interaction.guildId !== "1307867835237793893") {
+		if (interaction.guildId !== "1307867835237793893" && interaction.guildId !== process.env.guildId) {
 			return interaction.reply({
 				content: "This command is exclusive to a specific server.",
 				flags: MessageFlags.Ephemeral,
@@ -47,25 +47,29 @@ export default {
 		let link = interaction.options.getString("linkinput");
 		let site = interaction.options.getString("proxysite");
 		let userId = interaction.user.id;
-		const allowedRoles = [
-			ROLES.galaxy,
-			ROLES.multiverse,
-			ROLES.LINK_BOTS.basic,
-			ROLES.LINK_BOTS.head,
-			ROLES.LINK_BOTS.elite,
-			ROLES.LINK_BOTS.honorary,
-		];
+
 		const list = getLinks();
-		if (
-			!interaction.member ||
-			!interaction.member.roles.cache.some((role) =>
-				allowedRoles.includes(role.id),
-			)
-		) {
-			return interaction.reply({
-				content: "You don't have permission.",
-				flags: MessageFlags.Ephemeral,
-			});
+
+		if (interaction.guildId == "1307867835237793893") {
+			const allowedRoles = [
+				ROLES.galaxy,
+				ROLES.multiverse,
+				ROLES.LINK_BOTS.head,
+				ROLES.LINK_BOTS.elite,
+				ROLES.LINK_BOTS.honorary,
+			];
+
+			if (
+				!interaction.member ||
+				!interaction.member.roles.cache.some((role) =>
+					allowedRoles.includes(role.id),
+				)
+			) {
+				return interaction.reply({
+					content: "You don't have permission.",
+					flags: MessageFlags.Ephemeral,
+				});
+			}
 		}
 		for (let i = 0; i < list.length; i++) {
 			const today = new Date().toLocaleDateString("en-US", {
@@ -106,7 +110,7 @@ export default {
 			content: `${link} has been added, ty :heart:`,
 			flags: MessageFlags.Ephemeral,
 		});
-		var unblocked = await check(link);
-		addLink(httpscheck(link), site, interaction.user.id, unblocked);
+		var { unblocked, roles } = await check(link);
+		addLink(httpscheck(link), site, interaction.user.id, unblocked, roles);
 	},
 };

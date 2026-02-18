@@ -16,7 +16,7 @@ if (!fs.existsSync(dbPath)) {
 	fs.writeFileSync(dbPath, JSON.stringify({ links: [], sticky: {} }, null, 2));
 }
 
-export const addLink = (url, site, userId, blocker) => {
+export const addLink = (url, site, userId, blocker, role) => {
 	const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
 	if (!data.sticky) data.sticky = {};
 
@@ -29,6 +29,7 @@ export const addLink = (url, site, userId, blocker) => {
 			day: "numeric",
 		}),
 		blocker,
+		role,
 	});
 
 	fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));

@@ -51,6 +51,7 @@ export const getAllBlockers = () => {
 };
 
 export const check = async (url, blockerFilter = "all") => {
+	let unblocked_roles = [];
 	let unblocked = [];
 	const list = await fetch(
 		`http://5.188.124.60:8000/api?link=${url}&blocker=${blockerFilter}`,
@@ -59,13 +60,14 @@ export const check = async (url, blockerFilter = "all") => {
 	for (let i = 0; i < list.length; i++) {
 		if (list[i].blocked == false) {
 			const blocker = list[i].blocker.toLowerCase();
+			unblocked.push(getBlockerName(blocker))
 			const roleId = ROLES.BLOCKERS[blocker];
 			if (roleId) {
-				unblocked.push(`<@&${roleId}>`);
+				unblocked_roles.push(`<@&${roleId}>`);
 			}
 		}
 	}
-	return unblocked;
+	return { unblocked, unblocked_roles };
 };
 
 export const checkWithDetails = async (url, blockerFilter = "all") => {
