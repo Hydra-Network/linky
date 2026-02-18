@@ -10,7 +10,7 @@ import {
 import cron from "node-cron";
 import "dotenv/config";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { getSticky, setSticky } from "./db.js";
+import { getSticky, setSticky, getLinks } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
