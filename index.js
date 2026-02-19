@@ -33,7 +33,7 @@ const client = new Client({
 });
 client.once(Events.ClientReady, (readyClient) => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-	cron.schedule('0 12 * * *', async () => {
+	cron.schedule('0 0 * * *', async () => {
 
 		try {
 			const TARGET_CHANNEL_ID = "1381046754257932308";
