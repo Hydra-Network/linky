@@ -84,7 +84,7 @@ export default {
 						},
 					],
 					footer: {
-						text: `${unblocked.length} unblocked • ${blocked.length} blocked`,
+						text: `${unblocked.length} unblocked • ${blocked.length} blocked • Credits to regentstew for Gaggle, NextDNS, DNSFilter, and Barracuda`,
 					},
 				},
 			],
