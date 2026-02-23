@@ -7,6 +7,4 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN bun run deploy-commands
-
-CMD ["bun", "run", "index.js"]
+CMD bun run deploy-commands && bun run index.js
