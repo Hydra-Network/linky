@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  dockerci:
+    name: Docker CI
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image tag
+        run: echo "IMAGE_TAG=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (timestamped)
+        run: docker build . --file Dockerfile --tag ghcr.io/hydra-network/linky:$IMAGE_TAG
+
+      - name: Build Docker image (latest)
+        run: docker build . --file Dockerfile --tag ghcr.io/hydra-network/linky:latest
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker container (timestamped)
+        run: docker push ghcr.io/hydra-network/linky:$IMAGE_TAG
+
+      - name: Push Docker container (latest)
+        run: docker push ghcr.io/hydra-network/linky:latest
+
