@@ -170,4 +170,21 @@ client.on(Events.MessageCreate, async (message) => {
 	}
 });
 
+const shutdown = async () => {
+	console.log("Shutting down...");
+	try {
+		if (client.user) {
+			await client.user.setPresence({ status: "invisible" });
+		}
+		client.destroy();
+		process.exit(0);
+	} catch (error) {
+		console.error("Error during shutdown:", error);
+		process.exit(1);
+	}
+};
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+
 
