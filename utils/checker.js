@@ -16,6 +16,10 @@ const BLOCKER_NAMES = {
 	paloalto: "Palo Alto",
 	securly: "Securly",
 	senso: "Senso Cloud",
+	gaggle: "Gaggle",
+	barracuda: "Barracuda",
+	dnsfilter: "DNSFilter",
+	nextdns: "NextDNS",
 };
 
 const BLOCKER_EMOJIS = {
@@ -34,6 +38,10 @@ const BLOCKER_EMOJIS = {
 	paloalto: ":fire:",
 	securly: ":atom:",
 	senso: ":deciduous_tree:",
+	gaggle: ":duck:",
+	barracuda: ":shark:",
+	dnsfilter: ":satellite_orbital:",
+	nextdns: ":track_next:",
 };
 export const getBlockerRole = (blocker) => {
 	return ROLES.BLOCKERS[blocker.toLowerCase()] || null;
