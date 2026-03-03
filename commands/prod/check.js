@@ -41,6 +41,8 @@ export default {
 					{ name: "Gaggle", value: "gaggle" },
 					{ name: "Barracuda", value: "barracuda" },
 					{ name: "DNSfilter", value: "dnsfilter" },
+					{ name: "Sophos", value: "sophos" },
+					{ name: "Qustodio", value: "qustodio" },
 					{ name: "NextDNS", value: "nextdns" },
 				)
 				.setDescription("Comma-separated blockers or 'all'")

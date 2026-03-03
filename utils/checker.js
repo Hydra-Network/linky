@@ -19,6 +19,8 @@ const BLOCKER_NAMES = {
 	gaggle: "Gaggle",
 	barracuda: "Barracuda",
 	dnsfilter: "DNSFilter",
+	sophos: "Sophos",
+	qustodio: "Qustodio",
 	nextdns: "NextDNS",
 };
 
@@ -42,6 +44,8 @@ const BLOCKER_EMOJIS = {
 	barracuda: ":shark:",
 	dnsfilter: ":satellite_orbital:",
 	nextdns: ":track_next:",
+	sophos: ":leopard:",
+	qustodio: ":jigsaw:",
 };
 export const getBlockerRole = (blocker) => {
 	return ROLES.BLOCKERS[blocker.toLowerCase()] || null;
