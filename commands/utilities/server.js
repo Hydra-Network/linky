@@ -16,6 +16,11 @@ export default {
 		const { guild } = interaction;
 		const fullGuild = await guild.fetch();
 		const owner = await guild.fetchOwner();
+		const allMembers = await guild.members.fetch();
+
+		const totalMembers = fullGuild.memberCount;
+		const botCount = allMembers.filter((m) => m.user.bot).size;
+		const humanCount = totalMembers - botCount;
 
 		const channels = guild.channels.cache;
 		const textChannels = channels.filter(
@@ -46,13 +51,13 @@ export default {
 			.setThumbnail(guild.iconURL({ dynamic: true, size: 1024 }))
 			.setDescription(
 				`**ID:** ${guild.id}\n` +
-					`**Owner:** <@${owner.id}>\n` +
-					`**Created Date:** <t:${Math.floor(guild.createdTimestamp / 1000)}:f> (<t:${Math.floor(guild.createdTimestamp / 1000)}:R>)`,
+				`**Owner:** <@${owner.id}>\n` +
+				`**Created Date:** <t:${Math.floor(guild.createdTimestamp / 1000)}:f> (<t:${Math.floor(guild.createdTimestamp / 1000)}:R>)`,
 			)
 			.addFields(
 				{
 					name: "Member Count",
-					value: `${fullGuild.memberCount}`,
+					value: `Total: ${totalMembers}\nHumans: ${humanCount}\nBots: ${botCount}`,
 					inline: true,
 				},
 				{
