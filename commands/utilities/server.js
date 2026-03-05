@@ -16,8 +16,10 @@ export default {
 			InteractionContextType.PrivateChannel,
 		]),
 	async execute(interaction) {
+
+		const fullGuild = await interaction.guild.fetch();
 		await interaction.reply(
-			`This server is ${interaction.guild.name} and has ${interaction.guild.memberCount} members.`,
+			`This server is ${interaction.guild.name} and has ${fullGuild.memberCount} members.`,
 		);
 	},
 };
