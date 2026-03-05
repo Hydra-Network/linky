@@ -68,7 +68,7 @@ export default {
 			let entry = "";
 
 			if (shouldPing) {
-				entry = `**${link.url}**\n${link.roles.join(" ")}\nCreated by: <@${link.userId}>`;
+				entry = `**${link.url}**\n${link.roles.join(", ")}\nCreated by: <@${link.userId}>`;
 			} else {
 				entry = `**${link.url}**\n${link.blocker.join(", ")}\nCreated by: <@${link.userId}>`;
 			}
