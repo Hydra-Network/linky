@@ -1,8 +1,8 @@
 import {
-	SlashCommandBuilder,
 	ApplicationIntegrationType,
-	MessageFlags,
 	InteractionContextType,
+	MessageFlags,
+	SlashCommandBuilder,
 } from "discord.js";
 import { getLinks } from "../../db.js";
 import { ROLES } from "../../utils/roles.js";
@@ -11,19 +11,20 @@ export default {
 	data: new SlashCommandBuilder()
 		.setName("showdaily")
 		.setDescription("Shows all links in the database for today.")
-		.setIntegrationTypes([
-			ApplicationIntegrationType.GuildInstall,
-		])
+		.setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
 		.setContexts([
 			InteractionContextType.Guild,
 			InteractionContextType.PrivateChannel,
 		])
 		.addBooleanOption((option) =>
-			option.setName("ping").setDescription("Ping roles it's unblocked for?"),
+			option.setName("ping").setDescription("Ping roles it's unblocked for?")
 		),
 
 	async execute(interaction) {
-		if (interaction.guildId !== "1307867835237793893" && interaction.guildId !== process.env.guildId) {
+		if (
+			interaction.guildId !== "1307867835237793893" &&
+			interaction.guildId !== process.env.guildId
+		) {
 			return interaction.reply({
 				content: "This command is exclusive to a specific server.",
 				flags: MessageFlags.Ephemeral,
@@ -41,7 +42,7 @@ export default {
 			if (
 				!interaction.member ||
 				!interaction.member.roles.cache.some((role) =>
-					allowedRoles.includes(role.id),
+					allowedRoles.includes(role.id)
 				)
 			) {
 				return interaction.reply({
@@ -56,9 +57,9 @@ export default {
 		const options = { month: "short", day: "numeric" };
 		const todayStr = today.toLocaleDateString("en-US", options);
 
-		let galaxy = [];
-		let glint = [];
-		let bromine = [];
+		const galaxy = [];
+		const glint = [];
+		const bromine = [];
 
 		for (let i = 0; i < links.length; i++) {
 			const link = links[i];
@@ -68,9 +69,11 @@ export default {
 			let entry = "";
 
 			if (shouldPing) {
-				entry = `**${link.url}**\n${link.roles.join(", ")}\nCreated by: <@${link.userId}>`;
+				entry = `**${link.url}**\n${link.roles.join(" ")
+					}\nCreated by: <@${link.userId}>`;
 			} else {
-				entry = `**${link.url}**\n${link.blocker.join(", ")}\nCreated by: <@${link.userId}>`;
+				entry = `**${link.url}**\n${link.blocker.join(", ")
+					}\nCreated by: <@${link.userId}>`;
 			}
 
 			if (link.site === "galaxy") {
@@ -86,11 +89,14 @@ export default {
 
 		if (galaxy.length) messages.push(`## Galaxy Links\n${galaxy.join("\n\n")}`);
 		if (glint.length) messages.push(`## Glint Links\n${glint.join("\n\n")}`);
-		if (bromine.length) messages.push(`## Bromine Links\n${bromine.join("\n\n")}`);
+		if (bromine.length) {
+			messages.push(`## Bromine Links\n${bromine.join("\n\n")}`);
+		}
 
 		if (messages.length === 0) {
 			await interaction.reply({
-				content: "No links found.", flags: MessageFlags.Ephemeral,
+				content: "No links found.",
+				flags: MessageFlags.Ephemeral,
 			});
 		} else {
 			await interaction.reply({ content: messages[0] });
