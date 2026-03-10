@@ -47,6 +47,8 @@ const BLOCKER_EMOJIS = {
   sophos: ":leopard:",
   qustodio: ":jigsaw:",
 };
+const API_URL = process.env.API_URL || "http://5.188.124.60:8000/api";
+
 export const getBlockerRole = (blocker) => {
   return ROLES.BLOCKERS[blocker.toLowerCase()] || null;
 };
@@ -66,7 +68,7 @@ export const check = async (url, blockerFilter = "all") => {
   let unblocked_roles = [];
   let unblocked = [];
   const list = await fetch(
-    `http://40.160.3.200:8000/api?link=${url}&blocker=${blockerFilter}`,
+    `${API_URL}?link=${url}&blocker=${blockerFilter}`,
   ).then((res) => res.json());
 
   for (let i = 0; i < list.length; i++) {
@@ -85,7 +87,7 @@ export const check = async (url, blockerFilter = "all") => {
 export const checkWithDetails = async (url, blockerFilter = "all") => {
   const results = [];
   const list = await fetch(
-    `http://40.160.3.200:8000/api?link=${url}&blocker=${blockerFilter}`,
+    `${API_URL}?link=${url}&blocker=${blockerFilter}`,
   ).then((res) => res.json());
 
   for (let i = 0; i < list.length; i++) {
