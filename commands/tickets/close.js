@@ -1,4 +1,5 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, CommandInteraction } from "discord.js";
+import type { GuildTextBasedChannel } from "discord.js";
 
 export default {
 	data: new SlashCommandBuilder()
