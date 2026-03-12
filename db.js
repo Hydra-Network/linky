@@ -13,7 +13,10 @@ if (!fs.existsSync(dir)) {
 }
 
 if (!fs.existsSync(dbPath)) {
-  fs.writeFileSync(dbPath, JSON.stringify({ links: [], sticky: {} }, null, 2));
+  fs.writeFileSync(
+    dbPath,
+    JSON.stringify({ links: [], sticky: {}, ticketCategory: null }, null, 2),
+  );
 }
 
 export const addLink = (url, site, userId, blocker, role) => {
@@ -75,6 +78,17 @@ export const removeSticky = (channelId) => {
 export const getAllSticky = () => {
   const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
   return data.sticky || {};
+};
+
+export const setTicketCategory = (categoryId) => {
+  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  data.ticketCategory = categoryId;
+  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+};
+
+export const getTicketCategory = () => {
+  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  return data.ticketCategory || null;
 };
 
 export const clear = () => {

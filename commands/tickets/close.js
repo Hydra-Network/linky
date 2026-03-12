@@ -18,7 +18,7 @@ export default {
 		if (!channel) {
 			await interaction.reply({
 				content: "This command can only be used in a ticket channel.",
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}
@@ -26,7 +26,7 @@ export default {
 		if (!channel.name?.startsWith("ticket-")) {
 			await interaction.reply({
 				content: "This command can only be used in a ticket channel.",
-				ephemeral: true,
+				flags: MessageFlags.Ephemeral,
 			});
 			return;
 		}
