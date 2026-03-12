@@ -12,13 +12,13 @@ export default {
 		.setDescription("Send a ticket creation panel")
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 	async execute(interaction) {
-	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-		new ButtonBuilder()
-			.setCustomId("create_ticket")
-			.setLabel("Create Ticket")
-			.setStyle(ButtonStyle.Primary)
-			.setEmoji("🎫"),
-	);
+		const row = new ActionRowBuilder().addComponents(
+			new ButtonBuilder()
+				.setCustomId("create_ticket")
+				.setLabel("Create Ticket")
+				.setStyle(ButtonStyle.Primary)
+				.setEmoji("🎫"),
+		);
 
 		const embed = {
 			color: 0x5865f2,
