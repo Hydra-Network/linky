@@ -55,6 +55,8 @@ export default {
       });
     }
 
+    const botMemberPermissions = interaction.guild.members.me.permissions;
+
     if (
       !interaction.memberPermissions.has(PermissionFlagsBits.KickMembers) ||
       !botMemberPermissions.has(PermissionFlagsBits.KickMembers)
