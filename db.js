@@ -15,7 +15,11 @@ if (!fs.existsSync(dir)) {
 if (!fs.existsSync(dbPath)) {
   fs.writeFileSync(
     dbPath,
-    JSON.stringify({ links: [], sticky: {}, ticketCategory: null }, null, 2),
+    JSON.stringify(
+      { links: [], sticky: {}, ticketCategory: null, settings: {} },
+      null,
+      2,
+    ),
   );
 }
 
@@ -89,6 +93,21 @@ export const setTicketCategory = (categoryId) => {
 export const getTicketCategory = () => {
   const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
   return data.ticketCategory || null;
+};
+
+export const getUserSettings = (userId) => {
+  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  if (!data.settings) data.settings = {};
+  if (!data.settings[userId]) data.settings[userId] = {};
+  return data.settings[userId];
+};
+
+export const setUserSetting = (userId, key, value) => {
+  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  if (!data.settings) data.settings = {};
+  if (!data.settings[userId]) data.settings[userId] = {};
+  data.settings[userId][key] = value;
+  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
 };
 
 export const clear = () => {
