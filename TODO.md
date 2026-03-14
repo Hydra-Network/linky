@@ -1,3 +1,5 @@
 # TODO
 
-- trigger words
+- [ ] trigger words
+- [ ] music bot feature
+- [ ] invite tracker alternatives
