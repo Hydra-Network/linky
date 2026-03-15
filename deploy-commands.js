@@ -17,51 +17,54 @@ const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs
-		.readdirSync(commandsPath)
-		.filter((file) => file.endsWith(".js"));
-	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const commandModule = await import(pathToFileURL(filePath).href);
-		const command = commandModule.default || commandModule;
+  const commandsPath = path.join(foldersPath, folder);
+  const commandFiles = fs
+    .readdirSync(commandsPath)
+    .filter((file) => file.endsWith(".js"));
+  for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const commandModule = await import(pathToFileURL(filePath).href);
+    const command = commandModule.default || commandModule;
 
-		if ("data" in command && "execute" in command) {
-			commands.push(command.data.toJSON());
-		} else {
-			console.log(
-				`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
-			);
-		}
-	}
+    if ("data" in command && "execute" in command) {
+      commands.push(command.data.toJSON());
+    } else {
+      console.log(
+        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+      );
+    }
+  }
 }
 
 const rest = new REST().setToken(token);
 
-
-await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-	body: [],
-});
-
-await rest.put(Routes.applicationCommands(clientId), {
-	body: [],
-});
-
 (async () => {
-	try {
-		console.log(
-			`Started refreshing ${commands.length} application (/) commands.`,
-		);
+  try {
+    console.log(
+      `Started refreshing ${commands.length} application (/) commands.`,
+    );
 
-		const data = await rest.put(Routes.applicationCommands(clientId), {
-			body: commands,
-		});
+    const existingCommands = await rest.get(
+      Routes.applicationCommands(clientId),
+    );
 
-		console.log(
-			`Successfully reloaded ${data.length} application (/) commands.`,
-		);
-	} catch (error) {
-		console.error(error);
-	}
+    const localCommandNames = new Set(commands.map((cmd) => cmd.name));
+
+    for (const existingCmd of existingCommands) {
+      if (!localCommandNames.has(existingCmd.name)) {
+        console.log(`Removing command: ${existingCmd.name}`);
+        await rest.delete(Routes.applicationCommand(clientId, existingCmd.id));
+      }
+    }
+
+    const data = await rest.put(Routes.applicationCommands(clientId), {
+      body: commands,
+    });
+
+    console.log(
+      `Successfully reloaded ${data.length} application (/) commands.`,
+    );
+  } catch (error) {
+    console.error(error);
+  }
 })();
