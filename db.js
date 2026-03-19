@@ -12,19 +12,31 @@ if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
-if (!fs.existsSync(dbPath)) {
-  fs.writeFileSync(
-    dbPath,
-    JSON.stringify(
-      { links: [], sticky: {}, ticketCategory: null, settings: {} },
-      null,
-      2,
-    ),
-  );
-}
+let cache = null;
+let pendingWrite = null;
+const writeQueue = Promise.resolve();
+
+const loadDB = () => {
+  if (cache) return cache;
+  if (!fs.existsSync(dbPath)) {
+    cache = { links: [], sticky: {}, ticketCategory: null, settings: {} };
+    return cache;
+  }
+  cache = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  return cache;
+};
+
+const saveDB = () => {
+  if (!cache) return;
+  if (pendingWrite) return;
+  pendingWrite = setTimeout(() => {
+    fs.writeFileSync(dbPath, JSON.stringify(cache, null, 2));
+    pendingWrite = null;
+  }, 100);
+};
 
 export const addLink = (url, site, userId, blocker, role) => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  const data = loadDB();
   if (!data.sticky) data.sticky = {};
 
   data.links.push({
@@ -39,12 +51,11 @@ export const addLink = (url, site, userId, blocker, role) => {
     role,
   });
 
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+  saveDB();
 };
 
 export const getLinks = () => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
-  return data.links;
+  return loadDB().links;
 };
 
 export const setSticky = (
@@ -53,65 +64,63 @@ export const setSticky = (
   messageContent,
   lastMessageId = null,
 ) => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  const data = loadDB();
   if (!data.sticky) data.sticky = {};
   data.sticky[channelId] = {
-    guildId: guildId,
+    guildId,
     content: messageContent,
-    lastMessageId: lastMessageId,
+    lastMessageId,
   };
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+  saveDB();
 };
 
 export const getSticky = (channelId) => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  const data = loadDB();
   if (!data.sticky) return null;
   return data.sticky[channelId] || null;
 };
 
 export const removeSticky = (channelId) => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  const data = loadDB();
   if (data.sticky && data.sticky[channelId]) {
     delete data.sticky[channelId];
-    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+    saveDB();
     return true;
   }
   return false;
 };
 
 export const getAllSticky = () => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
-  return data.sticky || {};
+  return loadDB().sticky || {};
 };
 
 export const setTicketCategory = (categoryId) => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  const data = loadDB();
   data.ticketCategory = categoryId;
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+  saveDB();
 };
 
 export const getTicketCategory = () => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
-  return data.ticketCategory || null;
+  return loadDB().ticketCategory || null;
 };
 
 export const getUserSettings = (userId) => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  const data = loadDB();
   if (!data.settings) data.settings = {};
   if (!data.settings[userId]) data.settings[userId] = {};
   return data.settings[userId];
 };
 
 export const setUserSetting = (userId, key, value) => {
-  const data = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  const data = loadDB();
   if (!data.settings) data.settings = {};
   if (!data.settings[userId]) data.settings[userId] = {};
   data.settings[userId][key] = value;
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+  saveDB();
 };
 
 export const clear = () => {
-  if (!fs.existsSync(dbPath)) {
-    fs.rmdirSync(dbPath, { recursive: true });
+  if (fs.existsSync(dbPath)) {
+    fs.rmSync(dbPath, { recursive: true });
   }
 };

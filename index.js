@@ -88,7 +88,7 @@ client.once(Events.ClientReady, (readyClient) => {
       if (bromine.length)
         messages.push(`## Bromine Links\n${bromine.join("\n\n")}`);
 
-      if (!messages.length === 0) {
+      if (messages.length > 0) {
         for (const msg of messages) {
           await channel.send(msg);
         }
