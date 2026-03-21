@@ -5,7 +5,7 @@ import {
 } from "discord.js";
 import {
 	checkWithDetails,
-	NORMAL_BLOCKERS,
+	DNS_BLOCKERS,
 	getBlockerName,
 } from "../../utils/checker.js";
 import { getUserSettings } from "../../db.js";
@@ -13,14 +13,14 @@ import { getUserSettings } from "../../db.js";
 const CHOICES = [
 	{ name: "All", value: "normal" },
 	{ name: "All (Non-DNS)", value: "non_dns" },
-	{ name: "All (DNS)", value: "dns" },
-	...NORMAL_BLOCKERS.map((b) => ({ name: getBlockerName(b), value: b })),
+	{ name: "All (DNS)", value: "all" },
+	...DNS_BLOCKERS.map((b) => ({ name: getBlockerName(b), value: b })),
 ];
 
 export default {
 	data: new SlashCommandBuilder()
-		.setName("check")
-		.setDescription("Check blockers for a link")
+		.setName("dns-check")
+		.setDescription("Check DNS blockers for a link")
 		.setIntegrationTypes([
 			ApplicationIntegrationType.GuildInstall,
 			ApplicationIntegrationType.UserInstall,
@@ -81,7 +81,7 @@ ${fmt(unblocked)}
 ### :x: **Blocked (${blocked.length})**
 ${fmt(blocked)}`,
 					footer: {
-						text: `Credits to regentstew for Gaggle, NextDNS, DNSFilter, and Barracuda`,
+						text: `Credits to regentstew for NextDNS, DNSFilter, and Barracuda`,
 					},
 				},
 			],
