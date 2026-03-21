@@ -121,6 +121,8 @@ export const checkWithDetails = async (url, blockerFilter = "all") => {
     typeFilter = DNS_BLOCKERS;
   } else if (filter === "non_dns") {
     typeFilter = NORMAL_BLOCKERS;
+  } else if (ALL_BLOCKERS.includes(filter)) {
+    typeFilter = [filter];
   }
 
   const list = await fetch(`${API_URL}?link=${url}&blocker=all`).then((res) =>
