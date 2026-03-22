@@ -1,5 +1,6 @@
 # TODO
 
+- [x] invite command for invite link
 - [ ] trigger words
 - [ ] music bot feature
 - [ ] invite tracker alternatives
@@ -8,4 +9,3 @@
 - [ ] lock command for locking channels
 - [ ] verification for people non humans
 - [ ] about command for bot information about linky
-- [ ] invite command for invite link
