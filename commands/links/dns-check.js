@@ -81,7 +81,7 @@ ${fmt(unblocked)}
 ### :x: **Blocked (${blocked.length})**
 ${fmt(blocked)}`,
 					footer: {
-						text: `Credits to regentstew for NextDNS, DNSFilter, and Barracuda`,
+						text: `Credits to regentstew for Gaggle, NextDNS, DNSFilter, and Barracuday Credits to Beercat for Smoothwall.`,
 					},
 				},
 			],
