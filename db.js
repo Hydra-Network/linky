@@ -132,14 +132,27 @@ export const clear = () => {
   }
 };
 
-export const setLinkChannel = (guildId, channelId) => {
+export const addLinkChannel = (guildId, channelId) => {
   const data = loadDB();
   if (!data.linkChannels) data.linkChannels = {};
-  data.linkChannels[guildId] = channelId;
-  saveDB();
+  if (!data.linkChannels[guildId]) data.linkChannels[guildId] = [];
+  if (!data.linkChannels[guildId].includes(channelId)) {
+    data.linkChannels[guildId].push(channelId);
+    saveDB();
+  }
 };
 
-export const getLinkChannel = (guildId) => {
+export const removeLinkChannel = (guildId, channelId) => {
   const data = loadDB();
-  return data.linkChannels?.[guildId] || null;
+  if (!data.linkChannels?.[guildId]) return false;
+  const index = data.linkChannels[guildId].indexOf(channelId);
+  if (index === -1) return false;
+  data.linkChannels[guildId].splice(index, 1);
+  saveDB();
+  return true;
+};
+
+export const getLinkChannels = (guildId) => {
+  const data = loadDB();
+  return data.linkChannels?.[guildId] || [];
 };
