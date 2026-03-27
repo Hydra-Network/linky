@@ -36,6 +36,11 @@ export default {
           value: "tickets",
           description: "Settings for tickets",
         },
+        {
+          label: "Links",
+          value: "links",
+          description: "Settings for link channel",
+        },
       ]);
 
     const mainEmbed = new EmbedBuilder()

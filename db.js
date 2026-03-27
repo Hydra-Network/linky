@@ -19,10 +19,17 @@ const writeQueue = Promise.resolve();
 const loadDB = () => {
   if (cache) return cache;
   if (!fs.existsSync(dbPath)) {
-    cache = { links: [], sticky: {}, ticketCategory: null, settings: {} };
+    cache = {
+      links: [],
+      sticky: {},
+      ticketCategory: null,
+      settings: {},
+      linkChannels: {},
+    };
     return cache;
   }
   cache = JSON.parse(fs.readFileSync(dbPath, "utf8"));
+  if (!cache.linkChannels) cache.linkChannels = {};
   return cache;
 };
 
@@ -123,4 +130,16 @@ export const clear = () => {
   if (fs.existsSync(dbPath)) {
     fs.rmSync(dbPath, { recursive: true });
   }
+};
+
+export const setLinkChannel = (guildId, channelId) => {
+  const data = loadDB();
+  if (!data.linkChannels) data.linkChannels = {};
+  data.linkChannels[guildId] = channelId;
+  saveDB();
+};
+
+export const getLinkChannel = (guildId) => {
+  const data = loadDB();
+  return data.linkChannels?.[guildId] || null;
 };

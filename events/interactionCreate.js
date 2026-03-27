@@ -1,417 +1,541 @@
 import {
-	Events,
-	ChannelType,
-	ModalBuilder,
-	TextInputBuilder,
-	TextInputStyle,
-	ActionRowBuilder,
-	MessageFlags,
-	EmbedBuilder,
-	ButtonBuilder,
-	ButtonStyle,
-	StringSelectMenuBuilder,
-	PermissionFlagsBits,
+  Events,
+  ChannelType,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ActionRowBuilder,
+  MessageFlags,
+  EmbedBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  StringSelectMenuBuilder,
+  PermissionFlagsBits,
 } from "discord.js";
-import { setTicketCategory, getTicketCategory, getUserSettings, setUserSetting } from "../db.js";
+import {
+  setTicketCategory,
+  getTicketCategory,
+  getUserSettings,
+  setUserSetting,
+  getLinkChannel,
+  setLinkChannel,
+} from "../db.js";
 
 const getMainEmbed = () => {
-	return new EmbedBuilder()
-		.setColor(0x00ae86)
-		.setTitle("⚙️ Settings")
-		.setDescription("Select a category to view its settings.");
+  return new EmbedBuilder()
+    .setColor(0x00ae86)
+    .setTitle("⚙️ Settings")
+    .setDescription("Select a category to view its settings.");
 };
 
 const getEditEmbed = (userId, setting) => {
-	const settings = getUserSettings(userId);
-	const emojisEnabled = settings.checkEmojis !== false;
-	const ticketCategoryId = getTicketCategory();
+  const settings = getUserSettings(userId);
+  const emojisEnabled = settings.checkEmojis !== false;
+  const ticketCategoryId = getTicketCategory();
 
-	if (setting === "check_emojis") {
-		return new EmbedBuilder()
-			.setColor(0x00ae86)
-			.setTitle("⚙️ Settings > Check Emojis")
-			.setDescription("Show emojis in the check command")
-			.addFields({
-				name: "Current Value",
-				value: emojisEnabled ? "✅ On" : "❌ Off",
-			})
-			.addFields({
-				name: "Valid Values",
-				value: "✅ On / ❌ Off",
-			})
-			.setFooter({ text: "User-specific Settings" });
-	} else if (setting === "ticket_category") {
-		return new EmbedBuilder()
-			.setColor(0x00ae86)
-			.setTitle("⚙️ Settings > Ticket Category")
-			.setDescription("Category for ticket channels")
-			.addFields({
-				name: "Current Value",
-				value: ticketCategoryId || "Not set",
-			})
-			.setFooter({ text: "Server Settings" });
-	}
+  if (setting === "check_emojis") {
+    return new EmbedBuilder()
+      .setColor(0x00ae86)
+      .setTitle("⚙️ Settings > Check Emojis")
+      .setDescription("Show emojis in the check command")
+      .addFields({
+        name: "Current Value",
+        value: emojisEnabled ? "✅ On" : "❌ Off",
+      })
+      .addFields({
+        name: "Valid Values",
+        value: "✅ On / ❌ Off",
+      })
+      .setFooter({ text: "User-specific Settings" });
+  } else if (setting === "ticket_category") {
+    return new EmbedBuilder()
+      .setColor(0x00ae86)
+      .setTitle("⚙️ Settings > Ticket Category")
+      .setDescription("Category for ticket channels")
+      .addFields({
+        name: "Current Value",
+        value: ticketCategoryId || "Not set",
+      })
+      .setFooter({ text: "Server Settings" });
+  }
 };
 
 const getMainComponents = () => {
-	const categorySelect = new StringSelectMenuBuilder()
-		.setCustomId("settings_category_select")
-		.setPlaceholder("Select a category")
-		.addOptions([
-			{
-				label: "Check Command",
-				value: "check_command",
-				description: "Settings for the check command",
-			},
-			{
-				label: "Tickets",
-				value: "tickets",
-				description: "Settings for tickets",
-			},
-		]);
+  const categorySelect = new StringSelectMenuBuilder()
+    .setCustomId("settings_category_select")
+    .setPlaceholder("Select a category")
+    .addOptions([
+      {
+        label: "Check Command",
+        value: "check_command",
+        description: "Settings for the check command",
+      },
+      {
+        label: "Tickets",
+        value: "tickets",
+        description: "Settings for tickets",
+      },
+      {
+        label: "Links",
+        value: "links",
+        description: "Settings for link channel",
+      },
+    ]);
 
-	const selectRow = new ActionRowBuilder().addComponents(categorySelect);
+  const selectRow = new ActionRowBuilder().addComponents(categorySelect);
 
-	return [selectRow];
+  return [selectRow];
 };
 
 const getCategoryEmbed = (category, userId, guild) => {
-	const settings = getUserSettings(userId);
-	const emojisEnabled = settings.checkEmojis !== false;
-	const ticketCategoryId = getTicketCategory();
+  const settings = getUserSettings(userId);
+  const emojisEnabled = settings.checkEmojis !== false;
+  const ticketCategoryId = getTicketCategory();
 
-	if (category === "check_command") {
-		let ticketCategoryName = "Not set";
-		if (ticketCategoryId && guild) {
-			const category = guild.channels.cache.get(ticketCategoryId);
-			if (category) {
-				ticketCategoryName = category.name;
-			}
-		}
+  if (category === "check_command") {
+    let ticketCategoryName = "Not set";
+    if (ticketCategoryId && guild) {
+      const category = guild.channels.cache.get(ticketCategoryId);
+      if (category) {
+        ticketCategoryName = category.name;
+      }
+    }
 
-		return new EmbedBuilder()
-			.setColor(0x00ae86)
-			.setTitle("⚙️ Check Command Settings")
-			.setDescription("Configure the check command")
-			.addFields({
-				name: "Check Emojis",
-				value: `Current: ${emojisEnabled ? "✅ On" : "❌ Off"}`,
-				inline: true,
-			})
-			.setFooter({ text: "User-specific Settings" });
-	} else if (category === "tickets") {
-		let ticketCategoryName = "Not set";
-		if (ticketCategoryId && guild) {
-			const category = guild.channels.cache.get(ticketCategoryId);
-			if (category) {
-				ticketCategoryName = category.name;
-			}
-		}
+    return new EmbedBuilder()
+      .setColor(0x00ae86)
+      .setTitle("⚙️ Check Command Settings")
+      .setDescription("Configure the check command")
+      .addFields({
+        name: "Check Emojis",
+        value: `Current: ${emojisEnabled ? "✅ On" : "❌ Off"}`,
+        inline: true,
+      })
+      .setFooter({ text: "User-specific Settings" });
+  } else if (category === "tickets") {
+    let ticketCategoryName = "Not set";
+    if (ticketCategoryId && guild) {
+      const category = guild.channels.cache.get(ticketCategoryId);
+      if (category) {
+        ticketCategoryName = category.name;
+      }
+    }
 
-		return new EmbedBuilder()
-			.setColor(0x00ae86)
-			.setTitle("⚙️ Ticket Settings")
-			.setDescription("Configure ticket settings")
-			.addFields({
-				name: "Ticket Category",
-				value: `Current: ${ticketCategoryName}`,
-				inline: true,
-			})
-			.setFooter({ text: "Server Settings" });
-	}
+    return new EmbedBuilder()
+      .setColor(0x00ae86)
+      .setTitle("⚙️ Ticket Settings")
+      .setDescription("Configure ticket settings")
+      .addFields({
+        name: "Ticket Category",
+        value: `Current: ${ticketCategoryName}`,
+        inline: true,
+      })
+      .setFooter({ text: "Server Settings" });
+  } else if (category === "links") {
+    let linkChannelName = "Not set";
+    const linkChannelId = getLinkChannel(guild?.id);
+    if (linkChannelId && guild) {
+      const channel = guild.channels.cache.get(linkChannelId);
+      if (channel) {
+        linkChannelName = channel.name;
+      }
+    }
+
+    return new EmbedBuilder()
+      .setColor(0x00ae86)
+      .setTitle("⚙️ Link Settings")
+      .setDescription("Configure link channel settings")
+      .addFields({
+        name: "Link Channel",
+        value: `Current: ${linkChannelName}`,
+        inline: true,
+      })
+      .setFooter({ text: "Server Settings" });
+  }
 };
 
 const getCategoryComponents = (category) => {
-	const settingsSelect = new StringSelectMenuBuilder()
-		.setCustomId("settings_select")
-		.setPlaceholder("Select a setting")
-		.addOptions([]);
+  const settingsSelect = new StringSelectMenuBuilder()
+    .setCustomId("settings_select")
+    .setPlaceholder("Select a setting")
+    .addOptions([]);
 
-	if (category === "check_command") {
-		settingsSelect.addOptions([
-			{
-				label: "Check Emojis",
-				value: "check_emojis",
-				description: "Show emojis in the check command",
-			},
-		]);
-	} else if (category === "tickets") {
-		settingsSelect.addOptions([
-			{
-				label: "Ticket Category",
-				value: "ticket_category",
-				description: "Category for ticket channels",
-			},
-		]);
-	}
+  if (category === "check_command") {
+    settingsSelect.addOptions([
+      {
+        label: "Check Emojis",
+        value: "check_emojis",
+        description: "Show emojis in the check command",
+      },
+    ]);
+  } else if (category === "tickets") {
+    settingsSelect.addOptions([
+      {
+        label: "Ticket Category",
+        value: "ticket_category",
+        description: "Category for ticket channels",
+      },
+    ]);
+  } else if (category === "links") {
+    settingsSelect.addOptions([
+      {
+        label: "Link Channel",
+        value: "link_channel",
+        description: "Channel where links must be posted",
+      },
+    ]);
+  }
 
-	const backRow = new ActionRowBuilder().addComponents(
-		new ButtonBuilder()
-			.setCustomId("settings_back")
-			.setLabel("Back")
-			.setStyle(ButtonStyle.Secondary),
-	);
+  const backRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("settings_back")
+      .setLabel("Back")
+      .setStyle(ButtonStyle.Secondary),
+  );
 
-	const selectRow = new ActionRowBuilder().addComponents(settingsSelect);
+  const selectRow = new ActionRowBuilder().addComponents(settingsSelect);
 
-	return [selectRow, backRow];
+  return [selectRow, backRow];
 };
 
 const getEditComponents = (setting) => {
-	const settingsSelect = new StringSelectMenuBuilder()
-		.setCustomId("settings_select")
-		.setPlaceholder("Select a setting")
-		.addOptions([
-			{
-				label: "Check Emojis",
-				value: "check_emojis",
-				description: "Show emojis in the check command",
-			},
-			{
-				label: "Ticket Category",
-				value: "ticket_category",
-				description: "Category for ticket channels",
-			},
-		]);
+  const settingsSelect = new StringSelectMenuBuilder()
+    .setCustomId("settings_select")
+    .setPlaceholder("Select a setting")
+    .addOptions([
+      {
+        label: "Check Emojis",
+        value: "check_emojis",
+        description: "Show emojis in the check command",
+      },
+      {
+        label: "Ticket Category",
+        value: "ticket_category",
+        description: "Category for ticket channels",
+      },
+    ]);
 
-	const toggleRow = new ActionRowBuilder().addComponents(
-		new ButtonBuilder()
-			.setCustomId("settings_toggle")
-			.setLabel("Toggle")
-			.setStyle(ButtonStyle.Primary),
-	);
+  const toggleRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("settings_toggle")
+      .setLabel("Toggle")
+      .setStyle(ButtonStyle.Primary),
+  );
 
-	const backRow = new ActionRowBuilder().addComponents(
-		new ButtonBuilder()
-			.setCustomId("settings_back")
-			.setLabel("Back")
-			.setStyle(ButtonStyle.Secondary),
-	);
+  const backRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("settings_back")
+      .setLabel("Back")
+      .setStyle(ButtonStyle.Secondary),
+  );
 
-	const selectRow = new ActionRowBuilder().addComponents(settingsSelect);
+  const selectRow = new ActionRowBuilder().addComponents(settingsSelect);
 
-	if (setting === "ticket_category") {
-		return [selectRow, backRow];
-	}
+  if (setting === "ticket_category") {
+    return [selectRow, backRow];
+  }
 
-	return [selectRow, toggleRow, backRow];
+  return [selectRow, toggleRow, backRow];
 };
 
 export default {
-	name: Events.InteractionCreate,
-	once: false,
-	async execute(interaction, client) {
-		if (interaction.isStringSelectMenu()) {
-			const selectInteraction = interaction;
+  name: Events.InteractionCreate,
+  once: false,
+  async execute(interaction, client) {
+    if (interaction.isStringSelectMenu()) {
+      const selectInteraction = interaction;
 
-			if (selectInteraction.customId === "settings_category_select") {
-				const userId = selectInteraction.user.id;
-				const category = selectInteraction.values[0];
-				const guild = selectInteraction.guild;
+      if (selectInteraction.customId === "settings_category_select") {
+        const userId = selectInteraction.user.id;
+        const category = selectInteraction.values[0];
+        const guild = selectInteraction.guild;
 
-				await selectInteraction.update({
-					embeds: [getCategoryEmbed(category, userId, guild)],
-					components: getCategoryComponents(category),
-				});
-				return;
-			}
+        await selectInteraction.update({
+          embeds: [getCategoryEmbed(category, userId, guild)],
+          components: getCategoryComponents(category),
+        });
+        return;
+      }
 
-			if (selectInteraction.customId === "settings_select") {
-				const userId = selectInteraction.user.id;
-				const settingId = selectInteraction.values[0];
-				const guild = selectInteraction.guild;
+      if (selectInteraction.customId === "settings_select") {
+        const userId = selectInteraction.user.id;
+        const settingId = selectInteraction.values[0];
+        const guild = selectInteraction.guild;
 
-				if (settingId === "check_emojis") {
-					await selectInteraction.update({
-						embeds: [getEditEmbed(userId, settingId)],
-						components: getEditComponents(settingId),
-					});
-				} else if (settingId === "ticket_category") {
-					const categoryOptions = guild.channels.cache
-						.filter((c) => c.type === ChannelType.GuildCategory)
-						.map((c) => ({
-							label: c.name,
-							value: c.id,
-						}));
+        if (settingId === "check_emojis") {
+          await selectInteraction.update({
+            embeds: [getEditEmbed(userId, settingId)],
+            components: getEditComponents(settingId),
+          });
+        } else if (settingId === "link_channel") {
+          const channelOptions = guild.channels.cache
+            .filter((c) => c.type === ChannelType.GuildText)
+            .map((c) => ({
+              label: c.name,
+              value: c.id,
+            }));
 
-					if (categoryOptions.length === 0) {
-						await selectInteraction.update({
-							embeds: [
-								new EmbedBuilder()
-									.setColor(0xff0000)
-									.setTitle("⚙️ Error")
-									.setDescription("No categories found in this server."),
-							],
-							components: getMainComponents(),
-						});
-						return;
-					}
+          if (channelOptions.length === 0) {
+            await selectInteraction.update({
+              embeds: [
+                new EmbedBuilder()
+                  .setColor(0xff0000)
+                  .setTitle("⚙️ Error")
+                  .setDescription("No text channels found in this server."),
+              ],
+              components: getMainComponents(),
+            });
+            return;
+          }
 
-					const categorySelect = new StringSelectMenuBuilder()
-						.setCustomId("settings_ticket_category_select")
-						.setPlaceholder("Select a category")
-						.addOptions(categoryOptions);
+          const channelSelect = new StringSelectMenuBuilder()
+            .setCustomId("settings_link_channel_select")
+            .setPlaceholder("Select a channel")
+            .addOptions(channelOptions);
 
-					await selectInteraction.update({
-						embeds: [getEditEmbed(userId, settingId)],
-						components: [
-							new ActionRowBuilder().addComponents(categorySelect),
-							new ActionRowBuilder().addComponents(
-								new ButtonBuilder()
-									.setCustomId("settings_back")
-									.setLabel("Back")
-									.setStyle(ButtonStyle.Secondary),
-							),
-						],
-					});
-				}
-				return;
-			}
+          await selectInteraction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor(0x00ae86)
+                .setTitle("⚙️ Settings > Link Channel")
+                .setDescription(
+                  "Select the channel where links must be posted",
+                ),
+            ],
+            components: [
+              new ActionRowBuilder().addComponents(channelSelect),
+              new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setCustomId("settings_back")
+                  .setLabel("Back")
+                  .setStyle(ButtonStyle.Secondary),
+              ),
+            ],
+          });
+        } else if (settingId === "ticket_category") {
+          const categoryOptions = guild.channels.cache
+            .filter((c) => c.type === ChannelType.GuildCategory)
+            .map((c) => ({
+              label: c.name,
+              value: c.id,
+            }));
 
-			if (selectInteraction.customId === "settings_ticket_category_select") {
-				if (
-					!selectInteraction.memberPermissions.has(
-						PermissionFlagsBits.ManageChannels,
-					)
-				) {
-					await selectInteraction.update({
-						embeds: [
-							new EmbedBuilder()
-								.setColor(0xff0000)
-								.setTitle("⚙️ Permission Denied")
-								.setDescription(
-									"You need Manage Channels permission to change this setting.",
-								),
-						],
-						components: [],
-					});
-					return;
-				}
+          if (categoryOptions.length === 0) {
+            await selectInteraction.update({
+              embeds: [
+                new EmbedBuilder()
+                  .setColor(0xff0000)
+                  .setTitle("⚙️ Error")
+                  .setDescription("No categories found in this server."),
+              ],
+              components: getMainComponents(),
+            });
+            return;
+          }
 
-				const categoryId = selectInteraction.values[0];
-				setTicketCategory(categoryId);
+          const categorySelect = new StringSelectMenuBuilder()
+            .setCustomId("settings_ticket_category_select")
+            .setPlaceholder("Select a category")
+            .addOptions(categoryOptions);
 
-				const guild = selectInteraction.guild;
-				const categoryName =
-					guild?.channels.cache.get(categoryId)?.name || "Unknown";
+          await selectInteraction.update({
+            embeds: [getEditEmbed(userId, settingId)],
+            components: [
+              new ActionRowBuilder().addComponents(categorySelect),
+              new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                  .setCustomId("settings_back")
+                  .setLabel("Back")
+                  .setStyle(ButtonStyle.Secondary),
+              ),
+            ],
+          });
+        }
+        return;
+      }
 
-				await selectInteraction.update({
-					embeds: [
-						new EmbedBuilder()
-							.setColor(0x00ae86)
-							.setTitle("⚙️ Setting Updated")
-							.setDescription(`Ticket category set to ${categoryName}.`),
-					],
-					components: [],
-				});
-				return;
-			}
-		}
+      if (selectInteraction.customId === "settings_ticket_category_select") {
+        if (
+          !selectInteraction.memberPermissions.has(
+            PermissionFlagsBits.ManageChannels,
+          )
+        ) {
+          await selectInteraction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor(0xff0000)
+                .setTitle("⚙️ Permission Denied")
+                .setDescription(
+                  "You need Manage Channels permission to change this setting.",
+                ),
+            ],
+            components: [],
+          });
+          return;
+        }
 
-		if (interaction.isButton()) {
-			const buttonInteraction = interaction;
-			const userId = buttonInteraction.user.id;
+        const categoryId = selectInteraction.values[0];
+        setTicketCategory(categoryId);
 
-			if (buttonInteraction.customId === "settings_back") {
-				const guild = buttonInteraction.guild;
-				await buttonInteraction.update({
-					embeds: [getMainEmbed(userId, guild)],
-					components: getMainComponents(),
-				});
-				return;
-			}
+        const guild = selectInteraction.guild;
+        const categoryName =
+          guild?.channels.cache.get(categoryId)?.name || "Unknown";
 
-			if (buttonInteraction.customId === "settings_category_back") {
-				const guild = buttonInteraction.guild;
-				await buttonInteraction.update({
-					embeds: [getMainEmbed(userId, guild)],
-					components: getMainComponents(),
-				});
-				return;
-			}
+        await selectInteraction.update({
+          embeds: [
+            new EmbedBuilder()
+              .setColor(0x00ae86)
+              .setTitle("⚙️ Setting Updated")
+              .setDescription(`Ticket category set to ${categoryName}.`),
+          ],
+          components: [],
+        });
+        return;
+      }
 
-			if (buttonInteraction.customId === "settings_toggle") {
-				const settings = getUserSettings(userId);
-				const currentValue = settings.checkEmojis !== false;
-				setUserSetting(userId, "checkEmojis", !currentValue);
+      if (selectInteraction.customId === "settings_link_channel_select") {
+        if (
+          !selectInteraction.memberPermissions.has(
+            PermissionFlagsBits.ManageChannels,
+          )
+        ) {
+          await selectInteraction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor(0xff0000)
+                .setTitle("⚙️ Permission Denied")
+                .setDescription(
+                  "You need Manage Channels permission to change this setting.",
+                ),
+            ],
+            components: [],
+          });
+          return;
+        }
 
-				await buttonInteraction.update({
-					embeds: [getEditEmbed(userId, "check_emojis")],
-					components: getEditComponents("check_emojis"),
-				});
-				return;
-			}
+        const channelId = selectInteraction.values[0];
+        setLinkChannel(selectInteraction.guildId, channelId);
 
-			if (buttonInteraction.customId === "create_ticket") {
-				const modal = new ModalBuilder()
-					.setCustomId("ticket_modal")
-					.setTitle("Create a Ticket");
+        const guild = selectInteraction.guild;
+        const channelName =
+          guild?.channels.cache.get(channelId)?.name || "Unknown";
 
-				const reasonInput = new TextInputBuilder()
-					.setCustomId("ticket_reason")
-					.setLabel("Reason for creating a ticket")
-					.setStyle(TextInputStyle.Paragraph)
-					.setPlaceholder("Please describe your issue or question...")
-					.setRequired(true);
+        await selectInteraction.update({
+          embeds: [
+            new EmbedBuilder()
+              .setColor(0x00ae86)
+              .setTitle("⚙️ Setting Updated")
+              .setDescription(`Link channel set to ${channelName}.`),
+          ],
+          components: [],
+        });
+        return;
+      }
+    }
 
-				const row = new ActionRowBuilder().addComponents(reasonInput);
+    if (interaction.isButton()) {
+      const buttonInteraction = interaction;
+      const userId = buttonInteraction.user.id;
 
-				modal.addComponents(row);
+      if (buttonInteraction.customId === "settings_back") {
+        const guild = buttonInteraction.guild;
+        await buttonInteraction.update({
+          embeds: [getMainEmbed(userId, guild)],
+          components: getMainComponents(),
+        });
+        return;
+      }
 
-				await buttonInteraction.showModal(modal);
-			}
-		}
+      if (buttonInteraction.customId === "settings_category_back") {
+        const guild = buttonInteraction.guild;
+        await buttonInteraction.update({
+          embeds: [getMainEmbed(userId, guild)],
+          components: getMainComponents(),
+        });
+        return;
+      }
 
-		if (interaction.isModalSubmit()) {
-			const modalInteraction = interaction;
-			if (modalInteraction.customId === "ticket_modal") {
-				const reason =
-					modalInteraction.fields.getTextInputValue("ticket_reason");
-				const user = modalInteraction.user;
-				const guild = modalInteraction.guild;
+      if (buttonInteraction.customId === "settings_toggle") {
+        const settings = getUserSettings(userId);
+        const currentValue = settings.checkEmojis !== false;
+        setUserSetting(userId, "checkEmojis", !currentValue);
 
-				if (!guild) {
-					await modalInteraction.reply({
-						content: "This can only be used in a server.",
-						flags: MessageFlags.Ephemeral,
-					});
-					return;
-				}
+        await buttonInteraction.update({
+          embeds: [getEditEmbed(userId, "check_emojis")],
+          components: getEditComponents("check_emojis"),
+        });
+        return;
+      }
 
-				const ticketId = Date.now().toString().slice(-6);
-				const channelName = `ticket-${user.username}-${ticketId}`;
+      if (buttonInteraction.customId === "create_ticket") {
+        const modal = new ModalBuilder()
+          .setCustomId("ticket_modal")
+          .setTitle("Create a Ticket");
 
-				const ticketCategory = await getTicketCategory();
+        const reasonInput = new TextInputBuilder()
+          .setCustomId("ticket_reason")
+          .setLabel("Reason for creating a ticket")
+          .setStyle(TextInputStyle.Paragraph)
+          .setPlaceholder("Please describe your issue or question...")
+          .setRequired(true);
 
-				const ticketChannel = await guild.channels.create({
-					name: channelName,
-					type: ChannelType.GuildText,
-					parent: ticketCategory,
-					permissionOverwrites: [
-						{
-							id: guild.id,
-							deny: ["ViewChannel"],
-						},
-						{
-							id: user.id,
-							allow: ["ViewChannel", "SendMessages", "AttachFiles"],
-						},
-						{
-							id: client.user?.id ?? "",
-							allow: ["ViewChannel", "SendMessages", "ManageChannels"],
-						},
-					],
-				});
+        const row = new ActionRowBuilder().addComponents(reasonInput);
 
-				await ticketChannel.send({
-					content: `🎫 **New Ticket** | ${user} (\`${user.id}\`)\n📝 **Reason:** ${reason}`,
-				});
+        modal.addComponents(row);
 
-				await modalInteraction.reply({
-					content: `✅ Ticket created: ${ticketChannel}`,
-					flags: MessageFlags.Ephemeral,
-				});
-			}
-		}
-	},
+        await buttonInteraction.showModal(modal);
+      }
+    }
+
+    if (interaction.isModalSubmit()) {
+      const modalInteraction = interaction;
+      if (modalInteraction.customId === "ticket_modal") {
+        const reason =
+          modalInteraction.fields.getTextInputValue("ticket_reason");
+        const user = modalInteraction.user;
+        const guild = modalInteraction.guild;
+
+        if (!guild) {
+          await modalInteraction.reply({
+            content: "This can only be used in a server.",
+            flags: MessageFlags.Ephemeral,
+          });
+          return;
+        }
+
+        const ticketId = Date.now().toString().slice(-6);
+        const channelName = `ticket-${user.username}-${ticketId}`;
+
+        const ticketCategory = await getTicketCategory();
+
+        const ticketChannel = await guild.channels.create({
+          name: channelName,
+          type: ChannelType.GuildText,
+          parent: ticketCategory,
+          permissionOverwrites: [
+            {
+              id: guild.id,
+              deny: ["ViewChannel"],
+            },
+            {
+              id: user.id,
+              allow: ["ViewChannel", "SendMessages", "AttachFiles"],
+            },
+            {
+              id: client.user?.id ?? "",
+              allow: ["ViewChannel", "SendMessages", "ManageChannels"],
+            },
+          ],
+        });
+
+        await ticketChannel.send({
+          content: `🎫 **New Ticket** | ${user} (\`${user.id}\`)\n📝 **Reason:** ${reason}`,
+        });
+
+        await modalInteraction.reply({
+          content: `✅ Ticket created: ${ticketChannel}`,
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+    }
+  },
 };
