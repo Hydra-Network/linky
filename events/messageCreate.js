@@ -4,27 +4,27 @@ import { getLinkChannel } from "../db.js";
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
 
 export default {
-	name: Events.MessageCreate,
-	once: false,
-	async execute(message) {
-		if (message.author.bot) return;
+  name: Events.MessageCreate,
+  once: false,
+  async execute(message) {
+    if (message.author.bot) return;
 
-		const linkChannelId = getLinkChannel(message.guildId);
-		if (!linkChannelId || message.channelId !== linkChannelId) return;
+    const linkChannelId = getLinkChannel(message.guildId);
+    if (!linkChannelId || message.channelId !== linkChannelId) return;
 
-		const hasLink = message.content.match(URL_REGEX) !== null;
+    const hasLink = message.content.match(URL_REGEX) !== null;
 
-		if (!hasLink) {
-			try {
-				await message.delete();
+    if (!hasLink) {
+      try {
+        await message.delete();
 
-				await message.author.send({
-					content: `Hey! If you were trying to send categories or any text, bundle it in with your links. e.g. https://google.com/\n\nYour message: ${message.content}`,
-					flags: MessageFlags.Ephemeral,
-				});
-			} catch (error) {
-				console.error("Error handling link requirement:", error);
-			}
-		}
-	},
+        await message.author.send({
+          content: `Hey! If you were trying to send categories or any text, bundle it in with your links. e.g. https://google.com/\n\nYour message: ${message.content}`,
+          flags: MessageFlags.Ephemeral,
+        });
+      } catch (error) {
+        console.error("Error handling link requirement:", error);
+      }
+    }
+  },
 };
