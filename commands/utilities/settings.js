@@ -2,10 +2,17 @@ import {
   SlashCommandBuilder,
   ApplicationIntegrationType,
   InteractionContextType,
-  EmbedBuilder,
-  ActionRowBuilder,
-  StringSelectMenuBuilder,
+  ChannelType,
+  PermissionFlagsBits,
 } from "discord.js";
+import {
+  getUserSettings,
+  setUserSetting,
+  getTicketCategory,
+  setTicketCategory,
+  getLinkChannel,
+  setLinkChannel,
+} from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -19,37 +26,67 @@ export default {
       InteractionContextType.Guild,
       InteractionContextType.BotDM,
       InteractionContextType.PrivateChannel,
-    ]),
+    ])
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("check-emoji")
+        .setDescription("Toggle emojis in check command"),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("ticket-category")
+        .setDescription("Set ticket category")
+        .addChannelOption((option) =>
+          option
+            .setName("category")
+            .setDescription("Category for tickets")
+            .addChannelTypes(ChannelType.GuildCategory)
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("link-channel")
+        .setDescription("Set link channel")
+        .addChannelOption((option) =>
+          option
+            .setName("channel")
+            .setDescription("Channel where links must be posted")
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true),
+        ),
+    ),
 
   async execute(interaction) {
-    const categorySelect = new StringSelectMenuBuilder()
-      .setCustomId("settings_category_select")
-      .setPlaceholder("Select a category")
-      .addOptions([
-        {
-          label: "Check Command",
-          value: "check_command",
-          description: "Settings for the check command",
-        },
-        {
-          label: "Tickets",
-          value: "tickets",
-          description: "Settings for tickets",
-        },
-        {
-          label: "Links",
-          value: "links",
-          description: "Settings for link channel",
-        },
-      ]);
+    const subcommand = interaction.options.getSubcommand();
 
-    const mainEmbed = new EmbedBuilder()
-      .setColor(0x00ae86)
-      .setTitle("⚙️ Settings")
-      .setDescription("Select a category to view its settings.");
+    if (subcommand === "check-emoji") {
+      const settings = getUserSettings(interaction.user.id);
+      const currentValue = settings.checkEmojis !== false;
+      setUserSetting(interaction.user.id, "checkEmojis", !currentValue);
+      await interaction.reply(
+        `Check emojis ${!currentValue ? "enabled" : "disabled"}`,
+      );
+      return;
+    }
 
-    const selectRow = new ActionRowBuilder().addComponents(categorySelect);
+    if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+      await interaction.reply("You need Administrator permission.");
+      return;
+    }
 
-    await interaction.reply({ embeds: [mainEmbed], components: [selectRow] });
+    if (subcommand === "ticket-category") {
+      const category = interaction.options.getChannel("category");
+      setTicketCategory(category.id);
+      await interaction.reply(`Ticket category set to ${category.name}`);
+      return;
+    }
+
+    if (subcommand === "link-channel") {
+      const channel = interaction.options.getChannel("channel");
+      setLinkChannel(interaction.guildId, channel.id);
+      await interaction.reply(`Link channel set to ${channel.name}`);
+      return;
+    }
   },
 };
