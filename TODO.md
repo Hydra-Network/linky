@@ -1,6 +1,7 @@
 # TODO
 
 - [x] invite command for invite link
+- [ ] moderating words
 - [ ] trigger words
 - [ ] music bot feature
 - [ ] invite tracker alternatives
