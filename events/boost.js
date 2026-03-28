@@ -5,9 +5,7 @@ export default {
   name: Events.GuildMemberUpdate,
   once: false,
   async execute(oldMember, newMember) {
-    const oldWasBoosting =
-      oldMember.premiumSince ||
-      oldMember.guild.premiumSubscriptionCount !== undefined;
+    const oldWasBoosting = !!oldMember.premiumSince;
     const newIsBoosting = newMember.premiumSince;
 
     if (!oldWasBoosting && newIsBoosting) {
