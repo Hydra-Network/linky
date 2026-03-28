@@ -2,6 +2,7 @@ import {
   SlashCommandBuilder,
   ApplicationIntegrationType,
   InteractionContextType,
+  MessageFlags,
 } from "discord.js";
 
 export default {
