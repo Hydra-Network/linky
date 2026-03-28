@@ -12,7 +12,9 @@ import {
 import cron from "node-cron";
 import "dotenv/config";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { getItem, setItem } from "./db.js";
+import { init, getItem, setItem } from "./db.js";
+
+await init();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
