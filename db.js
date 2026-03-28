@@ -1,4 +1,4 @@
-import fs from "fs";
+import { JSONFilePreset } from "lowdb/node";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -7,165 +7,130 @@ const __dirname = path.dirname(__filename);
 
 const dbPath = path.join(__dirname, "data/database.json");
 
-const dir = path.dirname(dbPath);
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir, { recursive: true });
-}
-
-let cache = null;
-let pendingWrite = null;
-const writeQueue = Promise.resolve();
-
-const loadDB = () => {
-  if (cache) return cache;
-  if (!fs.existsSync(dbPath)) {
-    cache = {
-      links: [],
-      sticky: {},
-      ticketCategory: null,
-      settings: {},
-      linkChannels: {},
-    };
-    return cache;
-  }
-  cache = JSON.parse(fs.readFileSync(dbPath, "utf8"));
-  if (!cache.linkChannels) cache.linkChannels = {};
-  return cache;
+const defaultData = {
+	links: [],
+	sticky: {},
+	ticketCategory: null,
+	settings: {},
+	linkChannels: {},
 };
 
-const saveDB = () => {
-  if (!cache) return;
-  if (pendingWrite) return;
-  pendingWrite = setTimeout(() => {
-    fs.writeFileSync(dbPath, JSON.stringify(cache, null, 2));
-    pendingWrite = null;
-  }, 100);
-};
+const db = await JSONFilePreset(dbPath, defaultData);
 
-export const addLink = (url, site, userId, blocker, role) => {
-  const data = loadDB();
-  if (!data.sticky) data.sticky = {};
-
-  data.links.push({
-    url,
-    site,
-    userId,
-    timestamp: new Date().toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    }),
-    blocker,
-    role,
-  });
-
-  saveDB();
+export const addLink = async (url, site, userId, blocker, role) => {
+	await db.update(({ links }) => {
+		links.push({
+			url,
+			site,
+			userId,
+			timestamp: new Date().toLocaleDateString("en-US", {
+				month: "short",
+				day: "numeric",
+			}),
+			blocker,
+			role,
+		});
+	});
 };
 
 export const getLinks = () => {
-  return loadDB().links;
+	return db.data.links;
 };
 
-export const setSticky = (
-  guildId,
-  channelId,
-  messageContent,
-  lastMessageId = null,
+export const setSticky = async (
+	guildId,
+	channelId,
+	messageContent,
+	lastMessageId = null,
 ) => {
-  const data = loadDB();
-  if (!data.sticky) data.sticky = {};
-  data.sticky[channelId] = {
-    guildId,
-    content: messageContent,
-    lastMessageId,
-  };
-  saveDB();
+	await db.update(({ sticky }) => {
+		sticky[channelId] = {
+			guildId,
+			content: messageContent,
+			lastMessageId,
+		};
+	});
 };
 
 export const getSticky = (channelId) => {
-  const data = loadDB();
-  if (!data.sticky) return null;
-  return data.sticky[channelId] || null;
+	return db.data.sticky?.[channelId] || null;
 };
 
-export const removeSticky = (channelId) => {
-  const data = loadDB();
-  if (data.sticky && data.sticky[channelId]) {
-    delete data.sticky[channelId];
-    saveDB();
-    return true;
-  }
-  return false;
+export const removeSticky = async (channelId) => {
+	if (db.data.sticky?.[channelId]) {
+		await db.update(({ sticky }) => {
+			delete sticky[channelId];
+		});
+		return true;
+	}
+	return false;
 };
 
 export const getAllSticky = () => {
-  return loadDB().sticky || {};
+	return db.data.sticky || {};
 };
 
-export const setTicketCategory = (categoryId) => {
-  const data = loadDB();
-  data.ticketCategory = categoryId;
-  saveDB();
+export const setTicketCategory = async (categoryId) => {
+	await db.update(({ ticketCategory }) => {
+		ticketCategory = categoryId;
+	});
 };
 
 export const getTicketCategory = () => {
-  return loadDB().ticketCategory || null;
+	return db.data.ticketCategory || null;
 };
 
 export const getUserSettings = (userId) => {
-  const data = loadDB();
-  if (!data.settings) data.settings = {};
-  if (!data.settings[userId]) data.settings[userId] = {};
-  return data.settings[userId];
+	if (!db.data.settings) db.data.settings = {};
+	if (!db.data.settings[userId]) db.data.settings[userId] = {};
+	return db.data.settings[userId];
 };
 
-export const setUserSetting = (userId, key, value) => {
-  const data = loadDB();
-  if (!data.settings) data.settings = {};
-  if (!data.settings[userId]) data.settings[userId] = {};
-  data.settings[userId][key] = value;
-  saveDB();
+export const setUserSetting = async (userId, key, value) => {
+	await db.update(({ settings }) => {
+		if (!settings) settings = {};
+		if (!settings[userId]) settings[userId] = {};
+		settings[userId][key] = value;
+	});
 };
 
-export const clear = () => {
-  if (fs.existsSync(dbPath)) {
-    fs.rmSync(dbPath, { recursive: true });
-  }
+export const clear = async () => {
+	db.data = { ...defaultData };
+	await db.write();
 };
 
-export const addLinkChannel = (guildId, channelId) => {
-  const data = loadDB();
-  if (!data.linkChannels) data.linkChannels = {};
-  if (!data.linkChannels[guildId]) data.linkChannels[guildId] = [];
-  if (!data.linkChannels[guildId].includes(channelId)) {
-    data.linkChannels[guildId].push(channelId);
-    saveDB();
-  }
+export const addLinkChannel = async (guildId, channelId) => {
+	await db.update(({ linkChannels }) => {
+		if (!linkChannels) linkChannels = {};
+		if (!linkChannels[guildId]) linkChannels[guildId] = [];
+		if (!linkChannels[guildId].includes(channelId)) {
+			linkChannels[guildId].push(channelId);
+		}
+	});
 };
 
-export const removeLinkChannel = (guildId, channelId) => {
-  const data = loadDB();
-  if (!data.linkChannels?.[guildId]) return false;
-  const index = data.linkChannels[guildId].indexOf(channelId);
-  if (index === -1) return false;
-  data.linkChannels[guildId].splice(index, 1);
-  saveDB();
-  return true;
+export const removeLinkChannel = async (guildId, channelId) => {
+	if (!db.data.linkChannels?.[guildId]) return false;
+	const index = db.data.linkChannels[guildId].indexOf(channelId);
+	if (index === -1) return false;
+	await db.update(({ linkChannels }) => {
+		linkChannels[guildId].splice(index, 1);
+	});
+	return true;
 };
 
 export const getLinkChannels = (guildId) => {
-  const data = loadDB();
-  return data.linkChannels?.[guildId] || [];
+	return db.data.linkChannels?.[guildId] || [];
 };
 
-export const setBoostChannel = (guildId, channelId) => {
-  const data = loadDB();
-  if (!data.settings) data.settings = {};
-  if (!data.settings[guildId]) data.settings[guildId] = {};
-  data.settings[guildId].boostChannel = channelId;
-  saveDB();
+export const setBoostChannel = async (guildId, channelId) => {
+	await db.update(({ settings }) => {
+		if (!settings) settings = {};
+		if (!settings[guildId]) settings[guildId] = {};
+		settings[guildId].boostChannel = channelId;
+	});
 };
 
 export const getBoostChannel = (guildId) => {
-  const data = loadDB();
-  return data.settings?.[guildId]?.boostChannel || null;
+	return db.data.settings?.[guildId]?.boostChannel || null;
 };
