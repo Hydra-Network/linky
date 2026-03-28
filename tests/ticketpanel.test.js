@@ -1,14 +1,14 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 
-const mockReply = jest.fn();
+const mockReply = vi.fn();
 
-jest.mock("../db.js", () => ({ getItem: jest.fn() }));
+vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import ticketpanelCommand from "../commands/tickets/ticketpanel.js";
 
 describe("ticketpanel command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("sends ticket panel", async () => {

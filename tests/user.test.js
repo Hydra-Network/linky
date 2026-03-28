@@ -1,21 +1,21 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 
-jest.mock("../db.js", () => ({ getItem: jest.fn() }));
+vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import userCommand from "../commands/utilities/user.js";
 
-const mockReply = jest.fn();
+const mockReply = vi.fn();
 
 describe("user command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("replies with user info when no target specified", async () => {
     const mockUser = {
       id: "123456789",
       username: "testuser",
-      displayAvatarURL: jest
+      displayAvatarURL: vi
         .fn()
         .mockReturnValue("https://example.com/avatar.png"),
       createdTimestamp: Date.now() - 1000 * 60 * 60 * 24 * 365,
@@ -24,7 +24,7 @@ describe("user command", () => {
     const interaction = {
       reply: mockReply,
       options: {
-        getUser: jest.fn().mockReturnValue(null),
+        getUser: vi.fn().mockReturnValue(null),
       },
       user: mockUser,
       guild: null,
@@ -42,7 +42,7 @@ describe("user command", () => {
     const mockTargetUser = {
       id: "987654321",
       username: "targetuser",
-      displayAvatarURL: jest
+      displayAvatarURL: vi
         .fn()
         .mockReturnValue("https://example.com/target.png"),
       createdTimestamp: Date.now() - 1000 * 60 * 60 * 24 * 200,
@@ -51,12 +51,12 @@ describe("user command", () => {
     const interaction = {
       reply: mockReply,
       options: {
-        getUser: jest.fn().mockReturnValue(mockTargetUser),
+        getUser: vi.fn().mockReturnValue(mockTargetUser),
       },
       user: {
         id: "123456789",
         username: "testuser",
-        displayAvatarURL: jest.fn(),
+        displayAvatarURL: vi.fn(),
       },
       guild: null,
     };

@@ -1,9 +1,9 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 
-const mockReply = jest.fn();
-const mockGetLinks = jest.fn();
+const mockReply = vi.fn();
+const mockGetLinks = vi.fn();
 
-jest.mock("../db.js", () => ({
+vi.mock("../db.js", () => ({
   getLinks: mockGetLinks,
 }));
 
@@ -11,7 +11,7 @@ import inviteCommand from "../commands/utilities/invite.js";
 
 describe("invite command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("replies with invite link", async () => {

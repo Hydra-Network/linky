@@ -1,13 +1,13 @@
-import { describe, test, expect, beforeEach, jest } from "bun:test";
+import { describe, test, expect, beforeEach, vi } from "vitest";
 
-const mockSend = jest.fn();
-const mockGetItem = jest.fn();
+const mockSend = vi.fn();
+const mockGetItem = vi.fn();
 
 const mockChannel = {
   send: mockSend,
 };
 
-jest.mock("../db.js", () => {
+vi.mock("../db.js", () => {
   return {
     __esModule: true,
     getItem: (...args) => mockGetItem(...args),
@@ -18,7 +18,7 @@ import boostEvent from "../events/boost.js";
 
 describe("boost event", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("sends boost message when member starts boosting", async () => {
@@ -32,7 +32,7 @@ describe("boost event", () => {
         id: "guild123",
         premiumSubscriptionCount: 5,
         channels: {
-          fetch: jest.fn().mockResolvedValue(mockChannel),
+          fetch: vi.fn().mockResolvedValue(mockChannel),
         },
       },
       toString: () => "<@123>",
@@ -51,7 +51,7 @@ describe("boost event", () => {
     const oldMember = { premiumSince: new Date("2023-01-01") };
     const newMember = {
       premiumSince: new Date("2024-01-01"),
-      guild: { id: "guild123", channels: { fetch: jest.fn() } },
+      guild: { id: "guild123", channels: { fetch: vi.fn() } },
     };
 
     await boostEvent.execute(oldMember, newMember);
@@ -67,7 +67,7 @@ describe("boost event", () => {
       premiumSince: new Date(),
       guild: {
         id: "guild123",
-        channels: { fetch: jest.fn() },
+        channels: { fetch: vi.fn() },
       },
     };
 

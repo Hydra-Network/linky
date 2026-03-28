@@ -1,14 +1,14 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 
-const mockReply = jest.fn();
+const mockReply = vi.fn();
 
-jest.mock("../db.js", () => ({ getItem: jest.fn() }));
+vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import closeCommand from "../commands/tickets/close.js";
 
 describe("close command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("fails when no channel", async () => {
@@ -16,7 +16,7 @@ describe("close command", () => {
       reply: mockReply,
       channel: null,
       options: {
-        get: jest.fn().mockReturnValue(null),
+        get: vi.fn().mockReturnValue(null),
       },
     };
 
@@ -36,7 +36,7 @@ describe("close command", () => {
         name: "general",
       },
       options: {
-        get: jest.fn().mockReturnValue(null),
+        get: vi.fn().mockReturnValue(null),
       },
     };
 
@@ -50,12 +50,12 @@ describe("close command", () => {
   });
 
   test("closes ticket successfully", async () => {
-    const mockDelete = jest.fn().mockResolvedValue(undefined);
+    const mockDelete = vi.fn().mockResolvedValue(undefined);
 
     const interaction = {
       reply: mockReply,
       options: {
-        get: jest.fn().mockReturnValue({ value: "Test reason" }),
+        get: vi.fn().mockReturnValue({ value: "Test reason" }),
       },
       user: {
         username: "testuser",

@@ -1,14 +1,14 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 
-const mockReply = jest.fn();
+const mockReply = vi.fn();
 
-jest.mock("../db.js", () => ({ getItem: jest.fn() }));
+vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import unbanCommand from "../commands/moderation/unban.js";
 
 describe("unban command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("fails when not in a guild", async () => {
@@ -28,20 +28,20 @@ describe("unban command", () => {
     const interaction = {
       reply: mockReply,
       options: {
-        getUser: jest.fn().mockReturnValue({ id: "123", tag: "user#1234" }),
-        getString: jest.fn().mockReturnValue(null),
+        getUser: vi.fn().mockReturnValue({ id: "123", tag: "user#1234" }),
+        getString: vi.fn().mockReturnValue(null),
       },
       guild: {
         members: {
           me: {
             permissions: {
-              has: jest.fn().mockReturnValue(false),
+              has: vi.fn().mockReturnValue(false),
             },
           },
         },
       },
       memberPermissions: {
-        has: jest.fn().mockReturnValue(false),
+        has: vi.fn().mockReturnValue(false),
       },
     };
 

@@ -1,21 +1,21 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 
-jest.mock("../db.js", () => ({ getItem: jest.fn() }));
+vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import helpCommand from "../commands/utilities/help.js";
 
-const mockReply = jest.fn();
+const mockReply = vi.fn();
 
 describe("help command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("replies with help embed", async () => {
     const interaction = {
       reply: mockReply,
       options: {
-        getString: jest.fn().mockReturnValue(null),
+        getString: vi.fn().mockReturnValue(null),
       },
       client: {
         commands: new Map(),
@@ -41,7 +41,7 @@ describe("help command", () => {
     const interaction = {
       reply: mockReply,
       options: {
-        getString: jest.fn().mockReturnValue("ping"),
+        getString: vi.fn().mockReturnValue("ping"),
       },
       client: {
         commands: new Map([["ping", mockCommand]]),

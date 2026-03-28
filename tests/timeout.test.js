@@ -1,14 +1,14 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 
-const mockReply = jest.fn();
+const mockReply = vi.fn();
 
-jest.mock("../db.js", () => ({ getItem: jest.fn() }));
+vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import timeoutCommand from "../commands/moderation/timeout.js";
 
 describe("timeout command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("fails when not in a guild", async () => {
@@ -28,9 +28,9 @@ describe("timeout command", () => {
     const interaction = {
       reply: mockReply,
       options: {
-        getUser: jest.fn().mockReturnValue({ id: "123", tag: "user#1234" }),
-        getInteger: jest.fn().mockReturnValue(60),
-        getString: jest.fn().mockReturnValue(null),
+        getUser: vi.fn().mockReturnValue({ id: "123", tag: "user#1234" }),
+        getInteger: vi.fn().mockReturnValue(60),
+        getString: vi.fn().mockReturnValue(null),
       },
       guild: {
         members: {

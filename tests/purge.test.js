@@ -1,14 +1,14 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 
-const mockReply = jest.fn();
+const mockReply = vi.fn();
 
-jest.mock("../db.js", () => ({ getItem: jest.fn() }));
+vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import purgeCommand from "../commands/moderation/purge.js";
 
 describe("purge command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("fails when not in a guild", async () => {
@@ -25,14 +25,14 @@ describe("purge command", () => {
   });
 
   test("fails when bot lacks permission", async () => {
-    const mockPermissionsFor = jest.fn().mockReturnValue({
-      has: jest.fn().mockReturnValue(false),
+    const mockPermissionsFor = vi.fn().mockReturnValue({
+      has: vi.fn().mockReturnValue(false),
     });
 
     const interaction = {
       reply: mockReply,
       options: {
-        getInteger: jest.fn().mockReturnValue(10),
+        getInteger: vi.fn().mockReturnValue(10),
       },
       guild: {
         members: {
@@ -54,21 +54,21 @@ describe("purge command", () => {
   });
 
   test("purges messages when has permission", async () => {
-    const mockBulkDelete = jest.fn().mockResolvedValue(
+    const mockBulkDelete = vi.fn().mockResolvedValue(
       new Map([
         ["1", {}],
         ["2", {}],
       ]),
     );
 
-    const mockPermissionsFor = jest.fn().mockReturnValue({
-      has: jest.fn().mockReturnValue(true),
+    const mockPermissionsFor = vi.fn().mockReturnValue({
+      has: vi.fn().mockReturnValue(true),
     });
 
     const interaction = {
       reply: mockReply,
       options: {
-        getInteger: jest.fn().mockReturnValue(10),
+        getInteger: vi.fn().mockReturnValue(10),
       },
       guild: {
         members: {
