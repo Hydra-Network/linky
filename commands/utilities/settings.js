@@ -87,15 +87,25 @@ export default {
     const subcommandGroup = interaction.options.getSubcommandGroup();
 
     if (subcommand === "check-emoji") {
+      if (!interaction.guildId) {
+        await interaction.reply("This setting can only be used in a server.");
+        return;
+      }
+      if (
+        !interaction.memberPermissions.has(PermissionFlagsBits.Administrator)
+      ) {
+        await interaction.reply("You need Administrator permission.");
+        return;
+      }
       const allSettings = getItem("settings") || {};
-      const settings = allSettings[interaction.user.id] || {};
+      const settings = allSettings[interaction.guildId] || {};
       const currentValue = settings.checkEmojis !== false;
       await setItem("settings", {
         ...allSettings,
-        [interaction.user.id]: { ...settings, checkEmojis: !currentValue },
+        [interaction.guildId]: { ...settings, checkEmojis: !currentValue },
       });
       await interaction.reply(
-        `Check emojis ${!currentValue ? "enabled" : "disabled"}`,
+        `Check emojis ${!currentValue ? "enabled" : "disabled"} for this server`,
       );
       return;
     }

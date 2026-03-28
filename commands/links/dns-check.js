@@ -44,14 +44,13 @@ export default {
   async execute(interaction) {
     const url = interaction.options.getString("url");
     const blockers = interaction.options.getString("blockers");
-    const userId = interaction.user.id;
 
     await interaction.deferReply();
 
     const results = await checkWithDetails(url, blockers.toLowerCase().trim());
     if (!results.length) return interaction.editReply("No results returned.");
 
-    const settings = getItem("settings")?.[userId] || {};
+    const settings = getItem("settings")?.[interaction.guildId] || {};
     const useEmojis = settings.checkEmojis !== false;
 
     const unblocked = results.filter((r) => !r.blocked);
