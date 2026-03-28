@@ -12,6 +12,8 @@ import {
   addLinkChannel,
   removeLinkChannel,
   getLinkChannels,
+  setBoostChannel,
+  getBoostChannel,
 } from "../../db.js";
 
 export default {
@@ -75,6 +77,18 @@ export default {
         .addSubcommand((subcommand) =>
           subcommand.setName("list").setDescription("List all link channels"),
         ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("boost-channel")
+        .setDescription("Set the boost thank you channel")
+        .addChannelOption((option) =>
+          option
+            .setName("channel")
+            .setDescription("Channel for boost thank you messages")
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true),
+        ),
     ),
 
   async execute(interaction) {
@@ -133,6 +147,13 @@ export default {
         }
         return;
       }
+    }
+
+    if (subcommand === "boost-channel") {
+      const channel = interaction.options.getChannel("channel");
+      setBoostChannel(interaction.guildId, channel.id);
+      await interaction.reply(`Boost thank you channel set to ${channel.name}`);
+      return;
     }
   },
 };

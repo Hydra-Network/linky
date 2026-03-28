@@ -156,3 +156,16 @@ export const getLinkChannels = (guildId) => {
   const data = loadDB();
   return data.linkChannels?.[guildId] || [];
 };
+
+export const setBoostChannel = (guildId, channelId) => {
+  const data = loadDB();
+  if (!data.settings) data.settings = {};
+  if (!data.settings[guildId]) data.settings[guildId] = {};
+  data.settings[guildId].boostChannel = channelId;
+  saveDB();
+};
+
+export const getBoostChannel = (guildId) => {
+  const data = loadDB();
+  return data.settings?.[guildId]?.boostChannel || null;
+};
