@@ -5,16 +5,7 @@ import {
   ChannelType,
   PermissionFlagsBits,
 } from "discord.js";
-import {
-  getUserSettings,
-  setUserSetting,
-  setTicketCategory,
-  addLinkChannel,
-  removeLinkChannel,
-  getLinkChannels,
-  setBoostChannel,
-  getBoostChannel,
-} from "../../db.js";
+import { getItem, setItem } from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -96,9 +87,13 @@ export default {
     const subcommandGroup = interaction.options.getSubcommandGroup();
 
     if (subcommand === "check-emoji") {
-      const settings = getUserSettings(interaction.user.id);
+      const allSettings = getItem("settings") || {};
+      const settings = allSettings[interaction.user.id] || {};
       const currentValue = settings.checkEmojis !== false;
-      setUserSetting(interaction.user.id, "checkEmojis", !currentValue);
+      await setItem("settings", {
+        ...allSettings,
+        [interaction.user.id]: { ...settings, checkEmojis: !currentValue },
+      });
       await interaction.reply(
         `Check emojis ${!currentValue ? "enabled" : "disabled"}`,
       );
@@ -112,7 +107,7 @@ export default {
 
     if (subcommand === "ticket-category") {
       const category = interaction.options.getChannel("category");
-      setTicketCategory(category.id);
+      await setItem("ticketCategory", category.id);
       await interaction.reply(`Ticket category set to ${category.name}`);
       return;
     }
@@ -120,26 +115,38 @@ export default {
     if (subcommandGroup === "link-channel") {
       if (subcommand === "add") {
         const channel = interaction.options.getChannel("channel");
-        addLinkChannel(interaction.guildId, channel.id);
+        const linkChannels = getItem("linkChannels") || {};
+        const channels = linkChannels[interaction.guildId] || [];
+        await setItem("linkChannels", {
+          ...linkChannels,
+          [interaction.guildId]: [...channels, channel.id],
+        });
         await interaction.reply(`Link channel added: ${channel.name}`);
         return;
       }
 
       if (subcommand === "remove") {
         const channel = interaction.options.getChannel("channel");
-        const removed = removeLinkChannel(interaction.guildId, channel.id);
-        if (removed) {
-          await interaction.reply(`Link channel removed: ${channel.name}`);
-        } else {
+        const linkChannels = getItem("linkChannels") || {};
+        const channels = linkChannels[interaction.guildId] || [];
+        const index = channels.indexOf(channel.id);
+        if (index === -1) {
           await interaction.reply(
             `Channel ${channel.name} is not a link channel`,
           );
+        } else {
+          await setItem("linkChannels", {
+            ...linkChannels,
+            [interaction.guildId]: channels.filter((c) => c !== channel.id),
+          });
+          await interaction.reply(`Link channel removed: ${channel.name}`);
         }
         return;
       }
 
       if (subcommand === "list") {
-        const channels = getLinkChannels(interaction.guildId);
+        const linkChannels = getItem("linkChannels") || {};
+        const channels = linkChannels[interaction.guildId] || [];
         if (channels.length === 0) {
           await interaction.reply("No link channels set");
         } else {
@@ -151,7 +158,14 @@ export default {
 
     if (subcommand === "boost-channel") {
       const channel = interaction.options.getChannel("channel");
-      setBoostChannel(interaction.guildId, channel.id);
+      const settings = getItem("settings") || {};
+      await setItem("settings", {
+        ...settings,
+        [interaction.guildId]: {
+          ...settings[interaction.guildId],
+          boostChannel: channel.id,
+        },
+      });
       await interaction.reply(`Boost thank you channel set to ${channel.name}`);
       return;
     }

@@ -5,7 +5,7 @@ import {
   PermissionFlagsBits,
   MessageFlags,
 } from "discord.js";
-import { setSticky } from "../../db.js";
+import { getItem, setItem } from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -27,7 +27,11 @@ export default {
 
     const stickyMessage = await interaction.channel.send(content);
 
-    setSticky(guildId, channelId, content, stickyMessage.id);
+    const allSticky = getItem("sticky") || {};
+    await setItem("sticky", {
+      ...allSticky,
+      [channelId]: { guildId, content, lastMessageId: stickyMessage.id },
+    });
 
     await interaction.reply({
       content: "Sticky message set!",

@@ -1,5 +1,5 @@
 import { Events } from "discord.js";
-import { getBoostChannel } from "../db.js";
+import { getItem } from "../db.js";
 
 export default {
   name: Events.GuildMemberUpdate,
@@ -10,7 +10,7 @@ export default {
 
     if (!oldWasBoosting && newIsBoosting) {
       const guildId = newMember.guild.id;
-      const boostChannelId = getBoostChannel(guildId);
+      const boostChannelId = getItem("settings")?.[guildId]?.boostChannel;
 
       if (!boostChannelId) return;
 

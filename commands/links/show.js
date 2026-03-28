@@ -4,7 +4,7 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
-import { getLinks } from "../../db.js";
+import { getItem } from "../../db.js";
 import { ROLES } from "../../utils/roles.js";
 
 export default {
@@ -52,7 +52,7 @@ export default {
       }
     }
     const shouldPing = interaction.options.getBoolean("ping") ?? false;
-    const links = await getLinks();
+    const links = getItem("links") || [];
     const today = new Date();
     const options = { month: "short", day: "numeric" };
     const todayStr = today.toLocaleDateString("en-US", options);

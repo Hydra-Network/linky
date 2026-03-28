@@ -5,7 +5,7 @@ import {
   MessageFlags,
   PermissionFlagsBits,
 } from "discord.js";
-import { getSticky, removeSticky } from "../../db.js";
+import { getItem, setItem } from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -16,7 +16,7 @@ export default {
     .setContexts([InteractionContextType.Guild]),
   async execute(interaction) {
     const channelId = interaction.channelId;
-    const sticky = getSticky(channelId);
+    const sticky = getItem("sticky")?.[channelId];
 
     if (!sticky) {
       return interaction.reply({
@@ -25,7 +25,9 @@ export default {
       });
     }
 
-    removeSticky(channelId);
+    const allSticky = getItem("sticky") || {};
+    const { [channelId]: _, ...rest } = allSticky;
+    await setItem("sticky", rest);
 
     try {
       const channel = interaction.channel;

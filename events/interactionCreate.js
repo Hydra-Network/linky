@@ -10,7 +10,7 @@ import {
   ButtonStyle,
 } from "discord.js";
 
-import { getTicketCategory } from "../db.js";
+import { getItem } from "../db.js";
 
 export default {
   name: Events.InteractionCreate,
@@ -58,7 +58,7 @@ export default {
         const ticketId = Date.now().toString().slice(-6);
         const channelName = `ticket-${user.username}-${ticketId}`;
 
-        const ticketCategory = await getTicketCategory();
+        const ticketCategory = getItem("ticketCategory");
 
         const ticketChannel = await guild.channels.create({
           name: channelName,

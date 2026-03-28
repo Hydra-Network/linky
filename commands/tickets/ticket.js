@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChannelType, MessageFlags } from "discord.js";
-import { getTicketCategory } from "../../db.js";
+import { getItem } from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -28,7 +28,7 @@ export default {
     const ticketId = Date.now().toString().slice(-6);
     const channelName = `ticket-${user.username}-${ticketId}`;
 
-    const ticketCategory = await getTicketCategory();
+    const ticketCategory = getItem("ticketCategory");
 
     await guild.channels
       .create({

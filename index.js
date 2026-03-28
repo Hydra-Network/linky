@@ -12,7 +12,7 @@ import {
 import cron from "node-cron";
 import "dotenv/config";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { getSticky, setSticky, getLinks } from "./db.js";
+import { getItem, setItem } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,7 +56,7 @@ client.once(Events.ClientReady, (readyClient) => {
       cutoffDate.setDate(now.getDate() - 1);
       cutoffDate.setHours(0, 0, 0, 0);
 
-      const links = await getLinks();
+      const links = getItem("links") || [];
 
       let galaxy = [];
       let glint = [];
@@ -176,7 +176,7 @@ const processingSticky = new Set();
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
-  const sticky = getSticky(message.channelId);
+  const sticky = getItem("sticky")?.[message.channelId];
   if (!sticky) return;
 
   if (processingSticky.has(message.channelId)) return;
@@ -195,12 +195,15 @@ client.on(Events.MessageCreate, async (message) => {
     }
 
     const newStickyMessage = await message.channel.send(sticky.content);
-    setSticky(
-      message.guildId,
-      message.channelId,
-      sticky.content,
-      newStickyMessage.id,
-    );
+    const allSticky = getItem("sticky") || {};
+    await setItem("sticky", {
+      ...allSticky,
+      [message.channelId]: {
+        guildId: message.guildId,
+        content: sticky.content,
+        lastMessageId: newStickyMessage.id,
+      },
+    });
   } catch (error) {
     console.error("Error in sticky message logic:", error);
   } finally {

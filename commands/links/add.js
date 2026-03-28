@@ -4,7 +4,7 @@ import {
   InteractionContextType,
   MessageFlags,
 } from "discord.js";
-import { addLink, getLinks } from "../../db.js";
+import { getItem, setItem } from "../../db.js";
 import { check } from "../../utils/checker.js";
 import { filterURL } from "../../utils/urlfilter.js";
 import { ROLES } from "../../utils/roles.js";
@@ -49,7 +49,7 @@ export default {
     let site = interaction.options.getString("proxysite");
     let userId = interaction.user.id;
 
-    const list = getLinks();
+    const list = getItem("links") || [];
 
     if (interaction.guildId == "1307867835237793893") {
       const allowedRoles = [
@@ -112,6 +112,20 @@ export default {
       flags: MessageFlags.Ephemeral,
     });
     var { unblocked, roles } = await check(link);
-    addLink(httpscheck(link), site, interaction.user.id, unblocked, roles);
+    const links = getItem("links") || [];
+    await setItem("links", [
+      ...links,
+      {
+        url: httpscheck(link),
+        site,
+        userId: interaction.user.id,
+        timestamp: new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        }),
+        blocker: unblocked,
+        role: roles,
+      },
+    ]);
   },
 };

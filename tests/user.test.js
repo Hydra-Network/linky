@@ -1,6 +1,6 @@
 import { describe, test, expect, jest, beforeEach } from "bun:test";
 
-jest.mock("../db.js", () => ({}));
+jest.mock("../db.js", () => ({ getItem: jest.fn() }));
 
 import userCommand from "../commands/utilities/user.js";
 

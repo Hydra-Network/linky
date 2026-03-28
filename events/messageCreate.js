@@ -1,5 +1,5 @@
 import { Events, MessageFlags } from "discord.js";
-import { getLinkChannels } from "../db.js";
+import { getItem } from "../db.js";
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
 
@@ -9,7 +9,7 @@ export default {
   async execute(message) {
     if (message.author.bot) return;
 
-    const linkChannelIds = getLinkChannels(message.guildId);
+    const linkChannelIds = getItem("linkChannels")?.[message.guildId] || [];
     if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
       return;
 

@@ -2,7 +2,7 @@ import { describe, test, expect, jest, beforeEach } from "bun:test";
 
 const mockReply = jest.fn();
 
-jest.mock("../db.js", () => ({}));
+jest.mock("../db.js", () => ({ getItem: jest.fn() }));
 
 import kickCommand from "../commands/moderation/kick.js";
 

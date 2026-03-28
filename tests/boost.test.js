@@ -1,16 +1,18 @@
 import { describe, test, expect, beforeEach, jest } from "bun:test";
 
 const mockSend = jest.fn();
-
-const mockGetBoostChannel = jest.fn();
-
-jest.mock("../db.js", () => ({
-  getBoostChannel: mockGetBoostChannel,
-}));
+const mockGetItem = jest.fn();
 
 const mockChannel = {
   send: mockSend,
 };
+
+jest.mock("../db.js", () => {
+  return {
+    __esModule: true,
+    getItem: (...args) => mockGetItem(...args),
+  };
+});
 
 import boostEvent from "../events/boost.js";
 
@@ -20,7 +22,7 @@ describe("boost event", () => {
   });
 
   test("sends boost message when member starts boosting", async () => {
-    mockGetBoostChannel.mockReturnValue("123456789");
+    mockGetItem.mockReturnValue({ guild123: { boostChannel: "123456789" } });
 
     const oldMember = { premiumSince: null };
     const newMember = {
@@ -39,15 +41,13 @@ describe("boost event", () => {
 
     await boostEvent.execute(oldMember, newMember);
 
-    expect(mockGetBoostChannel).toHaveBeenCalledWith("guild123");
+    expect(mockGetItem).toHaveBeenCalledWith("settings");
     expect(mockChannel.send).toHaveBeenCalled();
     const sentEmbed = mockChannel.send.mock.calls[0][0].embeds[0];
     expect(sentEmbed.title).toBe("🎉 Thank You for Boosting!");
   });
 
   test("does nothing when member was already boosting", async () => {
-    mockGetBoostChannel.mockReturnValue("123456789");
-
     const oldMember = { premiumSince: new Date("2023-01-01") };
     const newMember = {
       premiumSince: new Date("2024-01-01"),
@@ -56,11 +56,11 @@ describe("boost event", () => {
 
     await boostEvent.execute(oldMember, newMember);
 
-    expect(mockGetBoostChannel).not.toHaveBeenCalled();
+    expect(mockGetItem).not.toHaveBeenCalled();
   });
 
   test("does nothing when no boost channel configured", async () => {
-    mockGetBoostChannel.mockReturnValue(null);
+    mockGetItem.mockReturnValue({});
 
     const oldMember = { premiumSince: null };
     const newMember = {

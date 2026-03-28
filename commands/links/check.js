@@ -8,7 +8,7 @@ import {
   NORMAL_BLOCKERS,
   getBlockerName,
 } from "../../utils/checker.js";
-import { getUserSettings } from "../../db.js";
+import { getItem } from "../../db.js";
 
 const CHOICES = [
   { name: "All", value: "normal" },
@@ -51,7 +51,7 @@ export default {
     const results = await checkWithDetails(url, blockers.toLowerCase().trim());
     if (!results.length) return interaction.editReply("No results returned.");
 
-    const settings = getUserSettings(userId);
+    const settings = getItem("settings")?.[userId] || {};
     const useEmojis = settings.checkEmojis !== false;
 
     const unblocked = results.filter((r) => !r.blocked);
