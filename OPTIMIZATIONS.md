@@ -6,17 +6,12 @@ Based on codebase analysis (Discord.js v14, LowDB, Node.js/Bun)
 
 ## Code Structure Improvements
 
-| Priority   | Area                 | Issue                                  | Recommendation                                   |
-| ---------- | -------------------- | -------------------------------------- | ------------------------------------------------ |
-| **Low**    | **No TypeScript**    | JavaScript has no type safety          | Migrate to TypeScript for better maintainability |
-
+| Priority | Area              | Issue                         | Recommendation                                   |
+| -------- | ----------------- | ----------------------------- | ------------------------------------------------ |
+| **Low**  | **No TypeScript** | JavaScript has no type safety | Migrate to TypeScript for better maintainability |
 
 ## Architecture Improvements
 
-### 2. Database
-
-- Consider LowDB → SQLite for production (better concurrency)
-- Or use PostgreSQL with Prisma for full SQL capabilities
 
 ### 3. Rate Limiting
 
