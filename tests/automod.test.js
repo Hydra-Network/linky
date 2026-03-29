@@ -32,16 +32,16 @@ describe("automod", () => {
     });
 
     mockMessage = {
-      author: { bot: false },
+      author: {
+        bot: false,
+        id: "123456789",
+        send: vi.fn().mockResolvedValue(undefined),
+      },
       channelId: "111222333",
       channel: { toString: () => "#test-channel" },
       guildId: "987654321",
       content: "Hello world",
       delete: vi.fn().mockResolvedValue(undefined),
-      author: {
-        id: "123456789",
-        send: vi.fn().mockResolvedValue(undefined),
-      },
     };
   });
 
@@ -56,6 +56,7 @@ describe("automod", () => {
     });
 
     mockMessage.content = "This contains badword in it";
+    mockMessage.guild = { id: "987654321" };
 
     await messageCreate.execute(mockMessage);
 
@@ -95,6 +96,7 @@ describe("automod", () => {
     });
 
     mockMessage.content = "This contains BADWORD in it";
+    mockMessage.guild = { id: "987654321" };
 
     await messageCreate.execute(mockMessage);
 
