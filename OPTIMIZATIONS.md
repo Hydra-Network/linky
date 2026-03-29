@@ -8,7 +8,6 @@ Based on codebase analysis (Discord.js v14, LowDB, Node.js/Bun)
 
 | Priority   | Area                                 | Issue                            | Recommendation                                            |
 | ---------- | ------------------------------------ | -------------------------------- | --------------------------------------------------------- |
-| **Medium** | **URL checker** (`utils/checker.js`) | No HTTP timeout, no caching      | Add timeout (5s), implement LRU cache for repeated checks |
 | **Medium** | **Daily cron**                       | Fetches all links, no pagination | Process links in batches, paginate DB queries             |
 | **Medium** | **Guild settings**                   | Fetched from DB on every message | Cache guild settings in memory with TTL                   |
 | **Low**    | **Command loading**                  | `readdirSync` at startup         | Lazy load commands on first use                           |
@@ -92,5 +91,4 @@ const middleware = createCommandMiddleware([checkRateLimit, checkPermissions]);
 
 ## Quick Wins (High Impact, Low Effort)
 
-1. **Add HTTP timeouts** to all fetch calls
 4. **Add health check command** (`/health`) for monitoring
