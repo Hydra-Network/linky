@@ -5,6 +5,8 @@ const URL_REGEX = /https?:\/\/[^\s]+/gi;
 const processingSticky = new Set();
 
 
+let stickyCache = await getItem("sticky") || {};
+
 export default {
 	name: Events.MessageCreate,
 	once: false,
@@ -12,7 +14,7 @@ export default {
 		if (message.author.bot) return;
 
 		// Sticky Messages
-		const sticky = getItem("sticky")?.[message.channelId];
+		const sticky = stickyCache[message.channelId];
 		if (!sticky) return;
 
 		if (processingSticky.has(message.channelId)) return;
@@ -20,34 +22,25 @@ export default {
 
 		try {
 			if (sticky.lastMessageId) {
-				try {
-					const lastMessage = await message.channel.messages.fetch(
-						sticky.lastMessageId,
-					);
-					if (lastMessage) {
-						await lastMessage.delete();
-					}
-				} catch (e) {
-					console.error("Sending sticky message failed: ", e)
-				}
+				message.channel.messages.delete(sticky.lastMessageId).catch(() => { });
 			}
 
 			const newStickyMessage = await message.channel.send(sticky.content);
-			const allSticky = getItem("sticky") || {};
-			await setItem("sticky", {
-				...allSticky,
-				[message.channelId]: {
-					guildId: message.guildId,
-					content: sticky.content,
-					lastMessageId: newStickyMessage.id,
-				},
-			});
+
+			stickyCache[message.channelId] = {
+				...sticky,
+				lastMessageId: newStickyMessage.id,
+			};
+
+			setItem("sticky", stickyCache).catch(err =>
+				console.error("DB Write Error:", err)
+			);
+
 		} catch (error) {
-			console.error("Error in sticky message logic:", error);
+			console.error("Sticky logic error:", error);
 		} finally {
 			processingSticky.delete(message.channelId);
 		}
-
 
 		// AutoMod
 		const automodWords = getItem("automodWords")?.[message.guildId] || [];

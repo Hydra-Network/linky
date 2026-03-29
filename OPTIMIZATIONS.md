@@ -8,46 +8,12 @@ Based on codebase analysis (Discord.js v14, LowDB, Node.js/Bun)
 
 | Priority   | Area                                     | Issue                                             | Recommendation                                            |
 | ---------- | ---------------------------------------- | ------------------------------------------------- | --------------------------------------------------------- |
-| **High**   | **db.js**                                | Every `setItem()` triggers immediate `db.write()` | Batch writes with debouncing or use a write queue         |
-| **High**   | **Sticky messages** (`index.js:176-213`) | Synchronous DB reads/writes on every message      | Cache sticky messages in memory, async writes             |
 | **Medium** | **URL checker** (`utils/checker.js`)     | No HTTP timeout, no caching                       | Add timeout (5s), implement LRU cache for repeated checks |
 | **Medium** | **Daily cron**                           | Fetches all links, no pagination                  | Process links in batches, paginate DB queries             |
 | **Medium** | **Guild settings**                       | Fetched from DB on every message                  | Cache guild settings in memory with TTL                   |
 | **Low**    | **Command loading**                      | `readdirSync` at startup                          | Lazy load commands on first use                           |
 
 ### Detailed Performance Fixes
-
-#### 1. Database Write Batching (db.js)
-
-```javascript
-// Current: writes on every setItem()
-async function setItem(key, value) {
-  data[key] = value;
-  await db.write(); // bottleneck
-}
-
-// Better: batch writes with debounce
-let writeQueue = [];
-let writeTimeout = null;
-const WRITE_DEBOUNCE_MS = 1000;
-
-async function queueWrite() {
-  if (writeTimeout) clearTimeout(writeTimeout);
-  writeTimeout = setTimeout(async () => {
-    await db.write();
-  }, WRITE_DEBOUNCE_MS);
-}
-```
-
-#### 2. Sticky Message Caching
-
-```javascript
-// Add in-memory cache for sticky messages
-const stickyCache = new Map();
-const STICKY_TTL = 5 * 60 * 1000; // 5 minutes
-
-// Refresh cache periodically instead of DB read on every message
-```
 
 #### 3. URL Checker with Cache
 
@@ -72,35 +38,12 @@ async function checkUrl(url) {
 
 | Priority   | Area                 | Issue                                       | Recommendation                                    |
 | ---------- | -------------------- | ------------------------------------------- | ------------------------------------------------- |
-| **High**   | **Hardcoded IDs**    | Guild/channel/role IDs scattered everywhere | Create `config/guilds.js` with centralized config |
 | **Medium** | **Magic strings**    | Repeated strings like "link", "sticky"      | Create constants file                             |
 | **Medium** | **Input validation** | No validation on command options            | Add validation with libraries like `zod`          |
 | **Medium** | **Rate limiting**    | No rate limits on commands                  | Add rate limiting middleware                      |
 | **Low**    | **No TypeScript**    | JavaScript has no type safety               | Migrate to TypeScript for better maintainability  |
 
 ### Detailed Structure Fixes
-
-#### 1. Centralized Configuration
-
-```
-config/
-├── index.js         # Main config loader
-├── guilds.js        # Guild-specific settings
-├── channels.js      # Channel IDs
-└── roles.js         # Role mappings
-```
-
-```javascript
-// config/guilds.js
-export const guilds = {
-  main: {
-    id: "123456789",
-    links: { channelId: "111", dailyChannelId: "222" },
-    tickets: { categoryId: "333", panelChannelId: "444" },
-    mod: { modChannelId: "555" },
-  },
-};
-```
 
 #### 2. Constants File
 

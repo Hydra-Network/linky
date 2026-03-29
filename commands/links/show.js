@@ -5,7 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { getItem } from "../../db.js";
-import { ROLES } from "../../utils/roles.js";
+import { ROLES } from "../../config/roles.js";
 
 export default {
   data: new SlashCommandBuilder()

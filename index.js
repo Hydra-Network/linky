@@ -6,13 +6,12 @@ import {
 	Events,
 	GatewayIntentBits,
 	ActivityType,
-	MessageFlags,
 	Status,
 } from "discord.js";
 import cron from "node-cron";
 import "dotenv/config";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { init, getItem, setItem } from "./db.js";
+import { init, getItem } from "./db.js";
 
 await init();
 

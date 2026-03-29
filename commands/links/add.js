@@ -7,7 +7,7 @@ import {
 import { getItem, setItem } from "../../db.js";
 import { check } from "../../utils/checker.js";
 import { filterURL } from "../../utils/urlfilter.js";
-import { ROLES } from "../../utils/roles.js";
+import { ROLES } from "../../config/roles.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -113,7 +113,7 @@ export default {
     });
     var { unblocked, roles } = await check(link);
     const links = getItem("links") || [];
-    await setItem("links", [
+    setItem("links", [
       ...links,
       {
         url: httpscheck(link),

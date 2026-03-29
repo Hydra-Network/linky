@@ -101,7 +101,7 @@ export default {
 			const allSettings = getItem("settings") || {};
 			const settings = allSettings[interaction.guildId] || {};
 			const currentValue = settings.checkEmojis !== false;
-			await setItem("settings", {
+			setItem("settings", {
 				...allSettings,
 				[interaction.guildId]: { ...settings, checkEmojis: !currentValue },
 			});
@@ -118,7 +118,7 @@ export default {
 
 		if (subcommand === "ticket-category") {
 			const category = interaction.options.getChannel("category");
-			await setItem("ticketCategory", category.id);
+			setItem("ticketCategory", category.id);
 			await interaction.reply(`Ticket category set to ${category.name}`);
 			return;
 		}
@@ -128,7 +128,7 @@ export default {
 				const channel = interaction.options.getChannel("channel");
 				const linkChannels = getItem("linkChannels") || {};
 				const channels = linkChannels[interaction.guildId] || [];
-				await setItem("linkChannels", {
+				setItem("linkChannels", {
 					...linkChannels,
 					[interaction.guildId]: [...channels, channel.id],
 				});
@@ -146,7 +146,7 @@ export default {
 						`Channel ${channel.name} is not a link channel`,
 					);
 				} else {
-					await setItem("linkChannels", {
+					setItem("linkChannels", {
 						...linkChannels,
 						[interaction.guildId]: channels.filter((c) => c !== channel.id),
 					});
@@ -170,7 +170,7 @@ export default {
 		if (subcommand === "boost-channel") {
 			const channel = interaction.options.getChannel("channel");
 			const settings = getItem("settings") || {};
-			await setItem("settings", {
+			setItem("settings", {
 				...settings,
 				[interaction.guildId]: {
 					...settings[interaction.guildId],
