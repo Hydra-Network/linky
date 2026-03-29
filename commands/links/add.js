@@ -2,7 +2,6 @@ import {
 	SlashCommandBuilder,
 	ApplicationIntegrationType,
 	InteractionContextType,
-	CommandInteraction,
 	MessageFlags,
 } from "discord.js";
 import { getItem, setItem } from "../../db.js";
@@ -37,7 +36,7 @@ export default {
 					{ name: "Bromine", value: "bromine" },
 				),
 		),
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction) {
 		if (
 			interaction.guildId !== "1307867835237793893" &&
 			interaction.guildId !== process.env.guildId

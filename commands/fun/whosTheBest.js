@@ -2,7 +2,6 @@ import {
 	SlashCommandBuilder,
 	ApplicationIntegrationType,
 	InteractionContextType,
-	CommandInteraction,
 } from "discord.js";
 
 export default {
@@ -18,7 +17,7 @@ export default {
 			InteractionContextType.BotDM,
 			InteractionContextType.PrivateChannel,
 		]),
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction) {
 		await interaction.reply("testuserforlearning is the best!");
 	},
 };
