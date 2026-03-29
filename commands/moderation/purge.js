@@ -5,8 +5,12 @@ import {
   MessageFlags,
   PermissionFlagsBits,
 } from "discord.js";
+import { z } from "zod";
 import logger from "../../utils/logger.js";
 import { ERROR_MESSAGES } from "../../config/index.js";
+import { validateWithSchema } from "../../utils/validation.js";
+
+const PurgeAmountSchema = z.number().int().min(1).max(100);
 
 export default {
   data: new SlashCommandBuilder()
@@ -35,6 +39,14 @@ export default {
     }
     const targetChannel = interaction.channel;
     const amount = interaction.options.getInteger("amount");
+
+    const amountValidation = validateWithSchema(PurgeAmountSchema, amount);
+    if (!amountValidation.valid) {
+      return interaction.reply({
+        content: `Invalid amount: ${amountValidation.errors[0]?.message || "Amount must be between 1 and 100"}`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
 
     const botMember = interaction.guild.members.me;
     if (

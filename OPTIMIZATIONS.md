@@ -8,7 +8,6 @@ Based on codebase analysis (Discord.js v14, LowDB, Node.js/Bun)
 
 | Priority   | Area                 | Issue                                  | Recommendation                                   |
 | ---------- | -------------------- | -------------------------------------- | ------------------------------------------------ |
-| **Medium** | **Input validation** | No validation on command options       | Add validation with libraries like `zod`         |
 | **Low**    | **No TypeScript**    | JavaScript has no type safety          | Migrate to TypeScript for better maintainability |
 
 

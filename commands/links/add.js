@@ -9,6 +9,7 @@ import { getItem, setItem } from "../../db.js";
 import { check } from "../../utils/checker.js";
 import { filterURL } from "../../utils/urlfilter.js";
 import { ROLES, DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
+import { validateWithSchema, LinkInputSchema, SiteSchema } from "../../utils/validation.js";
 
 export default {
 	data: new SlashCommandBuilder()
@@ -49,6 +50,22 @@ export default {
 		let link = interaction.options.getString("linkinput");
 		let site = interaction.options.getString("proxysite");
 		let userId = interaction.user.id;
+
+		const linkValidation = validateWithSchema(LinkInputSchema, link);
+		if (!linkValidation.valid) {
+			return interaction.reply({
+				content: `Invalid link: ${linkValidation.errors[0]?.message || "Invalid input"}`,
+				flags: MessageFlags.Ephemeral,
+			});
+		}
+
+		const siteValidation = validateWithSchema(SiteSchema, site);
+		if (!siteValidation.valid) {
+			return interaction.reply({
+				content: `Invalid site selection.`,
+				flags: MessageFlags.Ephemeral,
+			});
+		}
 
 		const list = getItem(DATABASE_KEYS.LINKS) || [];
 

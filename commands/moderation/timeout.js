@@ -7,6 +7,10 @@ import {
 } from "discord.js";
 import logger from "../../utils/logger.js";
 import { ERROR_MESSAGES } from "../../config/index.js";
+import {
+  validateWithSchema,
+  TimeoutDurationSchema,
+} from "../../utils/validation.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -50,6 +54,17 @@ export default {
     const duration = interaction.options.getInteger("duration");
     const reason =
       interaction.options.getString("reason") || "No reason provided";
+
+    const durationValidation = validateWithSchema(
+      TimeoutDurationSchema,
+      duration,
+    );
+    if (!durationValidation.valid) {
+      return interaction.reply({
+        content: `Invalid duration: ${durationValidation.errors[0]?.message || "Duration must be between 1 and 40320 minutes"}`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
 
     if (!target) {
       return interaction.reply({
