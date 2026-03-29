@@ -19,6 +19,7 @@ const defaultData = {
   ticketCategory: null,
   settings: {},
   linkChannels: {},
+  automodWords: {},
 };
 
 let db;
@@ -44,4 +45,5 @@ export const clear = async () => {
   await setItem("ticketCategory", null);
   await setItem("settings", {});
   await setItem("linkChannels", {});
+  await setItem("automodWords", {});
 };
