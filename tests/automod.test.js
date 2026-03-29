@@ -17,12 +17,19 @@ import messageCreate from "../events/messageCreate.js";
 
 describe("automod", () => {
   let mockMessage;
-  let mockGetItem;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockGetItem = vi.mocked(getItem);
+    const mockGetItem = vi.mocked(getItem);
+    mockGetItem.mockReset();
+
+    mockGetItem.mockImplementation((key) => {
+      if (key === "sticky") return Promise.resolve({});
+      if (key === "automodWords") return Promise.resolve({});
+      if (key === "linkChannels") return Promise.resolve({});
+      return Promise.resolve(null);
+    });
 
     mockMessage = {
       author: { bot: false },
@@ -39,9 +46,14 @@ describe("automod", () => {
   });
 
   test("deletes message containing blocked word", async () => {
-    mockGetItem
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({ 987654321: ["badword", "spam"] });
+    const mockGetItem = vi.mocked(getItem);
+    mockGetItem.mockImplementation((key) => {
+      if (key === "sticky") return Promise.resolve({});
+      if (key === "automodWords")
+        return Promise.resolve({ 987654321: ["badword", "spam"] });
+      if (key === "linkChannels") return Promise.resolve({});
+      return Promise.resolve(null);
+    });
 
     mockMessage.content = "This contains badword in it";
 
@@ -56,9 +68,14 @@ describe("automod", () => {
   });
 
   test("does not delete message without blocked word", async () => {
-    mockGetItem
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({ 987654321: ["badword", "spam"] });
+    const mockGetItem = vi.mocked(getItem);
+    mockGetItem.mockImplementation((key) => {
+      if (key === "sticky") return Promise.resolve({});
+      if (key === "automodWords")
+        return Promise.resolve({ 987654321: ["badword", "spam"] });
+      if (key === "linkChannels") return Promise.resolve({});
+      return Promise.resolve(null);
+    });
 
     mockMessage.content = "This is a clean message";
 
@@ -68,9 +85,14 @@ describe("automod", () => {
   });
 
   test("is case insensitive", async () => {
-    mockGetItem
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({ 987654321: ["badword"] });
+    const mockGetItem = vi.mocked(getItem);
+    mockGetItem.mockImplementation((key) => {
+      if (key === "sticky") return Promise.resolve({});
+      if (key === "automodWords")
+        return Promise.resolve({ 987654321: ["badword"] });
+      if (key === "linkChannels") return Promise.resolve({});
+      return Promise.resolve(null);
+    });
 
     mockMessage.content = "This contains BADWORD in it";
 
@@ -80,7 +102,13 @@ describe("automod", () => {
   });
 
   test("does nothing when no automod words configured", async () => {
-    mockGetItem.mockResolvedValueOnce({}).mockResolvedValueOnce({});
+    const mockGetItem = vi.mocked(getItem);
+    mockGetItem.mockImplementation((key) => {
+      if (key === "sticky") return Promise.resolve({});
+      if (key === "automodWords") return Promise.resolve({});
+      if (key === "linkChannels") return Promise.resolve({});
+      return Promise.resolve(null);
+    });
 
     mockMessage.content = "badword spam";
 
@@ -90,7 +118,13 @@ describe("automod", () => {
   });
 
   test("does nothing when guild has no automod config", async () => {
-    mockGetItem.mockResolvedValueOnce({}).mockResolvedValueOnce(null);
+    const mockGetItem = vi.mocked(getItem);
+    mockGetItem.mockImplementation((key) => {
+      if (key === "sticky") return Promise.resolve({});
+      if (key === "automodWords") return Promise.resolve(null);
+      if (key === "linkChannels") return Promise.resolve({});
+      return Promise.resolve(null);
+    });
 
     mockMessage.content = "This contains badword";
 
@@ -104,6 +138,6 @@ describe("automod", () => {
 
     await messageCreate.execute(mockMessage);
 
-    expect(mockGetItem).not.toHaveBeenCalled();
+    expect(vi.mocked(getItem)).not.toHaveBeenCalled();
   });
 });
