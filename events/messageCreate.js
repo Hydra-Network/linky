@@ -52,7 +52,7 @@ export default {
 
     // AutoMod
     const automodWords =
-      getItem(DATABASE_KEYS.AUTOMOD_WORDS)?.[message.guildId] || [];
+      (await getItem(DATABASE_KEYS.AUTOMOD_WORDS))?.[message.guildId] || [];
     if (automodWords.length > 0) {
       const messageContent = message.content.toLowerCase();
       const containsBlockedWord = automodWords.some((word) =>
@@ -82,7 +82,7 @@ export default {
 
     // Link Channels
     const linkChannelIds =
-      getItem(DATABASE_KEYS.LINK_CHANNELS)?.[message.guildId] || [];
+      (await getItem(DATABASE_KEYS.LINK_CHANNELS))?.[message.guildId] || [];
     if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
       return;
 

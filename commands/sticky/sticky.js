@@ -28,8 +28,8 @@ export default {
 
     const stickyMessage = await interaction.channel.send(content);
 
-    const allSticky = getItem(DATABASE_KEYS.STICKY) || {};
-    setItem(DATABASE_KEYS.STICKY, {
+    const allSticky = (await getItem(DATABASE_KEYS.STICKY)) || {};
+    await setItem(DATABASE_KEYS.STICKY, {
       ...allSticky,
       [channelId]: { guildId, content, lastMessageId: stickyMessage.id },
     });

@@ -69,7 +69,7 @@ client.once(Events.ClientReady, (readyClient) => {
       cutoffDate.setDate(now.getDate() - 1);
       cutoffDate.setHours(0, 0, 0, 0);
 
-      const links = getItem(DATABASE_KEYS.LINKS) || [];
+      const links = (await getItem(DATABASE_KEYS.LINKS)) || [];
 
       let galaxy = [];
       let glint = [];

@@ -12,7 +12,7 @@ export default {
 
     if (!oldWasBoosting && newIsBoosting) {
       const guildId = newMember.guild.id;
-      const boostChannelId = getItem(DATABASE_KEYS.SETTINGS)?.[guildId]
+      const boostChannelId = (await getItem(DATABASE_KEYS.SETTINGS))?.[guildId]
         ?.boostChannel;
 
       if (!boostChannelId) return;

@@ -29,7 +29,7 @@ export default {
     const ticketId = Date.now().toString().slice(-6);
     const channelName = `ticket-${user.username}-${ticketId}`;
 
-    const ticketCategory = getItem(DATABASE_KEYS.TICKET_CATEGORY);
+    const ticketCategory = await getItem(DATABASE_KEYS.TICKET_CATEGORY);
 
     await guild.channels
       .create({

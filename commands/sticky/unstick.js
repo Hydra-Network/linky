@@ -18,7 +18,7 @@ export default {
     .setContexts([InteractionContextType.Guild]),
   async execute(interaction) {
     const channelId = interaction.channelId;
-    const sticky = getItem(DATABASE_KEYS.STICKY)?.[channelId];
+    const sticky = (await getItem(DATABASE_KEYS.STICKY))?.[channelId];
 
     if (!sticky) {
       return interaction.reply({
@@ -27,9 +27,9 @@ export default {
       });
     }
 
-    const allSticky = getItem(DATABASE_KEYS.STICKY) || {};
+    const allSticky = (await getItem(DATABASE_KEYS.STICKY)) || {};
     const { [channelId]: _, ...rest } = allSticky;
-    setItem(DATABASE_KEYS.STICKY, rest);
+    await setItem(DATABASE_KEYS.STICKY, rest);
 
     try {
       const channel = interaction.channel;

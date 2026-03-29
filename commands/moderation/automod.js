@@ -62,7 +62,7 @@ export default {
     }
 
     const subcommand = interaction.options.getSubcommand();
-    const automodWords = getItem(DATABASE_KEYS.AUTOMOD_WORDS) || {};
+    const automodWords = (await getItem(DATABASE_KEYS.AUTOMOD_WORDS)) || {};
     const guildWords = automodWords[interaction.guildId] || [];
 
     if (subcommand === "add") {
@@ -75,7 +75,7 @@ export default {
         await interaction.reply(`"${word}" is already in the blocklist.`);
         return;
       }
-      setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
+      await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
         [interaction.guildId]: [...guildWords, word],
       });
@@ -89,7 +89,7 @@ export default {
         await interaction.reply(`"${word}" is not in the blocklist.`);
         return;
       }
-      setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
+      await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
         [interaction.guildId]: guildWords.filter((w) => w !== word),
       });
@@ -113,7 +113,7 @@ export default {
         await interaction.reply("The blocklist is already empty.");
         return;
       }
-      setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
+      await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
         [interaction.guildId]: [],
       });

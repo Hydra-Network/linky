@@ -52,7 +52,7 @@ export default {
     if (!results.length) return interaction.editReply("No results returned.");
 
     const settings =
-      getItem(DATABASE_KEYS.SETTINGS)?.[interaction.guildId] || {};
+      (await getItem(DATABASE_KEYS.SETTINGS))?.[interaction.guildId] || {};
     const useEmojis = settings.checkEmojis !== false;
 
     const unblocked = results.filter((r) => !r.blocked);

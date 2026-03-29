@@ -52,7 +52,7 @@ export default {
       }
     }
     const shouldPing = interaction.options.getBoolean("ping") ?? false;
-    const links = getItem(DATABASE_KEYS.LINKS) || [];
+    const links = (await getItem(DATABASE_KEYS.LINKS)) || [];
     const today = new Date();
     const options = { month: "short", day: "numeric" };
     const todayStr = today.toLocaleDateString("en-US", options);
