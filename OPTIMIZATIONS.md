@@ -73,7 +73,6 @@ async function checkUrl(url) {
 | Priority   | Area                 | Issue                                       | Recommendation                                    |
 | ---------- | -------------------- | ------------------------------------------- | ------------------------------------------------- |
 | **High**   | **Hardcoded IDs**    | Guild/channel/role IDs scattered everywhere | Create `config/guilds.js` with centralized config |
-| **High**   | **Error handling**   | Empty `catch` blocks hide errors            | Add proper error logging (e.g., `console.error`)  |
 | **Medium** | **Magic strings**    | Repeated strings like "link", "sticky"      | Create constants file                             |
 | **Medium** | **Input validation** | No validation on command options            | Add validation with libraries like `zod`          |
 | **Medium** | **Rate limiting**    | No rate limits on commands                  | Add rate limiting middleware                      |

@@ -27,7 +27,9 @@ export default {
 					if (lastMessage) {
 						await lastMessage.delete();
 					}
-				} catch (e) { }
+				} catch (e) {
+					console.error("Sending sticky message failed: ", e)
+				}
 			}
 
 			const newStickyMessage = await message.channel.send(sticky.content);
