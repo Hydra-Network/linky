@@ -59,7 +59,6 @@ export default {
 				messageContent.includes(word.toLowerCase()),
 			);
 			if (containsBlockedWord) {
-				logger.info("badword")
 				try {
 					await message.delete();
 					await message.author.send({
