@@ -4,35 +4,6 @@ Based on codebase analysis (Discord.js v14, LowDB, Node.js/Bun)
 
 ---
 
-## Performance Optimizations
-
-| Priority   | Area                                 | Issue                            | Recommendation                                            |
-| ---------- | ------------------------------------ | -------------------------------- | --------------------------------------------------------- |
-| **Medium** | **Daily cron**                       | Fetches all links, no pagination | Process links in batches, paginate DB queries             |
-| **Medium** | **Guild settings**                   | Fetched from DB on every message | Cache guild settings in memory with TTL                   |
-| **Low**    | **Command loading**                  | `readdirSync` at startup         | Lazy load commands on first use                           |
-
-### Detailed Performance Fixes
-
-#### 3. URL Checker with Cache
-
-```javascript
-import NodeCache from "node-cache";
-
-const urlCache = new NodeCache({ stdTTL: 300 }); // 5 min TTL
-
-async function checkUrl(url) {
-  const cached = urlCache.get(url);
-  if (cached) return cached;
-
-  const result = await fetch(url, { signal: AbortSignal.timeout(5000) });
-  urlCache.set(url, result);
-  return result;
-}
-```
-
----
-
 ## Code Structure Improvements
 
 | Priority   | Area                 | Issue                                  | Recommendation                                   |
