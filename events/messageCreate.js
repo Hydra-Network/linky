@@ -1,6 +1,6 @@
 import { Events, MessageFlags } from "discord.js";
 import { setItem, getItem } from "../db.js";
-import { DATABASE_KEYS } from "../config/index.js";
+import { DATABASE_KEYS, LINKY_ID, EMOJI_IDS, EMOJIS } from "../config/index.js";
 import logger from "../utils/logger.js";
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
@@ -12,7 +12,13 @@ export default {
 	name: Events.MessageCreate,
 	once: false,
 	async execute(message) {
-		if (message.author.bot) return;
+		if (message.author.bot || !message.guild) return;
+
+		const messageContent = message.content.toLowerCase();
+		if (messageContent.includes(`bad boy <@${LINKY_ID}>`)) {
+			message.react(EMOJI_IDS.cat_attack)
+			message.reply(`im mad ${EMOJIS.cat_attack}`)
+		}
 
 		// Sticky Messages
 		const sticky = stickyCache[message.channelId];
@@ -54,7 +60,6 @@ export default {
 		const automodWords =
 			(await getItem(DATABASE_KEYS.AUTOMOD_WORDS))?.[message.guildId] || [];
 		if (automodWords.length > 0) {
-			const messageContent = message.content.toLowerCase();
 			const containsBlockedWord = automodWords.some((word) =>
 				messageContent.includes(word.toLowerCase()),
 			);
@@ -86,14 +91,14 @@ export default {
 		if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
 			return;
 
-		const hasLink = message.content.match(URL_REGEX) !== null;
+		const hasLink = messageContent.match(URL_REGEX) !== null;
 
 		if (!hasLink) {
 			try {
 				await message.delete();
 
 				await message.author.send({
-					content: `Hey! If you were trying to send any text, bundle it in with your links. e.g. Securly, Goguardian\nhttps://google.com/\n\nYour message: ${message.content}`,
+					content: `Hey! If you were trying to send any text, bundle it in with your links. e.g. Securly, Goguardian\nhttps://google.com/\n\nYour message: ${messageContent}`,
 					flags: MessageFlags.Ephemeral,
 				});
 			} catch (error) {
