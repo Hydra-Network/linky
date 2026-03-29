@@ -1,30 +1,30 @@
 import logger from "./logger.js";
 
-export const filterURL = async (url) => {
-  try {
-    const urlObj = new URL(url.startsWith("http") ? url : "https://" + url);
-    const hostname = urlObj.hostname.replace(/^www\./, "");
-    const parts = hostname.split(".");
+const MULTI_LEVEL_TLDS = new Set([
+	"co.uk", "com.au", "co.jp", "com.br", "co.za", "com.cn", "co.in", "org.uk", "gov.uk"
+]);
 
-    if (parts.length < 2) return hostname;
+export const filterURL = (url) => {
+	if (!url) return null;
 
-    const twoLevelTLDs = [
-      "co.uk",
-      "com.au",
-      "co.jp",
-      "com.br",
-      "co.za",
-      "com.cn",
-      "co.in",
-    ];
-    const lastTwo = parts.slice(-2).join(".");
+	try {
+		const normalized = url.startsWith("http") ? url : `https://${url}`;
+		const { hostname } = new URL(normalized);
 
-    return twoLevelTLDs.includes(lastTwo) && parts.length >= 3
-      ? parts.slice(-3).join(".")
-      : lastTwo;
-  } catch (error) {
-    logger.error({ err: error }, "Filter URL Failed");
-    return null;
-  }
+		const parts = hostname.replace(/^www\./, "").split(".");
+		const len = parts.length;
+
+		if (len <= 2) return parts.join(".");
+
+		const lastTwo = `${parts[len - 2]}.${parts[len - 1]}`;
+
+		if (MULTI_LEVEL_TLDS.has(lastTwo) && len >= 3) {
+			return `${parts[len - 3]}.${lastTwo}`;
+		}
+
+		return lastTwo;
+	} catch (error) {
+		logger.error({ err: error, url }, "Filter URL Failed");
+		return null;
+	}
 };
-//ty claude :heart:

@@ -10,3 +10,4 @@
 - [ ] lock command for locking channels
 - [ ] verification for people non humans
 - [ ] about command for bot information about linky
+- [ ] `/health` command for health checking
