@@ -65,10 +65,6 @@ export const ERROR_MESSAGES = {
 
 ## Architecture Improvements
 
-### 1. Logging
-
-- Include request IDs for traceability
-
 ### 2. Database
 
 - Consider LowDB → SQLite for production (better concurrency)
