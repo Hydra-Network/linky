@@ -40,7 +40,6 @@ async function checkUrl(url) {
 | ---------- | -------------------- | ------------------------------------------- | ------------------------------------------------- |
 | **Medium** | **Magic strings**    | Repeated strings like "link", "sticky"      | Create constants file                             |
 | **Medium** | **Input validation** | No validation on command options            | Add validation with libraries like `zod`          |
-| **Medium** | **Rate limiting**    | No rate limits on commands                  | Add rate limiting middleware                      |
 | **Low**    | **No TypeScript**    | JavaScript has no type safety               | Migrate to TypeScript for better maintainability  |
 
 ### Detailed Structure Fixes
@@ -61,20 +60,6 @@ export const ERROR_MESSAGES = {
   USER_NOT_FOUND: "User not found.",
 };
 ```
-
-#### 3. Error Handling Pattern
-
-```javascript
-// Bad
-catch (e) {}
-
-// Good
-catch (e) {
-  console.error('Command failed:', { command: interaction.commandName, error: e });
-  await interaction.reply({ content: 'An error occurred.', ephemeral: true });
-}
-```
-
 ---
 
 ## Architecture Improvements
