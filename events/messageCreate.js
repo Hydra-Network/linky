@@ -1,5 +1,5 @@
 import { Events, MessageFlags } from "discord.js";
-import { getItem } from "../../db.js";
+import { getItem } from "../db.js";
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
 
