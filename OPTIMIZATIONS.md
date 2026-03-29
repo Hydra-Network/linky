@@ -48,8 +48,6 @@ const middleware = createCommandMiddleware([checkRateLimit, checkPermissions]);
 
 ## Testing Improvements
 
-- Add integration tests for commands
-- Test database operations with test fixtures
 - Add performance benchmarks for critical paths
 
 ---
