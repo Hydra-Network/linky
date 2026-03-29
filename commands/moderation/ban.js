@@ -6,6 +6,7 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 import logger from "../../utils/logger.js";
+import { ERROR_MESSAGES } from "../../config/index.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -63,7 +64,7 @@ export default {
       !botMemberPermissions.has(PermissionFlagsBits.BanMembers)
     ) {
       return interaction.reply({
-        content: "You or I don't have permission to ban members.",
+        content: ERROR_MESSAGES.BAN_PERMISSION,
         flags: MessageFlags.Ephemeral,
       });
     }

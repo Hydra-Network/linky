@@ -1,11 +1,12 @@
 import { Events, MessageFlags } from "discord.js";
 import { setItem, getItem } from "../db.js";
+import { DATABASE_KEYS } from "../config/index.js";
 import logger from "../utils/logger.js";
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
 const processingSticky = new Set();
 
-let stickyCache = (await getItem("sticky")) || {};
+let stickyCache = (await getItem(DATABASE_KEYS.STICKY)) || {};
 
 export default {
   name: Events.MessageCreate,
@@ -32,7 +33,7 @@ export default {
         lastMessageId: newStickyMessage.id,
       };
 
-      setItem("sticky", stickyCache).catch((err) =>
+      setItem(DATABASE_KEYS.STICKY, stickyCache).catch((err) =>
         logger.error({ err }, "DB Write Error"),
       );
     } catch (error) {
@@ -50,7 +51,8 @@ export default {
     }
 
     // AutoMod
-    const automodWords = getItem("automodWords")?.[message.guildId] || [];
+    const automodWords =
+      getItem(DATABASE_KEYS.AUTOMOD_WORDS)?.[message.guildId] || [];
     if (automodWords.length > 0) {
       const messageContent = message.content.toLowerCase();
       const containsBlockedWord = automodWords.some((word) =>
@@ -79,7 +81,8 @@ export default {
     }
 
     // Link Channels
-    const linkChannelIds = getItem("linkChannels")?.[message.guildId] || [];
+    const linkChannelIds =
+      getItem(DATABASE_KEYS.LINK_CHANNELS)?.[message.guildId] || [];
     if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
       return;
 

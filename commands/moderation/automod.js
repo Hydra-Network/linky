@@ -5,6 +5,7 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 import { getItem, setItem } from "../../db.js";
+import { DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -56,12 +57,12 @@ export default {
     if (
       !interaction.memberPermissions.has(PermissionFlagsBits.ManageMessages)
     ) {
-      await interaction.reply("You need Manage Messages permission.");
+      await interaction.reply(ERROR_MESSAGES.MANAGE_MESSAGES_REQUIRED);
       return;
     }
 
     const subcommand = interaction.options.getSubcommand();
-    const automodWords = getItem("automodWords") || {};
+    const automodWords = getItem(DATABASE_KEYS.AUTOMOD_WORDS) || {};
     const guildWords = automodWords[interaction.guildId] || [];
 
     if (subcommand === "add") {
@@ -74,7 +75,7 @@ export default {
         await interaction.reply(`"${word}" is already in the blocklist.`);
         return;
       }
-      setItem("automodWords", {
+      setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
         [interaction.guildId]: [...guildWords, word],
       });
@@ -88,7 +89,7 @@ export default {
         await interaction.reply(`"${word}" is not in the blocklist.`);
         return;
       }
-      setItem("automodWords", {
+      setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
         [interaction.guildId]: guildWords.filter((w) => w !== word),
       });
@@ -112,7 +113,7 @@ export default {
         await interaction.reply("The blocklist is already empty.");
         return;
       }
-      setItem("automodWords", {
+      setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
         [interaction.guildId]: [],
       });

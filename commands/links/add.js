@@ -7,7 +7,7 @@ import {
 import { getItem, setItem } from "../../db.js";
 import { check } from "../../utils/checker.js";
 import { filterURL } from "../../utils/urlfilter.js";
-import { ROLES } from "../../config/roles.js";
+import { ROLES, DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -49,7 +49,7 @@ export default {
     let site = interaction.options.getString("proxysite");
     let userId = interaction.user.id;
 
-    const list = getItem("links") || [];
+    const list = getItem(DATABASE_KEYS.LINKS) || [];
 
     if (interaction.guildId == "1307867835237793893") {
       const allowedRoles = [
@@ -67,7 +67,7 @@ export default {
         )
       ) {
         return interaction.reply({
-          content: "You don't have permission.",
+          content: ERROR_MESSAGES.NO_PERMISSION,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -112,8 +112,8 @@ export default {
       flags: MessageFlags.Ephemeral,
     });
     var { unblocked, roles } = await check(link);
-    const links = getItem("links") || [];
-    setItem("links", [
+    const links = getItem(DATABASE_KEYS.LINKS) || [];
+    setItem(DATABASE_KEYS.LINKS, [
       ...links,
       {
         url: httpscheck(link),

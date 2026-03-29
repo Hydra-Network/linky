@@ -6,6 +6,7 @@ import {
   MessageFlags,
 } from "discord.js";
 import { getItem, setItem } from "../../db.js";
+import { DATABASE_KEYS } from "../../config/index.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -27,8 +28,8 @@ export default {
 
     const stickyMessage = await interaction.channel.send(content);
 
-    const allSticky = getItem("sticky") || {};
-    setItem("sticky", {
+    const allSticky = getItem(DATABASE_KEYS.STICKY) || {};
+    setItem(DATABASE_KEYS.STICKY, {
       ...allSticky,
       [channelId]: { guildId, content, lastMessageId: stickyMessage.id },
     });

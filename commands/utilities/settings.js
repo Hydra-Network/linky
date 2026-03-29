@@ -6,6 +6,7 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 import { getItem, setItem } from "../../db.js";
+import { DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -94,13 +95,13 @@ export default {
       if (
         !interaction.memberPermissions.has(PermissionFlagsBits.Administrator)
       ) {
-        await interaction.reply("You need Administrator permission.");
+        await interaction.reply(ERROR_MESSAGES.ADMIN_REQUIRED);
         return;
       }
-      const allSettings = getItem("settings") || {};
+      const allSettings = getItem(DATABASE_KEYS.SETTINGS) || {};
       const settings = allSettings[interaction.guildId] || {};
       const currentValue = settings.checkEmojis !== false;
-      setItem("settings", {
+      setItem(DATABASE_KEYS.SETTINGS, {
         ...allSettings,
         [interaction.guildId]: { ...settings, checkEmojis: !currentValue },
       });
@@ -111,13 +112,13 @@ export default {
     }
 
     if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-      await interaction.reply("You need Administrator permission.");
+      await interaction.reply(ERROR_MESSAGES.ADMIN_REQUIRED);
       return;
     }
 
     if (subcommand === "ticket-category") {
       const category = interaction.options.getChannel("category");
-      setItem("ticketCategory", category.id);
+      setItem(DATABASE_KEYS.TICKET_CATEGORY, category.id);
       await interaction.reply(`Ticket category set to ${category.name}`);
       return;
     }
@@ -125,9 +126,9 @@ export default {
     if (subcommandGroup === "link-channel") {
       if (subcommand === "add") {
         const channel = interaction.options.getChannel("channel");
-        const linkChannels = getItem("linkChannels") || {};
+        const linkChannels = getItem(DATABASE_KEYS.LINK_CHANNELS) || {};
         const channels = linkChannels[interaction.guildId] || [];
-        setItem("linkChannels", {
+        setItem(DATABASE_KEYS.LINK_CHANNELS, {
           ...linkChannels,
           [interaction.guildId]: [...channels, channel.id],
         });
@@ -137,7 +138,7 @@ export default {
 
       if (subcommand === "remove") {
         const channel = interaction.options.getChannel("channel");
-        const linkChannels = getItem("linkChannels") || {};
+        const linkChannels = getItem(DATABASE_KEYS.LINK_CHANNELS) || {};
         const channels = linkChannels[interaction.guildId] || [];
         const index = channels.indexOf(channel.id);
         if (index === -1) {
@@ -145,7 +146,7 @@ export default {
             `Channel ${channel.name} is not a link channel`,
           );
         } else {
-          setItem("linkChannels", {
+          setItem(DATABASE_KEYS.LINK_CHANNELS, {
             ...linkChannels,
             [interaction.guildId]: channels.filter((c) => c !== channel.id),
           });
@@ -155,7 +156,7 @@ export default {
       }
 
       if (subcommand === "list") {
-        const linkChannels = getItem("linkChannels") || {};
+        const linkChannels = getItem(DATABASE_KEYS.LINK_CHANNELS) || {};
         const channels = linkChannels[interaction.guildId] || [];
         if (channels.length === 0) {
           await interaction.reply("No link channels set");
@@ -168,8 +169,8 @@ export default {
 
     if (subcommand === "boost-channel") {
       const channel = interaction.options.getChannel("channel");
-      const settings = getItem("settings") || {};
-      setItem("settings", {
+      const settings = getItem(DATABASE_KEYS.SETTINGS) || {};
+      setItem(DATABASE_KEYS.SETTINGS, {
         ...settings,
         [interaction.guildId]: {
           ...settings[interaction.guildId],

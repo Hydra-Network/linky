@@ -5,7 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { getItem } from "../../db.js";
-import { ROLES } from "../../config/roles.js";
+import { ROLES, DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -46,13 +46,13 @@ export default {
         )
       ) {
         return interaction.reply({
-          content: "You don't have permission.",
+          content: ERROR_MESSAGES.NO_PERMISSION,
           flags: MessageFlags.Ephemeral,
         });
       }
     }
     const shouldPing = interaction.options.getBoolean("ping") ?? false;
-    const links = getItem("links") || [];
+    const links = getItem(DATABASE_KEYS.LINKS) || [];
     const today = new Date();
     const options = { month: "short", day: "numeric" };
     const todayStr = today.toLocaleDateString("en-US", options);

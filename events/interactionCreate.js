@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 
 import { getItem } from "../db.js";
+import { DATABASE_KEYS } from "../config/index.js";
 import logger from "../utils/logger.js";
 
 export default {
@@ -94,7 +95,7 @@ export default {
         const ticketId = Date.now().toString().slice(-6);
         const channelName = `ticket-${user.username}-${ticketId}`;
 
-        const ticketCategory = getItem("ticketCategory");
+        const ticketCategory = getItem(DATABASE_KEYS.TICKET_CATEGORY);
 
         const ticketChannel = await guild.channels.create({
           name: channelName,

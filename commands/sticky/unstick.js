@@ -6,6 +6,7 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 import { getItem, setItem } from "../../db.js";
+import { DATABASE_KEYS } from "../../config/index.js";
 import logger from "../../utils/logger.js";
 
 export default {
@@ -17,7 +18,7 @@ export default {
     .setContexts([InteractionContextType.Guild]),
   async execute(interaction) {
     const channelId = interaction.channelId;
-    const sticky = getItem("sticky")?.[channelId];
+    const sticky = getItem(DATABASE_KEYS.STICKY)?.[channelId];
 
     if (!sticky) {
       return interaction.reply({
@@ -26,9 +27,9 @@ export default {
       });
     }
 
-    const allSticky = getItem("sticky") || {};
+    const allSticky = getItem(DATABASE_KEYS.STICKY) || {};
     const { [channelId]: _, ...rest } = allSticky;
-    setItem("sticky", rest);
+    setItem(DATABASE_KEYS.STICKY, rest);
 
     try {
       const channel = interaction.channel;

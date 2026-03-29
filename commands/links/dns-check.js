@@ -9,6 +9,7 @@ import {
   getBlockerName,
 } from "../../utils/checker.js";
 import { getItem } from "../../db.js";
+import { DATABASE_KEYS } from "../../config/index.js";
 
 const CHOICES = [
   { name: "All", value: "normal" },
@@ -50,7 +51,8 @@ export default {
     const results = await checkWithDetails(url, blockers.toLowerCase().trim());
     if (!results.length) return interaction.editReply("No results returned.");
 
-    const settings = getItem("settings")?.[interaction.guildId] || {};
+    const settings =
+      getItem(DATABASE_KEYS.SETTINGS)?.[interaction.guildId] || {};
     const useEmojis = settings.checkEmojis !== false;
 
     const unblocked = results.filter((r) => !r.blocked);

@@ -6,6 +6,7 @@ import {
   PermissionFlagsBits,
 } from "discord.js";
 import logger from "../../utils/logger.js";
+import { ERROR_MESSAGES } from "../../config/index.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -42,7 +43,7 @@ export default {
         .has(PermissionFlagsBits.ManageMessages)
     ) {
       return interaction.reply({
-        content: "I don't have permission to manage messages in this channel.",
+        content: ERROR_MESSAGES.CHANNEL_PERMISSION,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -60,8 +61,7 @@ export default {
     } catch (error) {
       logger.error({ err: error }, "Purge error");
       await interaction.reply({
-        content:
-          "There was an error while trying to purge messages. Make sure I have permissions to manage messages.",
+        content: ERROR_MESSAGES.PURGE_ERROR,
         flags: MessageFlags.Ephemeral,
       });
     }

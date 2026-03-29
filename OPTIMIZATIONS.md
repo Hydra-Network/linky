@@ -38,30 +38,9 @@ async function checkUrl(url) {
 
 | Priority   | Area                 | Issue                                  | Recommendation                                   |
 | ---------- | -------------------- | -------------------------------------- | ------------------------------------------------ |
-| **Medium** | **Magic strings**    | Repeated strings like "link", "sticky" | Create constants file                            |
 | **Medium** | **Input validation** | No validation on command options       | Add validation with libraries like `zod`         |
 | **Low**    | **No TypeScript**    | JavaScript has no type safety          | Migrate to TypeScript for better maintainability |
 
-### Detailed Structure Fixes
-
-#### 2. Constants File
-
-```javascript
-// constants.js
-export const DATABASE_KEYS = {
-  LINKS: "links",
-  STICKY: "sticky",
-  TICKETS: "tickets",
-  SETTINGS: "settings",
-};
-
-export const ERROR_MESSAGES = {
-  NO_PERMISSION: "You do not have permission to use this command.",
-  USER_NOT_FOUND: "User not found.",
-};
-```
-
----
 
 ## Architecture Improvements
 
@@ -114,6 +93,4 @@ const middleware = createCommandMiddleware([checkRateLimit, checkPermissions]);
 ## Quick Wins (High Impact, Low Effort)
 
 1. **Add HTTP timeouts** to all fetch calls
-2. **Wrap empty catch blocks** with error logging
-3. **Extract magic strings** to constants
 4. **Add health check command** (`/health`) for monitoring

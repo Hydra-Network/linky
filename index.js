@@ -12,6 +12,7 @@ import cron from "node-cron";
 import "dotenv/config";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { init, getItem } from "./db.js";
+import { DATABASE_KEYS } from "./config/index.js";
 import logger from "./utils/logger.js";
 
 process.on("uncaughtException", (error, origin) => {
@@ -68,7 +69,7 @@ client.once(Events.ClientReady, (readyClient) => {
       cutoffDate.setDate(now.getDate() - 1);
       cutoffDate.setHours(0, 0, 0, 0);
 
-      const links = getItem("links") || [];
+      const links = getItem(DATABASE_KEYS.LINKS) || [];
 
       let galaxy = [];
       let glint = [];

@@ -1,5 +1,6 @@
 import { Events } from "discord.js";
 import { getItem } from "../db.js";
+import { DATABASE_KEYS } from "../config/index.js";
 import logger from "../utils/logger.js";
 
 export default {
@@ -11,7 +12,8 @@ export default {
 
     if (!oldWasBoosting && newIsBoosting) {
       const guildId = newMember.guild.id;
-      const boostChannelId = getItem("settings")?.[guildId]?.boostChannel;
+      const boostChannelId = getItem(DATABASE_KEYS.SETTINGS)?.[guildId]
+        ?.boostChannel;
 
       if (!boostChannelId) return;
 
