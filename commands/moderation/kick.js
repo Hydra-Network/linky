@@ -5,6 +5,7 @@ import {
   MessageFlags,
   PermissionFlagsBits,
 } from "discord.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -97,7 +98,7 @@ export default {
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
-      console.error("Kick error:", error);
+      logger.error({ err: error }, "Kick error");
       await interaction.reply({
         content: "There was an error while trying to kick this member.",
         flags: MessageFlags.Ephemeral,

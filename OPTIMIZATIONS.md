@@ -121,5 +121,4 @@ const middleware = createCommandMiddleware([checkRateLimit, checkPermissions]);
 1. **Add HTTP timeouts** to all fetch calls
 2. **Wrap empty catch blocks** with error logging
 3. **Extract magic strings** to constants
-4. **Add `.env.example`** documenting required variables
 5. **Add health check command** (`/health`) for monitoring

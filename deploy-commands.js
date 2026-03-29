@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { fileURLToPath, pathToFileURL } from "node:url";
+import logger from "./utils/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,8 +30,8 @@ for (const folder of commandFolders) {
     if ("data" in command && "execute" in command) {
       commands.push(command.data.toJSON());
     } else {
-      console.log(
-        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+      logger.warn(
+        `The command at ${filePath} is missing a required "data" or "execute" property.`,
       );
     }
   }
@@ -40,7 +41,7 @@ const rest = new REST().setToken(token);
 
 (async () => {
   try {
-    console.log(
+    logger.info(
       `Started refreshing ${commands.length} application (/) commands.`,
     );
 
@@ -52,7 +53,7 @@ const rest = new REST().setToken(token);
 
     for (const existingCmd of existingCommands) {
       if (!localCommandNames.has(existingCmd.name)) {
-        console.log(`Removing command: ${existingCmd.name}`);
+        logger.info(`Removing command: ${existingCmd.name}`);
         await rest.delete(Routes.applicationCommand(clientId, existingCmd.id));
       }
     }
@@ -61,10 +62,10 @@ const rest = new REST().setToken(token);
       body: commands,
     });
 
-    console.log(
+    logger.info(
       `Successfully reloaded ${data.length} application (/) commands.`,
     );
   } catch (error) {
-    console.error(error);
+    logger.error({ err: error });
   }
 })();

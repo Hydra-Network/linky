@@ -5,6 +5,7 @@ import {
   MessageFlags,
   PermissionFlagsBits,
 } from "discord.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -55,9 +56,9 @@ export default {
             flags: MessageFlags.Ephemeral,
           });
         })
-        .catch(console.error);
+        .catch((err) => logger.error({ err }, "Purge bulk delete error"));
     } catch (error) {
-      console.error("Purge error:", error);
+      logger.error({ err: error }, "Purge error");
       await interaction.reply({
         content:
           "There was an error while trying to purge messages. Make sure I have permissions to manage messages.",

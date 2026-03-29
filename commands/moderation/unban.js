@@ -5,6 +5,7 @@ import {
   MessageFlags,
   PermissionFlagsBits,
 } from "discord.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -59,7 +60,7 @@ export default {
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
-      console.error("Unban error:", error);
+      logger.error({ err: error }, "Unban error");
       await interaction.reply({
         content:
           "There was an error while trying to unban this user. They may not be banned.",

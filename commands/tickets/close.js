@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -40,7 +41,7 @@ export default {
       try {
         await channel.delete();
       } catch (error) {
-        console.error("Error deleting channel:", error);
+        logger.error({ err: error }, "Error deleting channel");
       }
     }, 3000);
   },

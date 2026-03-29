@@ -5,6 +5,7 @@ import {
   MessageFlags,
   PermissionFlagsBits,
 } from "discord.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -96,7 +97,7 @@ export default {
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
-      console.error("Ban error:", error);
+      logger.error({ err: error }, "Ban error");
       await interaction.reply({
         content: "There was an error while trying to ban this member.",
         flags: MessageFlags.Ephemeral,
