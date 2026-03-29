@@ -14,6 +14,16 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { init, getItem } from "./db.js";
 import logger from "./utils/logger.js";
 
+process.on("uncaughtException", (error, origin) => {
+  logger.fatal({ err: error, origin }, "Uncaught Exception");
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.fatal({ reason, promise }, "Unhandled Rejection");
+  process.exit(1);
+});
+
 await init();
 
 const __filename = fileURLToPath(import.meta.url);

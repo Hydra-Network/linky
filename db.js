@@ -32,12 +32,18 @@ export const init = async () => {
 };
 
 export const getItem = (key) => {
-  if (!db) throw new Error("Database not initialized.");
+  if (!db) {
+    logger.fatal("Database not initialized");
+    throw new Error("Database not initialized.");
+  }
   return db.data[key];
 };
 
 export const setItem = (key, value) => {
-  if (!db) throw new Error("Database not initialized.");
+  if (!db) {
+    logger.fatal("Database not initialized");
+    throw new Error("Database not initialized.");
+  }
 
   db.data[key] = value;
 

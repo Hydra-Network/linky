@@ -11,4 +11,8 @@ const logger = pino({
   },
 });
 
+export function createChildLogger(context = {}) {
+  return logger.child(context);
+}
+
 export default logger;

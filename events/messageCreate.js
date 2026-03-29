@@ -36,7 +36,15 @@ export default {
         logger.error({ err }, "DB Write Error"),
       );
     } catch (error) {
-      logger.error({ err: error }, "Sticky logic error");
+      logger.error(
+        {
+          err: error,
+          channelId: message.channelId,
+          userId: message.author?.id,
+          guildId: message.guildId,
+        },
+        "Sticky logic error",
+      );
     } finally {
       processingSticky.delete(message.channelId);
     }
@@ -56,7 +64,15 @@ export default {
             flags: MessageFlags.Ephemeral,
           });
         } catch (error) {
-          logger.error({ err: error }, "Error handling automod");
+          logger.error(
+            {
+              err: error,
+              channelId: message.channelId,
+              userId: message.author?.id,
+              guildId: message.guildId,
+            },
+            "Error handling automod",
+          );
         }
         return;
       }
@@ -78,7 +94,15 @@ export default {
           flags: MessageFlags.Ephemeral,
         });
       } catch (error) {
-        logger.error({ err: error }, "Error handling link requirement");
+        logger.error(
+          {
+            err: error,
+            channelId: message.channelId,
+            userId: message.author?.id,
+            guildId: message.guildId,
+          },
+          "Error handling link requirement",
+        );
       }
     }
   },

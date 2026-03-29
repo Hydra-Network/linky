@@ -1,184 +1,183 @@
 import {
-	SlashCommandBuilder,
-	ApplicationIntegrationType,
-	InteractionContextType,
-	ChannelType,
-	PermissionFlagsBits,
+  SlashCommandBuilder,
+  ApplicationIntegrationType,
+  InteractionContextType,
+  ChannelType,
+  PermissionFlagsBits,
 } from "discord.js";
 import { getItem, setItem } from "../../db.js";
 
 export default {
-	data: new SlashCommandBuilder()
-		.setName("settings")
-		.setDescription("Manage bot settings")
-		.setIntegrationTypes([
-			ApplicationIntegrationType.GuildInstall,
-			ApplicationIntegrationType.UserInstall,
-		])
-		.setContexts([
-			InteractionContextType.Guild,
-			InteractionContextType.BotDM,
-			InteractionContextType.PrivateChannel,
-		])
-		.addSubcommand((subcommand) =>
-			subcommand
-				.setName("check-emoji")
-				.setDescription("Toggle emojis in check command"),
-		)
-		.addSubcommand((subcommand) =>
-			subcommand
-				.setName("ticket-category")
-				.setDescription("Set ticket category")
-				.addChannelOption((option) =>
-					option
-						.setName("category")
-						.setDescription("Category for tickets")
-						.addChannelTypes(ChannelType.GuildCategory)
-						.setRequired(true),
-				),
-		)
-		.addSubcommandGroup((group) =>
-			group
-				.setName("link-channel")
-				.setDescription("Manage link channels")
-				.addSubcommand((subcommand) =>
-					subcommand
-						.setName("add")
-						.setDescription("Add a link channel")
-						.addChannelOption((option) =>
-							option
-								.setName("channel")
-								.setDescription("Channel where links must be posted")
-								.addChannelTypes(ChannelType.GuildText)
-								.setRequired(true),
-						),
-				)
-				.addSubcommand((subcommand) =>
-					subcommand
-						.setName("remove")
-						.setDescription("Remove a link channel")
-						.addChannelOption((option) =>
-							option
-								.setName("channel")
-								.setDescription("Channel to remove")
-								.addChannelTypes(ChannelType.GuildText)
-								.setRequired(true),
-						),
-				)
-				.addSubcommand((subcommand) =>
-					subcommand.setName("list").setDescription("List all link channels"),
-				),
-		)
-		.addSubcommand((subcommand) =>
-			subcommand
-				.setName("boost-channel")
-				.setDescription("Set the boost thank you channel")
-				.addChannelOption((option) =>
-					option
-						.setName("channel")
-						.setDescription("Channel for boost thank you messages")
-						.addChannelTypes(ChannelType.GuildText)
-						.setRequired(true),
-				),
-		),
+  data: new SlashCommandBuilder()
+    .setName("settings")
+    .setDescription("Manage bot settings")
+    .setIntegrationTypes([
+      ApplicationIntegrationType.GuildInstall,
+      ApplicationIntegrationType.UserInstall,
+    ])
+    .setContexts([
+      InteractionContextType.Guild,
+      InteractionContextType.BotDM,
+      InteractionContextType.PrivateChannel,
+    ])
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("check-emoji")
+        .setDescription("Toggle emojis in check command"),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("ticket-category")
+        .setDescription("Set ticket category")
+        .addChannelOption((option) =>
+          option
+            .setName("category")
+            .setDescription("Category for tickets")
+            .addChannelTypes(ChannelType.GuildCategory)
+            .setRequired(true),
+        ),
+    )
+    .addSubcommandGroup((group) =>
+      group
+        .setName("link-channel")
+        .setDescription("Manage link channels")
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("add")
+            .setDescription("Add a link channel")
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Channel where links must be posted")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("remove")
+            .setDescription("Remove a link channel")
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Channel to remove")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand.setName("list").setDescription("List all link channels"),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("boost-channel")
+        .setDescription("Set the boost thank you channel")
+        .addChannelOption((option) =>
+          option
+            .setName("channel")
+            .setDescription("Channel for boost thank you messages")
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true),
+        ),
+    ),
 
+  async execute(interaction) {
+    const subcommand = interaction.options.getSubcommand();
+    const subcommandGroup = interaction.options.getSubcommandGroup();
 
-	async execute(interaction) {
-		const subcommand = interaction.options.getSubcommand();
-		const subcommandGroup = interaction.options.getSubcommandGroup();
+    if (subcommand === "check-emoji") {
+      if (!interaction.guildId) {
+        await interaction.reply("This setting can only be used in a server.");
+        return;
+      }
+      if (
+        !interaction.memberPermissions.has(PermissionFlagsBits.Administrator)
+      ) {
+        await interaction.reply("You need Administrator permission.");
+        return;
+      }
+      const allSettings = getItem("settings") || {};
+      const settings = allSettings[interaction.guildId] || {};
+      const currentValue = settings.checkEmojis !== false;
+      setItem("settings", {
+        ...allSettings,
+        [interaction.guildId]: { ...settings, checkEmojis: !currentValue },
+      });
+      await interaction.reply(
+        `Check emojis ${!currentValue ? "enabled" : "disabled"} for this server`,
+      );
+      return;
+    }
 
-		if (subcommand === "check-emoji") {
-			if (!interaction.guildId) {
-				await interaction.reply("This setting can only be used in a server.");
-				return;
-			}
-			if (
-				!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)
-			) {
-				await interaction.reply("You need Administrator permission.");
-				return;
-			}
-			const allSettings = getItem("settings") || {};
-			const settings = allSettings[interaction.guildId] || {};
-			const currentValue = settings.checkEmojis !== false;
-			setItem("settings", {
-				...allSettings,
-				[interaction.guildId]: { ...settings, checkEmojis: !currentValue },
-			});
-			await interaction.reply(
-				`Check emojis ${!currentValue ? "enabled" : "disabled"} for this server`,
-			);
-			return;
-		}
+    if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+      await interaction.reply("You need Administrator permission.");
+      return;
+    }
 
-		if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-			await interaction.reply("You need Administrator permission.");
-			return;
-		}
+    if (subcommand === "ticket-category") {
+      const category = interaction.options.getChannel("category");
+      setItem("ticketCategory", category.id);
+      await interaction.reply(`Ticket category set to ${category.name}`);
+      return;
+    }
 
-		if (subcommand === "ticket-category") {
-			const category = interaction.options.getChannel("category");
-			setItem("ticketCategory", category.id);
-			await interaction.reply(`Ticket category set to ${category.name}`);
-			return;
-		}
+    if (subcommandGroup === "link-channel") {
+      if (subcommand === "add") {
+        const channel = interaction.options.getChannel("channel");
+        const linkChannels = getItem("linkChannels") || {};
+        const channels = linkChannels[interaction.guildId] || [];
+        setItem("linkChannels", {
+          ...linkChannels,
+          [interaction.guildId]: [...channels, channel.id],
+        });
+        await interaction.reply(`Link channel added: ${channel.name}`);
+        return;
+      }
 
-		if (subcommandGroup === "link-channel") {
-			if (subcommand === "add") {
-				const channel = interaction.options.getChannel("channel");
-				const linkChannels = getItem("linkChannels") || {};
-				const channels = linkChannels[interaction.guildId] || [];
-				setItem("linkChannels", {
-					...linkChannels,
-					[interaction.guildId]: [...channels, channel.id],
-				});
-				await interaction.reply(`Link channel added: ${channel.name}`);
-				return;
-			}
+      if (subcommand === "remove") {
+        const channel = interaction.options.getChannel("channel");
+        const linkChannels = getItem("linkChannels") || {};
+        const channels = linkChannels[interaction.guildId] || [];
+        const index = channels.indexOf(channel.id);
+        if (index === -1) {
+          await interaction.reply(
+            `Channel ${channel.name} is not a link channel`,
+          );
+        } else {
+          setItem("linkChannels", {
+            ...linkChannels,
+            [interaction.guildId]: channels.filter((c) => c !== channel.id),
+          });
+          await interaction.reply(`Link channel removed: ${channel.name}`);
+        }
+        return;
+      }
 
-			if (subcommand === "remove") {
-				const channel = interaction.options.getChannel("channel");
-				const linkChannels = getItem("linkChannels") || {};
-				const channels = linkChannels[interaction.guildId] || [];
-				const index = channels.indexOf(channel.id);
-				if (index === -1) {
-					await interaction.reply(
-						`Channel ${channel.name} is not a link channel`,
-					);
-				} else {
-					setItem("linkChannels", {
-						...linkChannels,
-						[interaction.guildId]: channels.filter((c) => c !== channel.id),
-					});
-					await interaction.reply(`Link channel removed: ${channel.name}`);
-				}
-				return;
-			}
+      if (subcommand === "list") {
+        const linkChannels = getItem("linkChannels") || {};
+        const channels = linkChannels[interaction.guildId] || [];
+        if (channels.length === 0) {
+          await interaction.reply("No link channels set");
+        } else {
+          await interaction.reply(`Link channels: ${channels.join(", ")}`);
+        }
+        return;
+      }
+    }
 
-			if (subcommand === "list") {
-				const linkChannels = getItem("linkChannels") || {};
-				const channels = linkChannels[interaction.guildId] || [];
-				if (channels.length === 0) {
-					await interaction.reply("No link channels set");
-				} else {
-					await interaction.reply(`Link channels: ${channels.join(", ")}`);
-				}
-				return;
-			}
-		}
-
-		if (subcommand === "boost-channel") {
-			const channel = interaction.options.getChannel("channel");
-			const settings = getItem("settings") || {};
-			setItem("settings", {
-				...settings,
-				[interaction.guildId]: {
-					...settings[interaction.guildId],
-					boostChannel: channel.id,
-				},
-			});
-			await interaction.reply(`Boost thank you channel set to ${channel.name}`);
-			return;
-		}
-	},
+    if (subcommand === "boost-channel") {
+      const channel = interaction.options.getChannel("channel");
+      const settings = getItem("settings") || {};
+      setItem("settings", {
+        ...settings,
+        [interaction.guildId]: {
+          ...settings[interaction.guildId],
+          boostChannel: channel.id,
+        },
+      });
+      await interaction.reply(`Boost thank you channel set to ${channel.name}`);
+      return;
+    }
+  },
 };

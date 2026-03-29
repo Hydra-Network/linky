@@ -22,10 +22,21 @@ export default {
       return;
     }
 
+    const commandName = interaction.commandName;
+
     try {
       await command.execute(interaction);
     } catch (error) {
-      logger.error({ err: error });
+      logger.error(
+        {
+          err: error,
+          commandName,
+          userId: interaction.user?.id,
+          guildId: interaction.guildId,
+          channelId: interaction.channelId,
+        },
+        `Command execution failed: ${commandName}`,
+      );
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
           content: "There was an error while executing this command!",

@@ -6,12 +6,12 @@ Based on codebase analysis (Discord.js v14, LowDB, Node.js/Bun)
 
 ## Performance Optimizations
 
-| Priority   | Area                                     | Issue                                             | Recommendation                                            |
-| ---------- | ---------------------------------------- | ------------------------------------------------- | --------------------------------------------------------- |
-| **Medium** | **URL checker** (`utils/checker.js`)     | No HTTP timeout, no caching                       | Add timeout (5s), implement LRU cache for repeated checks |
-| **Medium** | **Daily cron**                           | Fetches all links, no pagination                  | Process links in batches, paginate DB queries             |
-| **Medium** | **Guild settings**                       | Fetched from DB on every message                  | Cache guild settings in memory with TTL                   |
-| **Low**    | **Command loading**                      | `readdirSync` at startup                          | Lazy load commands on first use                           |
+| Priority   | Area                                 | Issue                            | Recommendation                                            |
+| ---------- | ------------------------------------ | -------------------------------- | --------------------------------------------------------- |
+| **Medium** | **URL checker** (`utils/checker.js`) | No HTTP timeout, no caching      | Add timeout (5s), implement LRU cache for repeated checks |
+| **Medium** | **Daily cron**                       | Fetches all links, no pagination | Process links in batches, paginate DB queries             |
+| **Medium** | **Guild settings**                   | Fetched from DB on every message | Cache guild settings in memory with TTL                   |
+| **Low**    | **Command loading**                  | `readdirSync` at startup         | Lazy load commands on first use                           |
 
 ### Detailed Performance Fixes
 
@@ -36,11 +36,11 @@ async function checkUrl(url) {
 
 ## Code Structure Improvements
 
-| Priority   | Area                 | Issue                                       | Recommendation                                    |
-| ---------- | -------------------- | ------------------------------------------- | ------------------------------------------------- |
-| **Medium** | **Magic strings**    | Repeated strings like "link", "sticky"      | Create constants file                             |
-| **Medium** | **Input validation** | No validation on command options            | Add validation with libraries like `zod`          |
-| **Low**    | **No TypeScript**    | JavaScript has no type safety               | Migrate to TypeScript for better maintainability  |
+| Priority   | Area                 | Issue                                  | Recommendation                                   |
+| ---------- | -------------------- | -------------------------------------- | ------------------------------------------------ |
+| **Medium** | **Magic strings**    | Repeated strings like "link", "sticky" | Create constants file                            |
+| **Medium** | **Input validation** | No validation on command options       | Add validation with libraries like `zod`         |
+| **Low**    | **No TypeScript**    | JavaScript has no type safety          | Migrate to TypeScript for better maintainability |
 
 ### Detailed Structure Fixes
 
@@ -60,14 +60,13 @@ export const ERROR_MESSAGES = {
   USER_NOT_FOUND: "User not found.",
 };
 ```
+
 ---
 
 ## Architecture Improvements
 
 ### 1. Logging
 
-- Replace `console.log` with `pino` or `winston`
-- Add structured logging with levels (debug, info, warn, error)
 - Include request IDs for traceability
 
 ### 2. Database
@@ -121,4 +120,4 @@ const middleware = createCommandMiddleware([checkRateLimit, checkPermissions]);
 1. **Add HTTP timeouts** to all fetch calls
 2. **Wrap empty catch blocks** with error logging
 3. **Extract magic strings** to constants
-5. **Add health check command** (`/health`) for monitoring
+4. **Add health check command** (`/health`) for monitoring
