@@ -7,6 +7,7 @@ export const DATABASE_KEYS = {
   LINK_CHANNELS: "linkChannels",
   TICKET_CATEGORY: "ticketCategory",
   AFK: "afk",
+  HONEYPOT_CHANNEL: "honeypotChannel",
 };
 
 export const ERROR_MESSAGES = {

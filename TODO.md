@@ -3,6 +3,7 @@
 - [x] invite command for invite link
 - [x] say
 - [x] afk
+- [x] honey pot
 - [x] moderating words
 - [ ] trigger words
 - [ ] music bot feature

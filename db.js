@@ -59,6 +59,12 @@ const SCHEMA = {
     valCol: "data",
     parse: JSON.parse,
   },
+  [DATABASE_KEYS.HONEYPOT_CHANNEL]: {
+    table: "honeypot",
+    keyCol: "guild_id",
+    valCol: "channel_id",
+    parse: (v) => v,
+  },
 };
 
 export const init = async () => {

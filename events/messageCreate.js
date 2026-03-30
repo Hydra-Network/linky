@@ -1,4 +1,4 @@
-import { Events, MessageFlags } from "discord.js";
+import { Events, MessageFlags, PermissionFlagsBits } from "discord.js";
 import { setItem, getItem } from "../db.js";
 import { DATABASE_KEYS, LINKY_ID, EMOJI_IDS, EMOJIS } from "../config/index.js";
 import logger from "../utils/logger.js";
@@ -13,6 +13,38 @@ export default {
   once: false,
   async execute(message) {
     if (message.author.bot || !message.guild) return;
+
+    const honeypotData = (await getItem(DATABASE_KEYS.HONEYPOT_CHANNEL)) || {};
+    const honeypotChannelId = honeypotData[message.guildId];
+
+    if (honeypotChannelId && message.channelId === honeypotChannelId) {
+      const botMember = message.guild.members.me;
+      if (botMember.permissions.has(PermissionFlagsBits.BanMembers)) {
+        try {
+          await message.guild.bans.create(message.author.id, {
+            reason: "Honeypot: caught messaging in honeypot channel",
+          });
+          await message.guild.bans.remove(
+            message.author.id,
+            "Softban from honeypot channel - allowed to rejoin",
+          );
+          logger.info(
+            {
+              userId: message.author.id,
+              guildId: message.guildId,
+              channelId: message.channelId,
+            },
+            "User softbanned via honeypot",
+          );
+        } catch (error) {
+          logger.error(
+            { err: error, userId: message.author.id, guildId: message.guildId },
+            "Honeypot softban error",
+          );
+        }
+      }
+      return;
+    }
 
     const messageContent = message.content.toLowerCase();
     if (messageContent.includes(`bad boy <@${LINKY_ID}>`)) {
