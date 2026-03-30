@@ -53,6 +53,12 @@ const SCHEMA = {
     valCol: "words",
     parse: JSON.parse,
   },
+  [DATABASE_KEYS.AFK]: {
+    table: "afk",
+    keyCol: "user_id",
+    valCol: "data",
+    parse: JSON.parse,
+  },
 };
 
 export const init = async () => {

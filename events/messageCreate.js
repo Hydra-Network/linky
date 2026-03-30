@@ -9,109 +9,128 @@ const processingSticky = new Set();
 let stickyCache = (await getItem(DATABASE_KEYS.STICKY)) || {};
 
 export default {
-	name: Events.MessageCreate,
-	once: false,
-	async execute(message) {
-		if (message.author.bot || !message.guild) return;
+  name: Events.MessageCreate,
+  once: false,
+  async execute(message) {
+    if (message.author.bot || !message.guild) return;
 
-		const messageContent = message.content.toLowerCase();
-		if (messageContent.includes(`bad boy <@${LINKY_ID}>`)) {
-			message.react(EMOJI_IDS.cat_attack)
-			message.reply(`im mad ${EMOJIS.cat_attack}`)
-		}
+    const messageContent = message.content.toLowerCase();
+    if (messageContent.includes(`bad boy <@${LINKY_ID}>`)) {
+      message.react(EMOJI_IDS.cat_attack);
+      message.reply(`im mad ${EMOJIS.cat_attack}`);
+    }
 
-		// Sticky Messages
-		const sticky = stickyCache[message.channelId];
-		if (sticky) {
-			if (processingSticky.has(message.channelId)) return;
-			processingSticky.add(message.channelId);
+    // Sticky Messages
+    const sticky = stickyCache[message.channelId];
+    if (sticky) {
+      if (processingSticky.has(message.channelId)) return;
+      processingSticky.add(message.channelId);
 
-			try {
-				if (sticky.lastMessageId) {
-					message.channel.messages.delete(sticky.lastMessageId).catch(() => { });
-				}
+      try {
+        if (sticky.lastMessageId) {
+          message.channel.messages.delete(sticky.lastMessageId).catch(() => {});
+        }
 
-				const newStickyMessage = await message.channel.send(sticky.content);
+        const newStickyMessage = await message.channel.send(sticky.content);
 
-				stickyCache[message.channelId] = {
-					...sticky,
-					lastMessageId: newStickyMessage.id,
-				};
+        stickyCache[message.channelId] = {
+          ...sticky,
+          lastMessageId: newStickyMessage.id,
+        };
 
-				setItem(DATABASE_KEYS.STICKY, stickyCache).catch((err) =>
-					logger.error({ err }, "DB Write Error"),
-				);
-			} catch (error) {
-				logger.error(
-					{
-						err: error,
-						channelId: message.channelId,
-						userId: message.author?.id,
-						guildId: message.guildId,
-					},
-					"Sticky logic error",
-				);
-			} finally {
-				processingSticky.delete(message.channelId);
-			}
-		}
+        setItem(DATABASE_KEYS.STICKY, stickyCache).catch((err) =>
+          logger.error({ err }, "DB Write Error"),
+        );
+      } catch (error) {
+        logger.error(
+          {
+            err: error,
+            channelId: message.channelId,
+            userId: message.author?.id,
+            guildId: message.guildId,
+          },
+          "Sticky logic error",
+        );
+      } finally {
+        processingSticky.delete(message.channelId);
+      }
+    }
 
-		// AutoMod
-		const automodWords =
-			(await getItem(DATABASE_KEYS.AUTOMOD_WORDS))?.[message.guildId] || [];
-		if (automodWords.length > 0) {
-			const containsBlockedWord = automodWords.some((word) =>
-				messageContent.includes(word.toLowerCase()),
-			);
-			if (containsBlockedWord) {
-				try {
-					await message.delete();
-					await message.author.send({
-						content: `Your message in ${message.channel} was deleted because it contained a blocked word.`,
-						flags: MessageFlags.Ephemeral,
-					});
-				} catch (error) {
-					logger.error(
-						{
-							err: error,
-							channelId: message.channelId,
-							userId: message.author?.id,
-							guildId: message.guildId,
-						},
-						"Error handling automod",
-					);
-				}
-				return;
-			}
-		}
+    // AutoMod
+    const automodWords =
+      (await getItem(DATABASE_KEYS.AUTOMOD_WORDS))?.[message.guildId] || [];
+    if (automodWords.length > 0) {
+      const containsBlockedWord = automodWords.some((word) =>
+        messageContent.includes(word.toLowerCase()),
+      );
+      if (containsBlockedWord) {
+        try {
+          await message.delete();
+          await message.author.send({
+            content: `Your message in ${message.channel} was deleted because it contained a blocked word.`,
+            flags: MessageFlags.Ephemeral,
+          });
+        } catch (error) {
+          logger.error(
+            {
+              err: error,
+              channelId: message.channelId,
+              userId: message.author?.id,
+              guildId: message.guildId,
+            },
+            "Error handling automod",
+          );
+        }
+        return;
+      }
+    }
 
-		// Link Channels
-		const linkChannelIds =
-			(await getItem(DATABASE_KEYS.LINK_CHANNELS))?.[message.guildId] || [];
-		if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
-			return;
+    // AFK - Unafk user when they send a message
+    const afkData = (await getItem(DATABASE_KEYS.AFK)) || {};
+    if (afkData[message.author.id]) {
+      const userAfk = afkData[message.author.id];
+      try {
+        await message.member.setNickname(userAfk.nickname);
+      } catch (error) {
+        logger.error({ err: error }, "Error removing AFK nickname");
+      }
 
-		const hasLink = messageContent.match(URL_REGEX) !== null;
+      delete afkData[message.author.id];
+      await setItem(DATABASE_KEYS.AFK, afkData);
 
-		if (!hasLink) {
-			try {
-				await message.delete();
+      await message.reply({
+        content: `Welcome back! I've removed your AFK status.`,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
 
-				await message.author.send({
-					content: `Hey! If you were trying to send any text, bundle it in with your links. e.g. Securly, Goguardian\nhttps://google.com/\n\nYour message: ${messageContent}`,
-					flags: MessageFlags.Ephemeral,
-				});
-			} catch (error) {
-				logger.error(
-					{
-						err: error,
-						channelId: message.channelId,
-						userId: message.author?.id,
-						guildId: message.guildId,
-					},
-					"Error handling link requirement",
-				);
-			}
-		}
-	},
+    // Link Channels
+    const linkChannelIds =
+      (await getItem(DATABASE_KEYS.LINK_CHANNELS))?.[message.guildId] || [];
+    if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
+      return;
+
+    const hasLink = messageContent.match(URL_REGEX) !== null;
+
+    if (!hasLink) {
+      try {
+        await message.delete();
+
+        await message.author.send({
+          content: `Hey! If you were trying to send any text, bundle it in with your links. e.g. Securly, Goguardian\nhttps://google.com/\n\nYour message: ${messageContent}`,
+          flags: MessageFlags.Ephemeral,
+        });
+      } catch (error) {
+        logger.error(
+          {
+            err: error,
+            channelId: message.channelId,
+            userId: message.author?.id,
+            guildId: message.guildId,
+          },
+          "Error handling link requirement",
+        );
+      }
+    }
+  },
 };

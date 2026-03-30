@@ -2,6 +2,7 @@
 
 - [x] invite command for invite link
 - [x] say
+- [x] afk
 - [x] moderating words
 - [ ] trigger words
 - [ ] music bot feature
@@ -10,7 +11,6 @@
 - [ ] softban feature(bans people for time and then unbans them right after that)
 - [ ] lock command for locking channels
 - [ ] verification for people non humans
-- [ ]  afk           
 - [ ] invite link for server
 - [ ] avatar command for fetching your avatar or someone elses avatar
 - [ ] role info /perms
@@ -20,7 +20,9 @@
 - [ ] antinuke features
 - [ ] change nickname of someone
 - [ ] reaction roles
-- [ ]  modlogs       
+- [ ] modlogs
 - [ ] set slowmode
 - [ ] warn a user
-
+- [ ] quarentine feature
+- [ ] change nickname
+- [ ] honey pot that softbans people who send messages in a channel for hacked people who are being used to raid

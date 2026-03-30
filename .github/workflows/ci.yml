@@ -25,7 +25,7 @@ jobs:
 
   dockerci:
     name: Docker CI
-    needs: test 
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read

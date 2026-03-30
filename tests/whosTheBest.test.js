@@ -7,17 +7,17 @@ vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 import whosTheBestCommand from "../commands/fun/whosTheBest.js";
 
 describe("whosTheBest command", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-	test("replies with testuserforlearning is the best!", async () => {
-		const interaction = {
-			reply: mockReply,
-		};
+  test("replies with testuserforlearning is the best!", async () => {
+    const interaction = {
+      reply: mockReply,
+    };
 
-		await whosTheBestCommand.execute(interaction);
+    await whosTheBestCommand.execute(interaction);
 
-		expect(mockReply).toHaveBeenCalledWith("testuserforlearning is the best!");
-	});
+    expect(mockReply).toHaveBeenCalledWith("testuserforlearning is the best!");
+  });
 });
