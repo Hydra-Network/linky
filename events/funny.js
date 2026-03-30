@@ -1,3 +1,4 @@
+import { Events } from "discord.js";
 import { LINKY_ID, EMOJI_IDS, EMOJIS } from "../config/index.js";
 
 export default {
