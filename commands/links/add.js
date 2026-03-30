@@ -1,152 +1,152 @@
 import {
-  SlashCommandBuilder,
-  ApplicationIntegrationType,
-  InteractionContextType,
-  MessageFlags,
+	SlashCommandBuilder,
+	ApplicationIntegrationType,
+	InteractionContextType,
+	MessageFlags,
 } from "discord.js";
 import { getItem, setItem } from "../../db.js";
 import { check } from "../../utils/checker.js";
 import { filterURL } from "../../utils/urlfilter.js";
-import { ROLES, DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
+import { ROLES, DATABASE_KEYS, ERROR_MESSAGES, GUILDS, CHANNELS } from "../../config/index.js";
 import {
-  validateWithSchema,
-  LinkInputSchema,
-  SiteSchema,
+	validateWithSchema,
+	LinkInputSchema,
+	SiteSchema,
 } from "../../utils/validation.js";
 
 export default {
-  data: new SlashCommandBuilder()
-    .setName("add")
-    .setDescription("Add a link to the database.")
-    .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
-    .setContexts([
-      InteractionContextType.Guild,
-      InteractionContextType.PrivateChannel,
-    ])
-    .addStringOption((option) =>
-      option
-        .setName("linkinput")
-        .setDescription("The link to add")
-        .setRequired(true),
-    )
-    .addStringOption((option) =>
-      option
-        .setName("proxysite")
-        .setDescription("What website is the link for?")
-        .setRequired(true)
-        .addChoices(
-          { name: "Galaxy", value: "galaxy" },
-          { name: "Glint", value: "glint" },
-          { name: "Bromine", value: "bromine" },
-        ),
-    ),
-  async execute(interaction) {
-    if (
-      interaction.guildId !== "1307867835237793893" &&
-      interaction.guildId !== process.env.guildId
-    ) {
-      return interaction.reply({
-        content: "This command is exclusive to a specific server.",
-        flags: MessageFlags.Ephemeral,
-      });
-    }
-    let link = interaction.options.getString("linkinput");
-    let site = interaction.options.getString("proxysite");
-    let userId = interaction.user.id;
+	data: new SlashCommandBuilder()
+		.setName("add")
+		.setDescription("Add a link to the database.")
+		.setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
+		.setContexts([
+			InteractionContextType.Guild,
+			InteractionContextType.PrivateChannel,
+		])
+		.addStringOption((option) =>
+			option
+				.setName("linkinput")
+				.setDescription("The link to add")
+				.setRequired(true),
+		)
+		.addStringOption((option) =>
+			option
+				.setName("proxysite")
+				.setDescription("What website is the link for?")
+				.setRequired(true)
+				.addChoices(
+					{ name: "Galaxy", value: "galaxy" },
+					{ name: "Glint", value: "glint" },
+					{ name: "Bromine", value: "bromine" },
+				),
+		),
+	async execute(interaction) {
+		if (
+			interaction.guildId !== GUILDS.hydra &&
+			interaction.guildId !== process.env.guildId
+		) {
+			return interaction.reply({
+				content: "This command is exclusive to a specific server.",
+				flags: MessageFlags.Ephemeral,
+			});
+		}
+		let link = interaction.options.getString("linkinput");
+		let site = interaction.options.getString("proxysite");
+		let userId = interaction.user.id;
 
-    const linkValidation = validateWithSchema(LinkInputSchema, link);
-    if (!linkValidation.valid) {
-      return interaction.reply({
-        content: `Invalid link: ${linkValidation.errors[0]?.message || "Invalid input"}`,
-        flags: MessageFlags.Ephemeral,
-      });
-    }
+		const linkValidation = validateWithSchema(LinkInputSchema, link);
+		if (!linkValidation.valid) {
+			return interaction.reply({
+				content: `Invalid link: ${linkValidation.errors[0]?.message || "Invalid input"}`,
+				flags: MessageFlags.Ephemeral,
+			});
+		}
 
-    const siteValidation = validateWithSchema(SiteSchema, site);
-    if (!siteValidation.valid) {
-      return interaction.reply({
-        content: `Invalid site selection.`,
-        flags: MessageFlags.Ephemeral,
-      });
-    }
+		const siteValidation = validateWithSchema(SiteSchema, site);
+		if (!siteValidation.valid) {
+			return interaction.reply({
+				content: `Invalid site selection.`,
+				flags: MessageFlags.Ephemeral,
+			});
+		}
 
-    const list = (await getItem(DATABASE_KEYS.LINKS)) || [];
+		const list = (await getItem(DATABASE_KEYS.LINKS)) || [];
 
-    if (interaction.guildId == "1307867835237793893") {
-      const allowedRoles = [
-        ROLES.galaxy,
-        ROLES.multiverse,
-        ROLES.LINK_BOTS.head,
-        ROLES.LINK_BOTS.elite,
-        ROLES.LINK_BOTS.honorary,
-      ];
+		if (interaction.guildId == "1307867835237793893") {
+			const allowedRoles = [
+				ROLES.galaxy,
+				ROLES.multiverse,
+				ROLES.LINK_BOTS.head,
+				ROLES.LINK_BOTS.elite,
+				ROLES.LINK_BOTS.honorary,
+			];
 
-      if (
-        !interaction.member ||
-        !interaction.member.roles.cache.some((role) =>
-          allowedRoles.includes(role.id),
-        )
-      ) {
-        return interaction.reply({
-          content: ERROR_MESSAGES.NO_PERMISSION,
-          flags: MessageFlags.Ephemeral,
-        });
-      }
-    }
-    for (let i = 0; i < list.length; i++) {
-      const today = new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
+			if (
+				!interaction.member ||
+				!interaction.member.roles.cache.some((role) =>
+					allowedRoles.includes(role.id),
+				)
+			) {
+				return interaction.reply({
+					content: ERROR_MESSAGES.NO_PERMISSION,
+					flags: MessageFlags.Ephemeral,
+				});
+			}
+		}
+		for (let i = 0; i < list.length; i++) {
+			const today = new Date().toLocaleDateString("en-US", {
+				month: "short",
+				day: "numeric",
+			});
 
-      if (
-        list[i].site == site &&
-        list[i].timestamp === today &&
-        (await filterURL(list[i].url)) == (await filterURL(link))
-      ) {
-        return interaction.reply({
-          content: `Link with the same parent domain already added for ${site}. Try again tomorrow.`,
-          flags: MessageFlags.Ephemeral,
-        });
-      }
-    }
-    function httpscheck(url) {
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        return "https://" + url;
-      }
-      return url;
-    }
+			if (
+				list[i].site == site &&
+				list[i].timestamp === today &&
+				(filterURL(list[i].url)) == (filterURL(link))
+			) {
+				return interaction.reply({
+					content: `Link with the same parent domain already added for ${site}. Try again tomorrow.`,
+					flags: MessageFlags.Ephemeral,
+				});
+			}
+		}
+		function httpscheck(url) {
+			if (!url.startsWith("http://") && !url.startsWith("https://")) {
+				return "https://" + url;
+			}
+			return url;
+		}
 
-    const targetChannel = interaction.client.channels.cache.get(
-      "1472419415118188771",
-    );
+		const targetChannel = interaction.client.channels.cache.get(
+			CHANNELS.hydra.links.channelId,
+		);
 
-    if (targetChannel) {
-      await targetChannel.send(
-        `${link} has been added by <@${userId}> for ${site}`,
-      );
-    } else {
-    }
+		if (targetChannel) {
+			await targetChannel.send(
+				`${link} has been added by <@${userId}> for ${site}`,
+			);
+		} else {
+		}
 
-    await interaction.reply({
-      content: `${link} has been added, ty :heart:`,
-      flags: MessageFlags.Ephemeral,
-    });
-    var { unblocked, roles } = await check(link);
-    const links = (await getItem(DATABASE_KEYS.LINKS)) || [];
-    await setItem(DATABASE_KEYS.LINKS, [
-      ...links,
-      {
-        url: httpscheck(link),
-        site,
-        userId: interaction.user.id,
-        timestamp: new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-        blocker: unblocked,
-        role: roles,
-      },
-    ]);
-  },
+		await interaction.reply({
+			content: `${link} has been added, ty :heart:`,
+			flags: MessageFlags.Ephemeral,
+		});
+		var { unblocked, roles } = await check(link);
+		const links = (await getItem(DATABASE_KEYS.LINKS)) || [];
+		await setItem(DATABASE_KEYS.LINKS, [
+			...links,
+			{
+				url: httpscheck(link),
+				site,
+				userId: interaction.user.id,
+				timestamp: new Date().toLocaleDateString("en-US", {
+					month: "short",
+					day: "numeric",
+				}),
+				blocker: unblocked,
+				role: roles,
+			},
+		]);
+	},
 };

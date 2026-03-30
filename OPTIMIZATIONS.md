@@ -4,17 +4,11 @@
 
 | Priority   | Issue                       | Solution                                                     |
 | ---------- | --------------------------- | ------------------------------------------------------------ |
-| **High**   | Hardcoded Guild/Channel IDs | Create `config/guilds.js` with all server-specific config    |
 | **High**   | Scattered magic strings     | Centralize all constants, use enums                          |
 | **Medium** | No TypeScript               | Migrate to TypeScript for type safety                        |
 | **Medium** | Flat command folders        | Add subcommands properly using discord.js built-in structure |
 | **Low**    | No dependency injection     | Use factory patterns for testability                         |
 
-**Specific fixes:**
-
-- Move `"1307867835237793893"` to config
-- Move `"1472419415118188771"` (channel) to config
-- Move `"1381046754257932308"` (daily links channel) to config
 
 ## 2. Performance Optimizations
 
