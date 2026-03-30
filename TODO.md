@@ -1,6 +1,7 @@
 # TODO
 
 - [x] invite command for invite link
+- [x] say
 - [x] moderating words
 - [ ] trigger words
 - [ ] music bot feature
@@ -20,7 +21,6 @@
 - [ ] antinuke features
 - [ ] change nickname of someone
 - [ ] reaction roles
-- [ ] say
 - [ ]  modlogs       
 - [ ] set slowmode
 - [ ] warn a user
