@@ -9,6 +9,8 @@ export default {
 	async execute(message) {
 		if (message.author.bot || !message.guild) return;
 
+		const messageContent = message.content.toLowerCase();
+
 		// AutoMod
 		const automodWords =
 			(await getItem(DATABASE_KEYS.AUTOMOD_WORDS))?.[message.guildId] || [];

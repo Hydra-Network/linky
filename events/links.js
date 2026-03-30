@@ -11,6 +11,8 @@ export default {
 	async execute(message) {
 		if (message.author.bot || !message.guild) return;
 
+		const messageContent = message.content.toLowerCase();
+
 		// Link Channels
 		const linkChannelIds =
 			(await getItem(DATABASE_KEYS.LINK_CHANNELS))?.[message.guildId] || [];
