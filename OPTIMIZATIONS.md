@@ -43,16 +43,10 @@ await client.execute(
 
 | Priority   | Issue                             | Solution                                    |
 | ---------- | --------------------------------- | ------------------------------------------- |
-| **High**   | Silent failures in automod        | Add proper error responses                  |
 | **Medium** | Missing error replies in commands | Add ephemeral error messages                |
 
-## 5. Testing & Quality
 
-| Priority   | Item                                |
-| ---------- | ----------------------------------- |
-| **High**   | Add ESLint + Husky pre-commit hook  |
-
-## 6. Quick Wins (High Impact, Low Effort)
+## 5. Quick Wins (High Impact, Low Effort)
 
 1. **Add caching layer** - 5-minute TTL cache for:
    - `DATABASE_KEYS.STICKY`
@@ -74,7 +68,7 @@ try {
 
 3. **Lazy load config values** - Don't read on every import
 
-## 7. Suggested File Structure
+## 6. Suggested File Structure
 
 ```
 src/

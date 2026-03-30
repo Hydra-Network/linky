@@ -21,7 +21,17 @@ export default {
 
       try {
         if (sticky.lastMessageId) {
-          message.channel.messages.delete(sticky.lastMessageId).catch(() => {});
+          message.channel.messages.delete(sticky.lastMessageId).catch((err) => {
+            logger.error(
+              {
+                err: err,
+                channelId: message.channelId,
+                userId: message.author?.id,
+                guildId: message.guildId,
+              },
+              "Sticky message deletion error: ",
+            );
+          });
         }
 
         const newStickyMessage = await message.channel.send(sticky.content);
