@@ -6,8 +6,6 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "../../config/index.js";
-import { getItem, setItem } from "../../db.js";
-import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -16,7 +14,10 @@ export default {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
     .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
     .setContexts([InteractionContextType.Guild]),
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const logger = container.get("logger");
+    const { getItem, setItem } = container.get("db");
+
     const channelId = interaction.channelId;
     const sticky = (await getItem(DATABASE_KEYS.STICKY))?.[channelId];
 

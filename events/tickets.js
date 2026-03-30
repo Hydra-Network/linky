@@ -8,13 +8,14 @@ import {
   TextInputStyle,
 } from "discord.js";
 import { DATABASE_KEYS } from "../config/index.js";
-import { getItem } from "../db.js";
-import logger from "../utils/logger.js";
 
 export default {
   name: Events.InteractionCreate,
   once: false,
-  async execute(interaction, client) {
+  async execute(interaction, client, container) {
+    const logger = container.get("logger");
+    const { getItem } = container.get("db");
+
     if (!interaction.isChatInputCommand()) return;
     const command = interaction.client.commands.get(interaction.commandName);
 
@@ -26,7 +27,7 @@ export default {
     const commandName = interaction.commandName;
 
     try {
-      await command.execute(interaction, client);
+      await command.execute(interaction, container);
     } catch (error) {
       logger.error(
         {

@@ -6,7 +6,6 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { ERROR_MESSAGES } from "../../config/index.js";
-import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -27,7 +26,9 @@ export default {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
     .setContexts([InteractionContextType.Guild]),
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const logger = container.get("logger");
+
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,

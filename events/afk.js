@@ -1,13 +1,14 @@
 import { Events, MessageFlags } from "discord.js";
 import { DATABASE_KEYS } from "../config/index.js";
-import { getItem, setItem } from "../db.js";
-import logger from "../utils/logger.js";
 
 export default {
   name: Events.MessageCreate,
   once: false,
-  async execute(message) {
+  async execute(message, _client, container) {
     if (message.author.bot || !message.guild) return;
+
+    const logger = container.get("logger");
+    const { getItem, setItem } = container.get("db");
 
     const afkData = (await getItem(DATABASE_KEYS.AFK)) || {};
     if (afkData[message.author.id]) {

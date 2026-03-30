@@ -4,7 +4,6 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "../../config/index.js";
-import { getItem } from "../../db.js";
 import {
   checkWithDetails,
   DNS_BLOCKERS,
@@ -42,7 +41,9 @@ export default {
       o.setName("url").setDescription("The link to check").setRequired(true),
     ),
 
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const { getItem } = container.get("db");
+
     const url = interaction.options.getString("url");
     const blockers = interaction.options.getString("blockers");
 

@@ -4,8 +4,6 @@ import {
   DATABASE_KEYS,
   ERROR_MESSAGES,
 } from "../../config/index.js";
-import { getItem } from "../../db.js";
-import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -17,7 +15,10 @@ export default {
         .setDescription("Reason for creating the ticket")
         .setRequired(true),
     ),
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const logger = container.get("logger");
+    const { getItem } = container.get("db");
+
     const reason =
       interaction.options.get("reason")?.value ||
       ERROR_MESSAGES.NO_REASON_PROVIDED;

@@ -13,6 +13,13 @@ vi.mock("../utils/logger.js", () => ({
 
 const { getItem } = await import("../db.js");
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem, setItem: vi.fn() };
+  }),
+};
+
 import messageCreate from "../events/automod.js";
 
 describe("automod", () => {
@@ -58,7 +65,7 @@ describe("automod", () => {
     mockMessage.content = "This contains badword in it";
     mockMessage.guild = { id: "987654321" };
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(mockMessage.delete).toHaveBeenCalled();
     expect(mockMessage.author.send).toHaveBeenCalledWith(
@@ -80,7 +87,7 @@ describe("automod", () => {
 
     mockMessage.content = "This is a clean message";
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(mockMessage.delete).not.toHaveBeenCalled();
   });
@@ -98,7 +105,7 @@ describe("automod", () => {
     mockMessage.content = "This contains BADWORD in it";
     mockMessage.guild = { id: "987654321" };
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(mockMessage.delete).toHaveBeenCalled();
   });
@@ -114,7 +121,7 @@ describe("automod", () => {
 
     mockMessage.content = "badword spam";
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(mockMessage.delete).not.toHaveBeenCalled();
   });
@@ -130,7 +137,7 @@ describe("automod", () => {
 
     mockMessage.content = "This contains badword";
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(mockMessage.delete).not.toHaveBeenCalled();
   });
@@ -138,7 +145,7 @@ describe("automod", () => {
   test("does not process bot messages", async () => {
     mockMessage.author.bot = true;
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(vi.mocked(getItem)).not.toHaveBeenCalled();
   });

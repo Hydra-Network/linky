@@ -4,7 +4,6 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
-import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -21,7 +20,9 @@ export default {
       InteractionContextType.Guild,
       InteractionContextType.PrivateChannel,
     ]),
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const logger = container.get("logger");
+
     const text = interaction.options.getString("text");
     try {
       await interaction.reply(text);

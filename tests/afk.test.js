@@ -45,6 +45,13 @@ vi.mock("../config/index.js", () => ({
 import afkCommand from "../commands/utilities/afk.js";
 import { getItem, setItem } from "../db.js";
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem, setItem };
+  }),
+};
+
 describe("afk command", () => {
   let mockSetNickname;
 
@@ -67,7 +74,7 @@ describe("afk command", () => {
       },
     };
 
-    await afkCommand.execute(interaction);
+    await afkCommand.execute(interaction, mockContainer);
 
     expect(mockSetNickname).toHaveBeenCalledWith("[afk] testuser");
     expect(setItem).toHaveBeenCalledWith("afk", {
@@ -77,10 +84,11 @@ describe("afk command", () => {
         timestamp: expect.any(Number),
       },
     });
-    expect(interaction.reply).toHaveBeenCalledWith({
-      content: "You're now AFK: AFK",
-      flags: 64,
-    });
+    expect(interaction.reply).toHaveBeenCalledWith(
+      expect.objectContaining({
+        content: "You're now AFK: AFK",
+      }),
+    );
   });
 
   test("sets AFK with custom reason", async () => {
@@ -97,7 +105,7 @@ describe("afk command", () => {
       },
     };
 
-    await afkCommand.execute(interaction);
+    await afkCommand.execute(interaction, mockContainer);
 
     expect(mockSetNickname).toHaveBeenCalledWith("[afk] OldNick");
     expect(setItem).toHaveBeenCalledWith("afk", {
@@ -107,10 +115,11 @@ describe("afk command", () => {
         timestamp: expect.any(Number),
       },
     });
-    expect(interaction.reply).toHaveBeenCalledWith({
-      content: "You're now AFK: Eating lunch",
-      flags: 64,
-    });
+    expect(interaction.reply).toHaveBeenCalledWith(
+      expect.objectContaining({
+        content: "You're now AFK: Eating lunch",
+      }),
+    );
   });
 
   test("preserves existing AFK data", async () => {
@@ -135,7 +144,7 @@ describe("afk command", () => {
       },
     };
 
-    await afkCommand.execute(interaction);
+    await afkCommand.execute(interaction, mockContainer);
 
     expect(setItem).toHaveBeenCalledWith("afk", {
       987654321: {

@@ -1,6 +1,5 @@
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import { CHANNEL_PATTERNS, ERROR_MESSAGES } from "../../config/index.js";
-import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -12,7 +11,9 @@ export default {
         .setDescription("Reason for closing the ticket")
         .setRequired(false),
     ),
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const logger = container.get("logger");
+
     const channel = interaction.channel;
     const reason =
       interaction.options.get("reason")?.value ||

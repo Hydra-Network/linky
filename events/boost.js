@@ -1,12 +1,13 @@
 import { Events } from "discord.js";
 import { DATABASE_KEYS } from "../config/index.js";
-import { getItem } from "../db.js";
-import logger from "../utils/logger.js";
 
 export default {
   name: Events.GuildMemberUpdate,
   once: false,
-  async execute(oldMember, newMember) {
+  async execute(oldMember, newMember, _client, container) {
+    const logger = container.get("logger");
+    const { getItem } = container.get("db");
+
     const oldWasBoosting = !!oldMember.premiumSince;
     const newIsBoosting = newMember.premiumSince;
 

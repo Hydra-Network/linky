@@ -2,6 +2,13 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockReply = vi.fn();
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+  }),
+};
+
 vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import unbanCommand from "../commands/moderation/unban.js";
@@ -17,7 +24,7 @@ describe("unban command", () => {
       guild: null,
     };
 
-    await unbanCommand.execute(interaction);
+    await unbanCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -45,7 +52,7 @@ describe("unban command", () => {
       },
     };
 
-    await unbanCommand.execute(interaction);
+    await unbanCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

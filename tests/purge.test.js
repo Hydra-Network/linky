@@ -2,6 +2,13 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockReply = vi.fn();
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+  }),
+};
+
 vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import purgeCommand from "../commands/moderation/purge.js";
@@ -17,7 +24,7 @@ describe("purge command", () => {
       guild: null,
     };
 
-    await purgeCommand.execute(interaction);
+    await purgeCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -44,7 +51,7 @@ describe("purge command", () => {
       },
     };
 
-    await purgeCommand.execute(interaction);
+    await purgeCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -81,7 +88,7 @@ describe("purge command", () => {
       },
     };
 
-    await purgeCommand.execute(interaction);
+    await purgeCommand.execute(interaction, mockContainer);
 
     expect(mockBulkDelete).toHaveBeenCalledWith(10, true);
     expect(mockReply).toHaveBeenCalled();

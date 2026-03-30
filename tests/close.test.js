@@ -2,7 +2,23 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockReply = vi.fn();
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+  }),
+};
+
 vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+
+vi.mock("../config/index.js", () => ({
+  CHANNEL_PATTERNS: { TICKET: "ticket-" },
+  ERROR_MESSAGES: {
+    TICKET_ONLY_IN_CHANNEL:
+      "This command can only be used in a ticket channel.",
+    NO_REASON_PROVIDED: "No reason provided",
+  },
+}));
 
 import closeCommand from "../commands/tickets/close.js";
 
@@ -13,17 +29,19 @@ describe("close command", () => {
 
   test("fails when no channel", async () => {
     const interaction = {
-      reply: mockReply,
+      reply: vi.fn().mockResolvedValue(undefined),
       channel: null,
       options: {
         get: vi.fn().mockReturnValue(null),
       },
+      user: { username: "testuser" },
     };
 
-    await closeCommand.execute(interaction);
+    await closeCommand.execute(interaction, mockContainer);
 
-    expect(mockReply).toHaveBeenCalled();
-    const callArg = mockReply.mock.calls[0][0];
+    expect(interaction.reply).toHaveBeenCalled();
+    const callArg = interaction.reply.mock.calls[0][0];
+    expect(callArg).toBeDefined();
     expect(callArg.content).toBe(
       "This command can only be used in a ticket channel.",
     );
@@ -31,19 +49,20 @@ describe("close command", () => {
 
   test("fails when not in a ticket channel", async () => {
     const interaction = {
-      reply: mockReply,
+      reply: vi.fn().mockResolvedValue(undefined),
       channel: {
         name: "general",
       },
       options: {
         get: vi.fn().mockReturnValue(null),
       },
+      user: { username: "testuser" },
     };
 
-    await closeCommand.execute(interaction);
+    await closeCommand.execute(interaction, mockContainer);
 
-    expect(mockReply).toHaveBeenCalled();
-    const callArg = mockReply.mock.calls[0][0];
+    expect(interaction.reply).toHaveBeenCalled();
+    const callArg = interaction.reply.mock.calls[0][0];
     expect(callArg.content).toBe(
       "This command can only be used in a ticket channel.",
     );
@@ -66,7 +85,7 @@ describe("close command", () => {
       },
     };
 
-    await closeCommand.execute(interaction);
+    await closeCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

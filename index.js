@@ -10,7 +10,8 @@ import {
 } from "discord.js";
 import "dotenv/config";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { init } from "./db.js";
+import { getItem, init, setItem } from "./db.js";
+import { container } from "./utils/container.js";
 import logger from "./utils/logger.js";
 
 process.on("uncaughtException", (error, origin) => {
@@ -56,6 +57,10 @@ client.once(Events.ClientReady, (readyClient) => {
 client.login(token);
 client.commands = new Collection();
 
+container.register("logger", logger);
+container.register("client", client);
+container.register("db", { getItem, setItem });
+
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 for (const folder of commandFolders) {
@@ -68,6 +73,10 @@ for (const folder of commandFolders) {
     const commandModule = await import(pathToFileURL(filePath).href);
     const command = commandModule.default || commandModule;
     if ("data" in command && "execute" in command) {
+      const wrappedExecute = async (...args) => {
+        return command.execute(...args, container);
+      };
+      command.execute = wrappedExecute;
       client.commands.set(command.data.name, command);
     } else {
       logger.warn(
@@ -86,10 +95,12 @@ for (const file of eventFiles) {
   const eventModule = await import(pathToFileURL(filePath).href);
   const event = eventModule.default || eventModule;
   if (event.name && event.execute) {
+    const wrappedExecute = (...args) =>
+      event.execute(...args, client, container);
     if (event.once) {
-      client.once(event.name, (...args) => event.execute(...args, client));
+      client.once(event.name, wrappedExecute);
     } else {
-      client.on(event.name, (...args) => event.execute(...args, client));
+      client.on(event.name, wrappedExecute);
     }
   } else {
     logger.warn(

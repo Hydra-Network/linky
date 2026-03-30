@@ -1,15 +1,16 @@
 import { Events, MessageFlags } from "discord.js";
 import { DATABASE_KEYS } from "../config/index.js";
-import { getItem } from "../db.js";
-import logger from "../utils/logger.js";
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
 
 export default {
   name: Events.MessageCreate,
   once: false,
-  async execute(message) {
+  async execute(message, _client, container) {
     if (message.author.bot || !message.guild) return;
+
+    const logger = container.get("logger");
+    const { getItem } = container.get("db");
 
     const messageContent = message.content.toLowerCase();
 

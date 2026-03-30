@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createClient } from "@libsql/client";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
-import { init } from "../../db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,14 +25,17 @@ export default {
       InteractionContextType.BotDM,
       InteractionContextType.PrivateChannel,
     ]),
-  async execute(interaction, client) {
+  async execute(interaction, container) {
+    const client = container.get("client");
+    const _logger = container.get("logger");
+
     const start = Date.now();
     let dbStatus = "Unknown";
     let dbSize = "Unknown";
     const tableCounts = {};
 
     try {
-      const db = await init();
+      const db = createClient({ url: `file:${dbPath}` });
       await db.execute("SELECT 1");
       dbStatus = "Connected";
 

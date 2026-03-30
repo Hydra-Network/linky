@@ -7,7 +7,6 @@ import {
 } from "discord.js";
 import { z } from "zod";
 import { ERROR_MESSAGES } from "../../config/index.js";
-import logger from "../../utils/logger.js";
 import { validateWithSchema } from "../../utils/validation.js";
 
 const PurgeAmountSchema = z.number().int().min(1).max(100);
@@ -30,7 +29,9 @@ export default {
       InteractionContextType.Guild,
       InteractionContextType.PrivateChannel,
     ]),
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const logger = container.get("logger");
+
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,

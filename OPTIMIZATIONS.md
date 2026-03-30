@@ -5,8 +5,6 @@
 | Priority   | Issue                       | Solution                                                     |
 | ---------- | --------------------------- | ------------------------------------------------------------ |
 | **Medium** | No TypeScript               | Migrate to TypeScript for type safety                        |
-| **Medium** | Flat command folders        | Add subcommands properly using discord.js built-in structure |
-| **Low**    | No dependency injection     | Use factory patterns for testability                         |
 
 
 ## 2. Performance Optimizations

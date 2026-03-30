@@ -6,7 +6,6 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
-import { getItem, setItem } from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -83,7 +82,9 @@ export default {
         ),
     ),
 
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const { getItem, setItem } = container.get("db");
+
     const subcommand = interaction.options.getSubcommand();
     const subcommandGroup = interaction.options.getSubcommandGroup();
 

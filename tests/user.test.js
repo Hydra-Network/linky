@@ -6,6 +6,13 @@ import userCommand from "../commands/utilities/user.js";
 
 const mockReply = vi.fn();
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+  }),
+};
+
 describe("user command", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -27,10 +34,14 @@ describe("user command", () => {
         getUser: vi.fn().mockReturnValue(null),
       },
       user: mockUser,
-      guild: null,
+      guild: {
+        members: {
+          fetch: vi.fn().mockResolvedValue(null),
+        },
+      },
     };
 
-    await userCommand.execute(interaction);
+    await userCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -58,10 +69,14 @@ describe("user command", () => {
         username: "testuser",
         displayAvatarURL: vi.fn(),
       },
-      guild: null,
+      guild: {
+        members: {
+          fetch: vi.fn().mockResolvedValue(null),
+        },
+      },
     };
 
-    await userCommand.execute(interaction);
+    await userCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

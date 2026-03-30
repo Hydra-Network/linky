@@ -30,6 +30,13 @@ vi.mock("discord.js", () => {
 
 const mockReply = vi.fn();
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+  }),
+};
+
 vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import sayCommand from "../commands/utilities/say.js";
@@ -47,7 +54,7 @@ describe("say command", () => {
       },
     };
 
-    await sayCommand.execute(interaction);
+    await sayCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalledWith("Hello, world!");
   });

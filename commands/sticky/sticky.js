@@ -6,8 +6,6 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "../../config/index.js";
-import { getItem, setItem } from "../../db.js";
-import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -22,7 +20,10 @@ export default {
         .setDescription("The content of the sticky message")
         .setRequired(true),
     ),
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const logger = container.get("logger");
+    const { getItem, setItem } = container.get("db");
+
     const content = interaction.options.getString("content");
     const channelId = interaction.channelId;
     const guildId = interaction.guildId;

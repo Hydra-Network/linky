@@ -7,8 +7,6 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
-import { getItem, setItem } from "../../db.js";
-import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -37,7 +35,9 @@ export default {
       subcommand.setName("status").setDescription("Show honeypot status"),
     ),
 
-  async execute(interaction) {
+  async execute(interaction, container) {
+    const logger = container.get("logger");
+    const { getItem, setItem } = container.get("db");
     if (!interaction.guildId) {
       await interaction.reply({
         content: "This command can only be used in a server.",

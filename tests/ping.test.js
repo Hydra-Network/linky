@@ -2,6 +2,13 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockReply = vi.fn();
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+  }),
+};
+
 vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import pingCommand from "../commands/utilities/ping.js";
@@ -16,7 +23,7 @@ describe("ping command", () => {
       reply: mockReply,
     };
 
-    await pingCommand.execute(interaction);
+    await pingCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalledWith("Pong!");
   });

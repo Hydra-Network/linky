@@ -14,6 +14,13 @@ vi.mock("../db.js", () => {
   };
 });
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem: mockGetItem, setItem: vi.fn() };
+  }),
+};
+
 import boostEvent from "../events/boost.js";
 
 describe("boost event", () => {
@@ -39,7 +46,7 @@ describe("boost event", () => {
       displayAvatarURL: () => "https://example.com/avatar.png",
     };
 
-    await boostEvent.execute(oldMember, newMember);
+    await boostEvent.execute(oldMember, newMember, {}, mockContainer);
 
     expect(mockGetItem).toHaveBeenCalledWith("settings");
     expect(mockChannel.send).toHaveBeenCalled();
@@ -54,7 +61,7 @@ describe("boost event", () => {
       guild: { id: "guild123", channels: { fetch: vi.fn() } },
     };
 
-    await boostEvent.execute(oldMember, newMember);
+    await boostEvent.execute(oldMember, newMember, {}, mockContainer);
 
     expect(mockGetItem).not.toHaveBeenCalled();
   });
@@ -71,7 +78,7 @@ describe("boost event", () => {
       },
     };
 
-    await boostEvent.execute(oldMember, newMember);
+    await boostEvent.execute(oldMember, newMember, {}, mockContainer);
 
     expect(newMember.guild.channels.fetch).not.toHaveBeenCalled();
   });

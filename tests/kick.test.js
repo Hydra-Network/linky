@@ -2,6 +2,13 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockReply = vi.fn();
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn() };
+    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+  }),
+};
+
 vi.mock("../db.js", () => ({ getItem: vi.fn() }));
 
 import kickCommand from "../commands/moderation/kick.js";
@@ -17,7 +24,7 @@ describe("kick command", () => {
       guild: null,
     };
 
-    await kickCommand.execute(interaction);
+    await kickCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -38,7 +45,7 @@ describe("kick command", () => {
       },
     };
 
-    await kickCommand.execute(interaction);
+    await kickCommand.execute(interaction, mockContainer);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

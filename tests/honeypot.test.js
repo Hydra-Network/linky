@@ -14,6 +14,13 @@ vi.mock("../utils/logger.js", () => ({
 
 const { getItem } = await import("../db.js");
 
+const mockContainer = {
+  get: vi.fn((key) => {
+    if (key === "logger") return { error: vi.fn(), info: vi.fn() };
+    if (key === "db") return { getItem, setItem: vi.fn() };
+  }),
+};
+
 import messageCreate from "../events/honeypot.js";
 
 describe("honeypot", () => {
@@ -71,7 +78,7 @@ describe("honeypot", () => {
 
     mockMessage.channelId = "111222333";
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(mockMessage.guild.bans.create).toHaveBeenCalledWith("123456789", {
       reason: "Honeypot: caught messaging in honeypot channel",
@@ -95,7 +102,7 @@ describe("honeypot", () => {
 
     mockMessage.channelId = "111222333";
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(mockMessage.guild.bans.create).not.toHaveBeenCalled();
     expect(mockMessage.guild.bans.remove).not.toHaveBeenCalled();
@@ -111,7 +118,7 @@ describe("honeypot", () => {
       return Promise.resolve(null);
     });
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(mockMessage.guild.bans.create).not.toHaveBeenCalled();
   });
@@ -119,7 +126,7 @@ describe("honeypot", () => {
   test("does not process bot messages", async () => {
     mockMessage.author.bot = true;
 
-    await messageCreate.execute(mockMessage);
+    await messageCreate.execute(mockMessage, {}, mockContainer);
 
     expect(vi.mocked(getItem)).not.toHaveBeenCalled();
   });
