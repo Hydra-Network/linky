@@ -51,9 +51,6 @@ await client.execute(
 | Priority   | Item                                |
 | ---------- | ----------------------------------- |
 | **High**   | Add ESLint + Husky pre-commit hook  |
-| **Medium** | Increase test coverage              |
-| **Medium** | Add integration tests for DB        |
-| **Low**    | Add benchmark tests for performance |
 
 ## 6. Quick Wins (High Impact, Low Effort)
 
