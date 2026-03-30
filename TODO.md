@@ -2,6 +2,7 @@
 
 - [x] invite command for invite link
 - [x] say
+- [x] honey pot that softbans people who send messages in a channel for hacked people who are being used to raid
 - [x] afk
 - [x] honey pot
 - [x] moderating words
@@ -26,4 +27,3 @@
 - [ ] warn a user
 - [ ] quarentine feature
 - [ ] change nickname
-- [ ] honey pot that softbans people who send messages in a channel for hacked people who are being used to raid
