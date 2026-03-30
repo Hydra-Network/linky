@@ -97,12 +97,20 @@ export const check = async (url, blockerFilter = "all") => {
   let unblocked_roles = [];
   let unblocked = [];
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-  const list = await fetch(`${API_URL}?link=${url}&blocker=${blockerFilter}`, {
-    signal: controller.signal,
-  })
-    .then((res) => res.json())
-    .finally(() => clearTimeout(timeout));
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  let list;
+  try {
+    list = await fetch(`${API_URL}?link=${url}&blocker=${blockerFilter}`, {
+      signal: controller.signal,
+    }).then((res) => res.json());
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new Error("Request timed out. Please try again later.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   for (let i = 0; i < list.length; i++) {
     if (list[i].blocked == false) {
@@ -132,12 +140,20 @@ export const checkWithDetails = async (url, blockerFilter = "all") => {
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-  const list = await fetch(`${API_URL}?link=${url}&blocker=all`, {
-    signal: controller.signal,
-  })
-    .then((res) => res.json())
-    .finally(() => clearTimeout(timeout));
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  let list;
+  try {
+    list = await fetch(`${API_URL}?link=${url}&blocker=all`, {
+      signal: controller.signal,
+    }).then((res) => res.json());
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new Error("Request timed out. Please try again later.");
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   for (let i = 0; i < list.length; i++) {
     const blocker = list[i].blocker.toLowerCase();

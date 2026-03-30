@@ -48,7 +48,12 @@ export default {
 
     await interaction.deferReply();
 
-    const results = await checkWithDetails(url, blockers.toLowerCase().trim());
+    let results;
+    try {
+      results = await checkWithDetails(url, blockers.toLowerCase().trim());
+    } catch (err) {
+      return interaction.editReply(`Error: ${err.message}`);
+    }
     if (!results.length) return interaction.editReply("No results returned.");
 
     const settings =
