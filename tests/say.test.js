@@ -1,0 +1,54 @@
+import { describe, test, expect, vi, beforeEach } from "vitest";
+
+vi.mock("discord.js", () => {
+  class MockSlashCommandBuilder {
+    setName() {
+      return this;
+    }
+    setDescription() {
+      return this;
+    }
+    addStringOption() {
+      return this;
+    }
+    setIntegrationTypes() {
+      return this;
+    }
+    setContexts() {
+      return this;
+    }
+  }
+  return {
+    SlashCommandBuilder: MockSlashCommandBuilder,
+    ApplicationIntegrationType: { GuildInstall: "GuildInstall" },
+    InteractionContextType: {
+      Guild: "Guild",
+      PrivateChannel: "PrivateChannel",
+    },
+  };
+});
+
+const mockReply = vi.fn();
+
+vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+
+import sayCommand from "../commands/utilities/say.js";
+
+describe("say command", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("replies with the provided text", async () => {
+    const interaction = {
+      reply: mockReply,
+      options: {
+        getString: vi.fn().mockReturnValue("Hello, world!"),
+      },
+    };
+
+    await sayCommand.execute(interaction);
+
+    expect(mockReply).toHaveBeenCalledWith("Hello, world!");
+  });
+});

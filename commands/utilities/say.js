@@ -6,8 +6,13 @@ import {
 
 export default {
 	data: new SlashCommandBuilder()
-		.setName("user")
-		.setDescription("Provides information about a user.")
+		.setName("Say")
+		.setDescription("Repeats the text you provide.")
+		.addStringOption(option =>
+			option.setName('text')
+				.setDescription('The text to say')
+				.setRequired(true)
+		)
 		.setIntegrationTypes([
 			ApplicationIntegrationType.GuildInstall,
 		])
