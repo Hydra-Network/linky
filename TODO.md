@@ -1,6 +1,7 @@
 # TODO
 
 - [x] invite command for invite link
+- [x] lock command for locking channels
 - [x] say
 - [x] honey pot that softbans people who send messages in a channel for hacked people who are being used to raid
 - [x] afk
@@ -11,14 +12,12 @@
 - [ ] invite tracker alternatives
 - [ ] ability to give cusom people permision for a command possibly temporary too?
 - [ ] softban feature(bans people for time and then unbans them right after that)
-- [ ] lock command for locking channels
 - [ ] verification for people non humans
 - [ ] invite link for server
 - [ ] avatar command for fetching your avatar or someone elses avatar
 - [ ] role info /perms
 - [ ] rock paper siscors
 - [ ] ai
-- [ ] lock channels
 - [ ] antinuke features
 - [ ] change nickname of someone
 - [ ] reaction roles
