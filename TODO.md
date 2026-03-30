@@ -10,7 +10,6 @@
 - [ ] softban feature(bans people for time and then unbans them right after that)
 - [ ] lock command for locking channels
 - [ ] verification for people non humans
-- [ ] about command for bot information about linky
 - [ ]  afk           
 - [ ] invite link for server
 - [ ] avatar command for fetching your avatar or someone elses avatar
