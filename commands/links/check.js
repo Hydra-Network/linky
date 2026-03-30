@@ -1,6 +1,7 @@
 import {
   ApplicationIntegrationType,
   InteractionContextType,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "../../config/index.js";
@@ -52,9 +53,16 @@ export default {
     try {
       results = await checkWithDetails(url, blockers.toLowerCase().trim());
     } catch (err) {
-      return interaction.editReply(`Error: ${err.message}`);
+      return interaction.editReply({
+        content: `Error: ${err.message}`,
+        flags: MessageFlags.Ephemeral,
+      });
     }
-    if (!results.length) return interaction.editReply("No results returned.");
+    if (!results.length)
+      return interaction.editReply({
+        content: "No results returned.",
+        flags: MessageFlags.Ephemeral,
+      });
 
     const settings =
       (await getItem(DATABASE_KEYS.SETTINGS))?.[interaction.guildId] || {};

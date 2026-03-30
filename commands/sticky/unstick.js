@@ -39,6 +39,11 @@ export default {
       }
     } catch (error) {
       logger.error({ err: error }, "Failed to delete the last sticky message");
+      await interaction.followUp({
+        content:
+          "Failed to delete the old sticky message, but sticky has been removed.",
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
     await interaction.reply({

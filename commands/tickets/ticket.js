@@ -1,6 +1,7 @@
 import { ChannelType, MessageFlags, SlashCommandBuilder } from "discord.js";
 import { DATABASE_KEYS } from "../../config/index.js";
 import { getItem } from "../../db.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -26,40 +27,48 @@ export default {
       return;
     }
 
-    const ticketId = Date.now().toString().slice(-6);
-    const channelName = `ticket-${user.username}-${ticketId}`;
+    try {
+      const ticketId = Date.now().toString().slice(-6);
+      const channelName = `ticket-${user.username}-${ticketId}`;
 
-    const ticketCategory = await getItem(DATABASE_KEYS.TICKET_CATEGORY);
+      const ticketCategory = await getItem(DATABASE_KEYS.TICKET_CATEGORY);
 
-    await guild.channels
-      .create({
-        name: channelName,
-        type: ChannelType.GuildText,
-        parent: ticketCategory,
-        permissionOverwrites: [
-          {
-            id: guild.id,
-            deny: ["ViewChannel"],
-          },
-          {
-            id: user.id,
-            allow: ["ViewChannel", "SendMessages", "AttachFiles"],
-          },
-          {
-            id: interaction.client.user?.id ?? "",
-            allow: ["ViewChannel", "SendMessages", "ManageChannels"],
-          },
-        ],
-      })
-      .then(async (ticketChannel) => {
-        await ticketChannel.send({
-          content: `🎫 **New Ticket** | ${user} (\`${user.id}\`)\n📝 **Reason:** ${reason}`,
+      await guild.channels
+        .create({
+          name: channelName,
+          type: ChannelType.GuildText,
+          parent: ticketCategory,
+          permissionOverwrites: [
+            {
+              id: guild.id,
+              deny: ["ViewChannel"],
+            },
+            {
+              id: user.id,
+              allow: ["ViewChannel", "SendMessages", "AttachFiles"],
+            },
+            {
+              id: interaction.client.user?.id ?? "",
+              allow: ["ViewChannel", "SendMessages", "ManageChannels"],
+            },
+          ],
+        })
+        .then(async (ticketChannel) => {
+          await ticketChannel.send({
+            content: `🎫 **New Ticket** | ${user} (\`${user.id}\`)\n📝 **Reason:** ${reason}`,
+          });
         });
-      });
 
-    await interaction.reply({
-      content: `✅ Ticket created! Check your DMs or the channel list.`,
-      flags: MessageFlags.Ephemeral,
-    });
+      await interaction.reply({
+        content: `✅ Ticket created! Check your DMs or the channel list.`,
+        flags: MessageFlags.Ephemeral,
+      });
+    } catch (error) {
+      logger.error({ err: error }, "Ticket command error");
+      await interaction.reply({
+        content: "There was an error while creating the ticket.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
   },
 };

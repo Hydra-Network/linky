@@ -7,6 +7,7 @@ import {
 } from "discord.js";
 import { DATABASE_KEYS } from "../../config/index.js";
 import { getItem, setItem } from "../../db.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -26,17 +27,25 @@ export default {
     const channelId = interaction.channelId;
     const guildId = interaction.guildId;
 
-    const stickyMessage = await interaction.channel.send(content);
+    try {
+      const stickyMessage = await interaction.channel.send(content);
 
-    const allSticky = (await getItem(DATABASE_KEYS.STICKY)) || {};
-    await setItem(DATABASE_KEYS.STICKY, {
-      ...allSticky,
-      [channelId]: { guildId, content, lastMessageId: stickyMessage.id },
-    });
+      const allSticky = (await getItem(DATABASE_KEYS.STICKY)) || {};
+      await setItem(DATABASE_KEYS.STICKY, {
+        ...allSticky,
+        [channelId]: { guildId, content, lastMessageId: stickyMessage.id },
+      });
 
-    await interaction.reply({
-      content: "Sticky message set!",
-      flags: MessageFlags.Ephemeral,
-    });
+      await interaction.reply({
+        content: "Sticky message set!",
+        flags: MessageFlags.Ephemeral,
+      });
+    } catch (error) {
+      logger.error({ err: error }, "Sticky command error");
+      await interaction.reply({
+        content: "There was an error while setting the sticky message.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
   },
 };

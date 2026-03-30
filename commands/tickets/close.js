@@ -42,6 +42,10 @@ export default {
         await channel.delete();
       } catch (error) {
         logger.error({ err: error }, "Error deleting channel");
+        await interaction.followUp({
+          content: "Failed to delete the ticket channel.",
+          flags: MessageFlags.Ephemeral,
+        });
       }
     }, 3000);
   },

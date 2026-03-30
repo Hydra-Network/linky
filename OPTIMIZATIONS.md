@@ -39,14 +39,7 @@ await client.execute(
 );
 ```
 
-## 4. Error Handling Improvements
-
-| Priority   | Issue                             | Solution                                    |
-| ---------- | --------------------------------- | ------------------------------------------- |
-| **Medium** | Missing error replies in commands | Add ephemeral error messages                |
-
-
-## 5. Quick Wins (High Impact, Low Effort)
+## 4. Quick Wins (High Impact, Low Effort)
 
 1. **Add caching layer** - 5-minute TTL cache for:
    - `DATABASE_KEYS.STICKY`
@@ -68,7 +61,7 @@ try {
 
 3. **Lazy load config values** - Don't read on every import
 
-## 6. Suggested File Structure
+## 5. Suggested File Structure
 
 ```
 src/

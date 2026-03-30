@@ -1,8 +1,10 @@
 import {
   ApplicationIntegrationType,
   InteractionContextType,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -21,6 +23,14 @@ export default {
     ]),
   async execute(interaction) {
     const text = interaction.options.getString("text");
-    await interaction.reply(text);
+    try {
+      await interaction.reply(text);
+    } catch (error) {
+      logger.error({ err: error }, "Say command error");
+      await interaction.reply({
+        content: "There was an error while trying to send the message.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
   },
 };
