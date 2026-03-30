@@ -33,18 +33,19 @@ export default {
   async execute(interaction) {
     if (!interaction.guild) {
       return interaction.reply({
-        content: "This command can only be used in a server.",
+        content: ERROR_MESSAGES.GUILD_ONLY,
         flags: MessageFlags.Ephemeral,
       });
     }
 
     const target = interaction.options.getUser("target");
     const reason =
-      interaction.options.getString("reason") || "No reason provided";
+      interaction.options.getString("reason") ||
+      ERROR_MESSAGES.NO_REASON_PROVIDED;
 
     if (!target) {
       return interaction.reply({
-        content: "Please mention a valid member to ban.",
+        content: ERROR_MESSAGES.VALID_MEMBER.replace("{action}", "ban"),
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -52,7 +53,7 @@ export default {
     const member = interaction.guild.members.cache.get(target.id);
     if (!member) {
       return interaction.reply({
-        content: "That member is not in this server.",
+        content: ERROR_MESSAGES.NOT_IN_SERVER,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -74,7 +75,7 @@ export default {
       interaction.guild.members.me.roles.highest.position
     ) {
       return interaction.reply({
-        content: "I cannot ban this member due to role hierarchy restrictions.",
+        content: ERROR_MESSAGES.HIERARCHY_BOT.replace("{action}", "ban"),
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -85,8 +86,7 @@ export default {
       interaction.member.id !== interaction.guild.ownerId
     ) {
       return interaction.reply({
-        content:
-          "You cannot ban this member due to role hierarchy restrictions.",
+        content: ERROR_MESSAGES.HIERARCHY_USER.replace("{action}", "ban"),
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -94,13 +94,15 @@ export default {
     try {
       await member.ban({ reason: reason });
       await interaction.reply({
-        content: `Successfully banned ${target.tag}. Reason: ${reason}`,
+        content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "banned")
+          .replace("{target}", target.tag)
+          .replace("{reason}", reason),
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
       logger.error({ err: error }, "Ban error");
       await interaction.reply({
-        content: "There was an error while trying to ban this member.",
+        content: ERROR_MESSAGES.ACTION_ERROR.replace("{action}", "ban"),
         flags: MessageFlags.Ephemeral,
       });
     }

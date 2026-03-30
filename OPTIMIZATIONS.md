@@ -4,7 +4,6 @@
 
 | Priority   | Issue                       | Solution                                                     |
 | ---------- | --------------------------- | ------------------------------------------------------------ |
-| **High**   | Scattered magic strings     | Centralize all constants, use enums                          |
 | **Medium** | No TypeScript               | Migrate to TypeScript for type safety                        |
 | **Medium** | Flat command folders        | Add subcommands properly using discord.js built-in structure |
 | **Low**    | No dependency injection     | Use factory patterns for testability                         |

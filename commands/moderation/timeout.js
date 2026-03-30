@@ -45,7 +45,7 @@ export default {
   async execute(interaction) {
     if (!interaction.guild) {
       return interaction.reply({
-        content: "This command can only be used in a server.",
+        content: ERROR_MESSAGES.GUILD_ONLY,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -53,7 +53,8 @@ export default {
     const target = interaction.options.getUser("target");
     const duration = interaction.options.getInteger("duration");
     const reason =
-      interaction.options.getString("reason") || "No reason provided";
+      interaction.options.getString("reason") ||
+      ERROR_MESSAGES.NO_REASON_PROVIDED;
 
     const durationValidation = validateWithSchema(
       TimeoutDurationSchema,
@@ -68,7 +69,7 @@ export default {
 
     if (!target) {
       return interaction.reply({
-        content: "Please mention a valid member to timeout.",
+        content: ERROR_MESSAGES.VALID_MEMBER.replace("{action}", "timeout"),
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -76,7 +77,7 @@ export default {
     const member = interaction.guild.members.cache.get(target.id);
     if (!member) {
       return interaction.reply({
-        content: "That member is not in this server.",
+        content: ERROR_MESSAGES.NOT_IN_SERVER,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -98,8 +99,7 @@ export default {
       interaction.guild.members.me.roles.highest.position
     ) {
       return interaction.reply({
-        content:
-          "I cannot timeout this member due to role hierarchy restrictions.",
+        content: ERROR_MESSAGES.HIERARCHY_BOT.replace("{action}", "timeout"),
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -110,8 +110,7 @@ export default {
       interaction.member.id !== interaction.guild.ownerId
     ) {
       return interaction.reply({
-        content:
-          "You cannot timeout this member due to role hierarchy restrictions.",
+        content: ERROR_MESSAGES.HIERARCHY_USER.replace("{action}", "timeout"),
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -125,7 +124,7 @@ export default {
     } catch (error) {
       logger.error({ err: error }, "Timeout error");
       await interaction.reply({
-        content: "There was an error while trying to timeout this member.",
+        content: ERROR_MESSAGES.ACTION_ERROR.replace("{action}", "timeout"),
         flags: MessageFlags.Ephemeral,
       });
     }

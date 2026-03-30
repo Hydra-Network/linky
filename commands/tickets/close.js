@@ -1,4 +1,5 @@
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
+import { CHANNEL_PATTERNS, ERROR_MESSAGES } from "../../config/index.js";
 import logger from "../../utils/logger.js";
 
 export default {
@@ -14,20 +15,21 @@ export default {
   async execute(interaction) {
     const channel = interaction.channel;
     const reason =
-      interaction.options.get("reason")?.value || "No reason provided";
+      interaction.options.get("reason")?.value ||
+      ERROR_MESSAGES.NO_REASON_PROVIDED;
     const user = interaction.user;
 
     if (!channel) {
       await interaction.reply({
-        content: "This command can only be used in a ticket channel.",
+        content: ERROR_MESSAGES.TICKET_ONLY_IN_CHANNEL,
         flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
-    if (!channel.name?.startsWith("ticket-")) {
+    if (!channel.name?.startsWith(CHANNEL_PATTERNS.TICKET)) {
       await interaction.reply({
-        content: "This command can only be used in a ticket channel.",
+        content: ERROR_MESSAGES.TICKET_ONLY_IN_CHANNEL,
         flags: MessageFlags.Ephemeral,
       });
       return;

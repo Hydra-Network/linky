@@ -33,7 +33,7 @@ export default {
   async execute(interaction) {
     if (!interaction.guild) {
       return interaction.reply({
-        content: "This command can only be used in a server.",
+        content: ERROR_MESSAGES.GUILD_ONLY,
         flags: MessageFlags.Ephemeral,
       });
     }

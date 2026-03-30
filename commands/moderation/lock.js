@@ -5,6 +5,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
+import { ERROR_MESSAGES } from "../../config/index.js";
 import logger from "../../utils/logger.js";
 
 export default {
@@ -32,7 +33,7 @@ export default {
   async execute(interaction) {
     if (!interaction.guild) {
       return interaction.reply({
-        content: "This command can only be used in a server.",
+        content: ERROR_MESSAGES.GUILD_ONLY,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -40,7 +41,8 @@ export default {
     const channel =
       interaction.options.getChannel("channel") || interaction.channel;
     const reason =
-      interaction.options.getString("reason") || "No reason provided";
+      interaction.options.getString("reason") ||
+      ERROR_MESSAGES.NO_REASON_PROVIDED;
 
     if (!channel) {
       return interaction.reply({

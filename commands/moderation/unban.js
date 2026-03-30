@@ -33,14 +33,15 @@ export default {
   async execute(interaction) {
     if (!interaction.guild) {
       return interaction.reply({
-        content: "This command can only be used in a server.",
+        content: ERROR_MESSAGES.GUILD_ONLY,
         flags: MessageFlags.Ephemeral,
       });
     }
 
     const target = interaction.options.getUser("target", true);
     const reason =
-      interaction.options.getString("reason") || "No reason provided";
+      interaction.options.getString("reason") ||
+      ERROR_MESSAGES.NO_REASON_PROVIDED;
 
     const botMemberPermissions = interaction.guild.members.me.permissions;
 
@@ -57,7 +58,9 @@ export default {
     try {
       await interaction.guild.bans.remove(target, { reason: reason });
       await interaction.reply({
-        content: `Successfully unbanned ${target.tag}. Reason: ${reason}`,
+        content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "unbanned")
+          .replace("{target}", target.tag)
+          .replace("{reason}", reason),
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {

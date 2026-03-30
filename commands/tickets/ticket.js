@@ -1,5 +1,9 @@
 import { ChannelType, MessageFlags, SlashCommandBuilder } from "discord.js";
-import { DATABASE_KEYS } from "../../config/index.js";
+import {
+  CHANNEL_PATTERNS,
+  DATABASE_KEYS,
+  ERROR_MESSAGES,
+} from "../../config/index.js";
 import { getItem } from "../../db.js";
 import logger from "../../utils/logger.js";
 
@@ -15,13 +19,14 @@ export default {
     ),
   async execute(interaction) {
     const reason =
-      interaction.options.get("reason")?.value || "No reason provided";
+      interaction.options.get("reason")?.value ||
+      ERROR_MESSAGES.NO_REASON_PROVIDED;
     const guild = interaction.guild;
     const user = interaction.user;
 
     if (!guild) {
       await interaction.reply({
-        content: "This command can only be used in a server.",
+        content: ERROR_MESSAGES.GUILD_ONLY,
         flags: MessageFlags.Ephemeral,
       });
       return;
@@ -29,7 +34,7 @@ export default {
 
     try {
       const ticketId = Date.now().toString().slice(-6);
-      const channelName = `ticket-${user.username}-${ticketId}`;
+      const channelName = `${CHANNEL_PATTERNS.TICKET}${user.username}-${ticketId}`;
 
       const ticketCategory = await getItem(DATABASE_KEYS.TICKET_CATEGORY);
 
