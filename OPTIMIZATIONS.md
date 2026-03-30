@@ -44,9 +44,7 @@ await client.execute(
 | Priority   | Issue                             | Solution                                    |
 | ---------- | --------------------------------- | ------------------------------------------- |
 | **High**   | Silent failures in automod        | Add proper error responses                  |
-| **High**   | No timeout handling for API calls | Already has 5s timeout in checker.js - good |
 | **Medium** | Missing error replies in commands | Add ephemeral error messages                |
-| **Medium** | Unhandled promise rejections      | Already has handlers in index.js - good     |
 
 ## 5. Testing & Quality
 
