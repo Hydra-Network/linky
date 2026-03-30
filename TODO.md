@@ -10,4 +10,18 @@
 - [ ] lock command for locking channels
 - [ ] verification for people non humans
 - [ ] about command for bot information about linky
-- [ ] `/health` command for health checking
+- [ ]  afk           
+- [ ] invite link for server
+- [ ] avatar command for fetching your avatar or someone elses avatar
+- [ ] role info /perms
+- [ ] rock paper siscors
+- [ ] ai
+- [ ] lock channels
+- [ ] antinuke features
+- [ ] change nickname of someone
+- [ ] reaction roles
+- [ ] say
+- [ ]  modlogs       
+- [ ] set slowmode
+- [ ] warn a user
+
