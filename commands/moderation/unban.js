@@ -1,12 +1,12 @@
 import {
-  SlashCommandBuilder,
   ApplicationIntegrationType,
   InteractionContextType,
   MessageFlags,
   PermissionFlagsBits,
+  SlashCommandBuilder,
 } from "discord.js";
-import logger from "../../utils/logger.js";
 import { ERROR_MESSAGES } from "../../config/index.js";
+import logger from "../../utils/logger.js";
 
 export default {
   data: new SlashCommandBuilder()

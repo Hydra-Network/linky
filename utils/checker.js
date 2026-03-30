@@ -94,8 +94,8 @@ export const getAllBlockers = () => {
 };
 
 export const check = async (url, blockerFilter = "all") => {
-  let unblocked_roles = [];
-  let unblocked = [];
+  const unblocked_roles = [];
+  const unblocked = [];
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
   let list;
@@ -113,7 +113,7 @@ export const check = async (url, blockerFilter = "all") => {
   }
 
   for (let i = 0; i < list.length; i++) {
-    if (list[i].blocked == false) {
+    if (list[i].blocked === false) {
       const blocker = list[i].blocker.toLowerCase();
       unblocked.push(getBlockerName(blocker));
       const roleId = ROLES.BLOCKERS[blocker];

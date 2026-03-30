@@ -1,7 +1,7 @@
 import {
-  SlashCommandBuilder,
   ApplicationIntegrationType,
   InteractionContextType,
+  SlashCommandBuilder,
 } from "discord.js";
 
 export default {

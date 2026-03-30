@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("discord.js", () => {
   class MockSlashCommandBuilder {
@@ -42,8 +42,8 @@ vi.mock("../config/index.js", () => ({
   DATABASE_KEYS: { AFK: "afk" },
 }));
 
-import { getItem, setItem } from "../db.js";
 import afkCommand from "../commands/utilities/afk.js";
+import { getItem, setItem } from "../db.js";
 
 describe("afk command", () => {
   let mockSetNickname;

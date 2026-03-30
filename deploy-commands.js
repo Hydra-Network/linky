@@ -1,8 +1,7 @@
-import { REST, Routes } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
-
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { REST, Routes } from "discord.js";
 import logger from "./utils/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,7 +10,7 @@ const __dirname = path.dirname(__filename);
 import "dotenv/config";
 const token = process.env.token;
 const clientId = process.env.clientId;
-const guildId = process.env.guildId;
+const _guildId = process.env.guildId;
 
 const commands = [];
 const foldersPath = path.join(__dirname, "commands");

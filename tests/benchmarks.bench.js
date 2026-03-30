@@ -1,16 +1,16 @@
-import { describe, bench } from "vitest";
+import { bench, describe } from "vitest";
 import {
-  validateWithSchema,
-  LinkSchema,
-  SiteSchema,
-  LinkInputSchema,
-} from "../utils/validation.js";
-import { filterURL } from "../utils/urlfilter.js";
-import {
-  getBlockerName,
   getBlockerEmoji,
+  getBlockerName,
   getBlockerRole,
 } from "../utils/checker.js";
+import { filterURL } from "../utils/urlfilter.js";
+import {
+  LinkInputSchema,
+  LinkSchema,
+  SiteSchema,
+  validateWithSchema,
+} from "../utils/validation.js";
 
 describe("validation benchmarks", () => {
   const validLinkData = {

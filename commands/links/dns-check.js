@@ -1,15 +1,15 @@
 import {
-  SlashCommandBuilder,
   ApplicationIntegrationType,
   InteractionContextType,
+  SlashCommandBuilder,
 } from "discord.js";
+import { DATABASE_KEYS } from "../../config/index.js";
+import { getItem } from "../../db.js";
 import {
   checkWithDetails,
   DNS_BLOCKERS,
   getBlockerName,
 } from "../../utils/checker.js";
-import { getItem } from "../../db.js";
-import { DATABASE_KEYS } from "../../config/index.js";
 
 const CHOICES = [
   { name: "All", value: "normal" },

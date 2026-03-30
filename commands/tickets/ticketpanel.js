@@ -1,10 +1,10 @@
 import {
-  SlashCommandBuilder,
-  PermissionFlagsBits,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
 } from "discord.js";
 
 export default {

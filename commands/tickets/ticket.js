@@ -1,6 +1,6 @@
-import { SlashCommandBuilder, ChannelType, MessageFlags } from "discord.js";
-import { getItem } from "../../db.js";
+import { ChannelType, MessageFlags, SlashCommandBuilder } from "discord.js";
 import { DATABASE_KEYS } from "../../config/index.js";
+import { getItem } from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()

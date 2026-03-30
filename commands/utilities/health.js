@@ -1,11 +1,11 @@
-import {
-  SlashCommandBuilder,
-  ApplicationIntegrationType,
-  InteractionContextType,
-} from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  ApplicationIntegrationType,
+  InteractionContextType,
+  SlashCommandBuilder,
+} from "discord.js";
 import { init } from "../../db.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,7 +29,7 @@ export default {
     const start = Date.now();
     let dbStatus = "Unknown";
     let dbSize = "Unknown";
-    let tableCounts = {};
+    const tableCounts = {};
 
     try {
       const db = await init();
@@ -110,7 +110,7 @@ function formatBytes(bytes) {
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
 }
 
 function formatUptime(seconds) {

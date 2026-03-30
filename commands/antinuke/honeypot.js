@@ -1,12 +1,12 @@
 import {
-  SlashCommandBuilder,
   ApplicationIntegrationType,
+  ChannelType,
   InteractionContextType,
   PermissionFlagsBits,
-  ChannelType,
+  SlashCommandBuilder,
 } from "discord.js";
-import { getItem, setItem } from "../../db.js";
 import { DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
+import { getItem, setItem } from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -87,7 +87,7 @@ export default {
 
       const channel = interaction.guild.channels.cache.get(currentChannelId);
       await interaction.reply(
-        `Honeypot channel: ${channel ? channel : "<#${currentChannelId}>"}`,
+        `Honeypot channel: ${channel ? channel : `<#${currentChannelId}>`}`,
       );
       return;
     }

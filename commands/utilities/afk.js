@@ -1,11 +1,11 @@
 import {
-  SlashCommandBuilder,
   ApplicationIntegrationType,
   InteractionContextType,
   MessageFlags,
+  SlashCommandBuilder,
 } from "discord.js";
-import { setItem, getItem } from "../../db.js";
 import { DATABASE_KEYS } from "../../config/index.js";
+import { getItem, setItem } from "../../db.js";
 
 export default {
   data: new SlashCommandBuilder()

@@ -1,6 +1,6 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import { init, getItem, setItem, clear } from "../db.js";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { DATABASE_KEYS } from "../config/constants.js";
+import { clear, getItem, init, setItem } from "../db.js";
 
 describe("database operations", () => {
   let client;
