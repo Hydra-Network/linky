@@ -73,8 +73,9 @@ for (const folder of commandFolders) {
     const commandModule = await import(pathToFileURL(filePath).href);
     const command = commandModule.default || commandModule;
     if ("data" in command && "execute" in command) {
+      const originalExecute = command.execute;
       const wrappedExecute = async (...args) => {
-        return command.execute(...args, container);
+        return originalExecute(...args, container);
       };
       command.execute = wrappedExecute;
       client.commands.set(command.data.name, command);
