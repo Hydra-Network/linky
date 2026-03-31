@@ -5,7 +5,11 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
+import {
+  DATABASE_KEYS,
+  ERROR_MESSAGES,
+  MIN_AGE_ERRORS,
+} from "../../config/index.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -79,6 +83,19 @@ export default {
             .setDescription("Channel for boost thank you messages")
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("min-age")
+        .setDescription("Set minimum account age (days) to join")
+        .addIntegerOption((option) =>
+          option
+            .setName("days")
+            .setDescription("Minimum age in days (1-365, 0 to disable)")
+            .setMinValue(0)
+            .setMaxValue(365)
+            .setRequired(false),
         ),
     ),
 
@@ -179,6 +196,43 @@ export default {
         },
       });
       await interaction.reply(`Boost thank you channel set to ${channel.name}`);
+      return;
+    }
+
+    if (subcommand === "min-age") {
+      const days = interaction.options.getInteger("days");
+      const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) || {};
+      const settings = allSettings[interaction.guildId] || {};
+
+      if (days === null || days === undefined) {
+        const currentAge = settings.minAge;
+        if (currentAge) {
+          await interaction.reply(
+            `Current minimum account age: ${currentAge} days`,
+          );
+        } else {
+          await interaction.reply(MIN_AGE_ERRORS.NO_MIN_AGE_SET);
+        }
+        return;
+      }
+
+      if (days === 0) {
+        delete settings.minAge;
+        await setItem(DATABASE_KEYS.SETTINGS, {
+          ...allSettings,
+          [interaction.guildId]: settings,
+        });
+        await interaction.reply(MIN_AGE_ERRORS.MIN_AGE_REMOVED);
+        return;
+      }
+
+      await setItem(DATABASE_KEYS.SETTINGS, {
+        ...allSettings,
+        [interaction.guildId]: { ...settings, minAge: days },
+      });
+      await interaction.reply(
+        MIN_AGE_ERRORS.MIN_AGE_SET.replace("{minAge}", days),
+      );
       return;
     }
   },

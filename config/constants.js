@@ -54,6 +54,16 @@ export const DATABASE_KEYS = {
   TICKET_CATEGORY: "ticketCategory",
   AFK: "afk",
   HONEYPOT_CHANNEL: "honeypotChannel",
+  MIN_AGE: "minAge",
 };
 
 export const LINKY_ID = "1469170337810743478";
+
+export const MIN_AGE_ERRORS = {
+  ACCOUNT_TOO_NEW:
+    "Your Discord account is too new. You must wait until your account is at least {minAge} days old before joining this server.",
+  NO_MIN_AGE_SET: "No minimum account age is currently set for this server.",
+  MIN_AGE_SET: "Minimum account age set to {minAge} days.",
+  MIN_AGE_REMOVED: "Minimum account age has been removed.",
+  INVALID_MIN_AGE: "Please provide a valid minimum age in days (1-365).",
+};
