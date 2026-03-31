@@ -16,20 +16,7 @@
 
 ## 4. Quick Wins (High Impact, Low Effort)
 
-2. **Batch DB writes** in `setItem`:
-
-```js
-// Use transaction instead of individual inserts
-await client.execute("BEGIN TRANSACTION");
-try {
-  for (const item of value) { ... }
-  await client.execute("COMMIT");
-} catch {
-  await client.execute("ROLLBACK");
-}
-```
-
-3. **Lazy load config values** - Don't read on every import
+1. **Lazy load config values** - Don't read on every import
 
 ## 5. Suggested File Structure
 
