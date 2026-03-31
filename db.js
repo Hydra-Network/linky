@@ -150,20 +150,24 @@ export const setItem = async (key, value) => {
 
   await client.execute(`DELETE FROM ${cfg.table}`);
 
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      await client.execute({
+  const tx = client.transaction("write");
+  try {
+    if (Array.isArray(value)) {
+      const stmts = value.map((item) => ({
         sql: `INSERT INTO ${cfg.table} (${cfg.keyCol}, ${cfg.valCol}) VALUES (?, ?)`,
         args: [item.id || item.url, JSON.stringify(item)],
-      });
-    }
-  } else if (typeof value === "object" && value !== null) {
-    for (const [k, v] of Object.entries(value)) {
-      await client.execute({
+      }));
+      await tx.batch(stmts);
+    } else if (typeof value === "object" && value !== null) {
+      const stmts = Object.entries(value).map(([k, v]) => ({
         sql: `INSERT OR REPLACE INTO ${cfg.table} (${cfg.keyCol}, ${cfg.valCol}) VALUES (?, ?)`,
         args: [k, JSON.stringify(v)],
-      });
+      }));
+      await tx.batch(stmts);
     }
+    await tx.commit();
+  } finally {
+    tx.close();
   }
 };
 

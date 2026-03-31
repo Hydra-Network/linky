@@ -11,7 +11,6 @@
 
 | Priority     | Issue                                    | Location                       | Solution                                                                              |
 | ------------ | ---------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| **High**     | N+1 DB writes                            | `db.js:138-143`                | Use batch inserts with transactions                                                   |
 | **High**     | Duplicate getItem calls                  | `commands/links/check.js:69`   | Cache result, reuse                                                                   |
 | **Medium**   | Sticky message DB write on every message | `events/sticky.js:48`          | Write to cache, flush periodically or on shutdown                                     |
 
