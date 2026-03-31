@@ -1,8 +1,9 @@
 import { Events } from "discord.js";
+import NodeCache from "node-cache";
 import { DATABASE_KEYS } from "../config/index.js";
 
 const processingSticky = new Set();
-let stickyCache = {};
+const stickyCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 export default {
   name: Events.MessageCreate,
@@ -13,12 +14,20 @@ export default {
     const logger = container.get("logger");
     const { getItem, setItem } = container.get("db");
 
-    if (Object.keys(stickyCache).length === 0) {
-      stickyCache = (await getItem(DATABASE_KEYS.STICKY)) || {};
+    if (
+      stickyCache.getStats().hits === 0 &&
+      stickyCache.getStats().keys === 0
+    ) {
+      const dbData = await getItem(DATABASE_KEYS.STICKY);
+      if (dbData) {
+        for (const [key, value] of Object.entries(dbData)) {
+          stickyCache.set(key, value);
+        }
+      }
     }
 
     // Sticky Messages
-    const sticky = stickyCache[message.channelId];
+    const sticky = stickyCache.get(message.channelId);
     if (sticky) {
       if (processingSticky.has(message.channelId)) return;
       processingSticky.add(message.channelId);
@@ -40,12 +49,16 @@ export default {
 
         const newStickyMessage = await message.channel.send(sticky.content);
 
-        stickyCache[message.channelId] = {
+        stickyCache.set(message.channelId, {
           ...sticky,
           lastMessageId: newStickyMessage.id,
-        };
+        });
 
-        setItem(DATABASE_KEYS.STICKY, stickyCache).catch((err) =>
+        const allStickies = stickyCache.keys().reduce((acc, key) => {
+          acc[key] = stickyCache.get(key);
+          return acc;
+        }, {});
+        setItem(DATABASE_KEYS.STICKY, allStickies).catch((err) =>
           logger.error({ err }, "DB Write Error"),
         );
       } catch (error) {

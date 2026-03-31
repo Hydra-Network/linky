@@ -11,17 +11,11 @@
 
 | Priority     | Issue                                    | Location                       | Solution                                                                              |
 | ------------ | ---------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| **Critical** | No caching for frequently read data      | `events/sticky.js, events/automod.js, events/links.js` | Implement in-memory cache (e.g., node-cache) for sticky, automod words, link channels |
 | **High**     | N+1 DB writes                            | `db.js:138-143`                | Use batch inserts with transactions                                                   |
 | **High**     | Duplicate getItem calls                  | `commands/links/check.js:69`   | Cache result, reuse                                                                   |
 | **Medium**   | Sticky message DB write on every message | `events/sticky.js:48`          | Write to cache, flush periodically or on shutdown                                     |
 
 ## 4. Quick Wins (High Impact, Low Effort)
-
-1. **Add caching layer** - 5-minute TTL cache for:
-   - `DATABASE_KEYS.STICKY`
-   - `DATABASE_KEYS.AUTOMOD_WORDS`
-   - `DATABASE_KEYS.LINK_CHANNELS`
 
 2. **Batch DB writes** in `setItem`:
 

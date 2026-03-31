@@ -1,7 +1,9 @@
 import { Events, MessageFlags } from "discord.js";
+import NodeCache from "node-cache";
 import { DATABASE_KEYS } from "../config/index.js";
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
+const linkChannelCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 export default {
   name: Events.MessageCreate,
@@ -14,9 +16,12 @@ export default {
 
     const messageContent = message.content.toLowerCase();
 
-    // Link Channels
-    const linkChannelIds =
-      (await getItem(DATABASE_KEYS.LINK_CHANNELS))?.[message.guildId] || [];
+    let linkChannelIds = linkChannelCache.get(message.guildId);
+    if (linkChannelIds === undefined) {
+      const dbData = await getItem(DATABASE_KEYS.LINK_CHANNELS);
+      linkChannelIds = dbData?.[message.guildId] || [];
+      linkChannelCache.set(message.guildId, linkChannelIds);
+    }
     if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
       return;
 
