@@ -4,6 +4,8 @@ import { DATABASE_KEYS } from "../config/index.js";
 
 const processingSticky = new Set();
 const stickyCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
+const debounceTimers = new Map();
+const DEBOUNCE_MS = 10000;
 
 export default {
   name: Events.MessageCreate,
@@ -54,12 +56,25 @@ export default {
           lastMessageId: newStickyMessage.id,
         });
 
-        const allStickies = stickyCache.keys().reduce((acc, key) => {
-          acc[key] = stickyCache.get(key);
-          return acc;
-        }, {});
-        setItem(DATABASE_KEYS.STICKY, allStickies).catch((err) =>
-          logger.error({ err }, "DB Write Error"),
+        if (debounceTimers.has(message.channelId)) {
+          clearTimeout(debounceTimers.get(message.channelId));
+        }
+
+        debounceTimers.set(
+          message.channelId,
+          setTimeout(async () => {
+            try {
+              const allStickies = stickyCache.keys().reduce((acc, key) => {
+                acc[key] = stickyCache.get(key);
+                return acc;
+              }, {});
+              await setItem(DATABASE_KEYS.STICKY, allStickies);
+            } catch (err) {
+              logger.error({ err }, "Sticky DB Write Error");
+            } finally {
+              debounceTimers.delete(message.channelId);
+            }
+          }, DEBOUNCE_MS),
         );
       } catch (error) {
         logger.error(

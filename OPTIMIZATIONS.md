@@ -7,17 +7,12 @@
 | **Medium** | No TypeScript               | Migrate to TypeScript for type safety                        |
 
 
-## 2. Performance Optimizations
 
-| Priority     | Issue                                    | Location                       | Solution                                                                              |
-| ------------ | ---------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| **Medium**   | Sticky message DB write on every message | `events/sticky.js:48`          | Write to cache, flush periodically or on shutdown                                     |
-
-## 4. Quick Wins (High Impact, Low Effort)
+## 3. Quick Wins (High Impact, Low Effort)
 
 1. **Lazy load config values** - Don't read on every import
 
-## 5. Suggested File Structure
+## 4. Suggested File Structure
 
 ```
 src/
