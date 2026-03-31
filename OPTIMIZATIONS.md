@@ -15,25 +15,6 @@
 | **High**     | N+1 DB writes                            | `db.js:138-143`                | Use batch inserts with transactions                                                   |
 | **High**     | Duplicate getItem calls                  | `commands/links/check.js:69`   | Cache result, reuse                                                                   |
 | **Medium**   | Sticky message DB write on every message | `events/sticky.js:48`          | Write to cache, flush periodically or on shutdown                                     |
-| **Low**      | No DB indexes                            | `db.js`                        | Add indexes on frequently queried columns (guild_id, channel_id, site)                |
-
-## 3. Database Optimizations
-
-```js
-// Add to db.js init():
-await client.execute(
-  `CREATE INDEX IF NOT EXISTS idx_links_site ON links(site)`,
-);
-await client.execute(
-  `CREATE INDEX IF NOT EXISTS idx_links_timestamp ON links(timestamp)`,
-);
-await client.execute(
-  `CREATE INDEX IF NOT EXISTS idx_sticky_channel ON sticky(key)`,
-);
-await client.execute(
-  `CREATE INDEX IF NOT EXISTS idx_automod_guild ON automod_words(guild_id)`,
-);
-```
 
 ## 4. Quick Wins (High Impact, Low Effort)
 
