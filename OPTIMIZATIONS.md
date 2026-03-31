@@ -11,7 +11,6 @@
 
 | Priority     | Issue                                    | Location                       | Solution                                                                              |
 | ------------ | ---------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| **High**     | Duplicate getItem calls                  | `commands/links/check.js:69`   | Cache result, reuse                                                                   |
 | **Medium**   | Sticky message DB write on every message | `events/sticky.js:48`          | Write to cache, flush periodically or on shutdown                                     |
 
 ## 4. Quick Wins (High Impact, Low Effort)

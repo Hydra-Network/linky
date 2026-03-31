@@ -4,12 +4,15 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
+import NodeCache from "node-cache";
 import { DATABASE_KEYS } from "../../config/index.js";
 import {
   checkWithDetails,
   getBlockerName,
   NORMAL_BLOCKERS,
 } from "../../utils/checker.js";
+
+const checkCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 const CHOICES = [
   { name: "All", value: "normal" },
@@ -50,14 +53,19 @@ export default {
 
     await interaction.deferReply();
 
-    let results;
-    try {
-      results = await checkWithDetails(url, blockers.toLowerCase().trim());
-    } catch (err) {
-      return interaction.editReply({
-        content: `Error: ${err.message}`,
-        flags: MessageFlags.Ephemeral,
-      });
+    const cacheKey = `${url}:${blockers.toLowerCase().trim()}`;
+    let results = checkCache.get(cacheKey);
+
+    if (!results) {
+      try {
+        results = await checkWithDetails(url, blockers.toLowerCase().trim());
+        checkCache.set(cacheKey, results);
+      } catch (err) {
+        return interaction.editReply({
+          content: `Error: ${err.message}`,
+          flags: MessageFlags.Ephemeral,
+        });
+      }
     }
     if (!results.length)
       return interaction.editReply({
