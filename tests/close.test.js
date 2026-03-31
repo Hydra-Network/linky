@@ -9,9 +9,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-vi.mock("../config/index.js", () => ({
+vi.mock("@/config/index.js", () => ({
   CHANNEL_PATTERNS: { TICKET: "ticket-" },
   ERROR_MESSAGES: {
     TICKET_ONLY_IN_CHANNEL:
@@ -20,7 +20,7 @@ vi.mock("../config/index.js", () => ({
   },
 }));
 
-import closeCommand from "../commands/tickets/close.js";
+import closeCommand from "@/commands/tickets/close.js";
 
 describe("close command", () => {
   beforeEach(() => {

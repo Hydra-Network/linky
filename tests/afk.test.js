@@ -33,17 +33,17 @@ vi.mock("discord.js", () => {
   };
 });
 
-vi.mock("../db.js", () => ({
+vi.mock("@/db.js", () => ({
   getItem: vi.fn().mockResolvedValue({}),
   setItem: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("../config/index.js", () => ({
+vi.mock("@/config/index.js", () => ({
   DATABASE_KEYS: { AFK: "afk" },
 }));
 
-import afkCommand from "../commands/utilities/afk.js";
-import { getItem, setItem } from "../db.js";
+import afkCommand from "@/commands/utilities/afk.js";
+import { getItem, setItem } from "@/db.js";
 
 const mockContainer = {
   get: vi.fn((key) => {

@@ -9,7 +9,7 @@ import {
   DATABASE_KEYS,
   ERROR_MESSAGES,
   MIN_AGE_ERRORS,
-} from "../../config/index.js";
+} from "@/config/index.js";
 
 export default {
   data: new SlashCommandBuilder()

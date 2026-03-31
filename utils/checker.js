@@ -1,4 +1,4 @@
-import { ROLES } from "../config/roles.js";
+import { ROLES } from "@/config/roles.js";
 
 const NORMAL_BLOCKER_NAMES = {
   blocksi: "Blocksi",

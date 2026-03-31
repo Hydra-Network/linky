@@ -6,7 +6,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { DATABASE_KEYS, ERROR_MESSAGES } from "../../config/index.js";
+import { DATABASE_KEYS, ERROR_MESSAGES } from "@/config/index.js";
 
 export default {
   data: new SlashCommandBuilder()

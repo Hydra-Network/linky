@@ -5,12 +5,12 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import NodeCache from "node-cache";
-import { DATABASE_KEYS } from "../../config/index.js";
+import { DATABASE_KEYS } from "@/config/index.js";
 import {
   checkWithDetails,
   getBlockerName,
   NORMAL_BLOCKERS,
-} from "../../utils/checker.js";
+} from "@/utils/checker.js";
 
 const checkCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 

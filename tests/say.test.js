@@ -37,9 +37,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import sayCommand from "../commands/utilities/say.js";
+import sayCommand from "@/commands/utilities/say.js";
 
 describe("say command", () => {
   beforeEach(() => {

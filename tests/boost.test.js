@@ -7,7 +7,7 @@ const mockChannel = {
   send: mockSend,
 };
 
-vi.mock("../db.js", () => {
+vi.mock("@/db.js", () => {
   return {
     __esModule: true,
     getItem: (...args) => mockGetItem(...args),
@@ -21,7 +21,7 @@ const mockContainer = {
   }),
 };
 
-import boostEvent from "../events/boost.js";
+import boostEvent from "@/events/boost.js";
 
 describe("boost event", () => {
   beforeEach(() => {

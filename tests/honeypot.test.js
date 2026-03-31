@@ -1,18 +1,18 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-vi.mock("../db.js", () => ({
+vi.mock("@/db.js", () => ({
   getItem: vi.fn(),
   setItem: vi.fn(),
 }));
 
-vi.mock("../utils/logger.js", () => ({
+vi.mock("@/utils/logger.js", () => ({
   default: {
     error: vi.fn(),
     info: vi.fn(),
   },
 }));
 
-const { getItem } = await import("../db.js");
+const { getItem } = await import("@/db.js");
 
 const mockContainer = {
   get: vi.fn((key) => {
@@ -21,7 +21,7 @@ const mockContainer = {
   }),
 };
 
-import messageCreate from "../events/honeypot.js";
+import messageCreate from "@/events/honeypot.js";
 
 describe("honeypot", () => {
   let mockMessage;

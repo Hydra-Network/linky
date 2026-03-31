@@ -3,12 +3,12 @@ import {
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
-import { DATABASE_KEYS } from "../../config/index.js";
+import { DATABASE_KEYS } from "@/config/index.js";
 import {
   checkWithDetails,
   DNS_BLOCKERS,
   getBlockerName,
-} from "../../utils/checker.js";
+} from "@/utils/checker.js";
 
 const CHOICES = [
   { name: "All", value: "normal" },

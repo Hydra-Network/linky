@@ -1,6 +1,6 @@
 import { Events } from "discord.js";
 import NodeCache from "node-cache";
-import { DATABASE_KEYS } from "../config/index.js";
+import { DATABASE_KEYS } from "@/config/index.js";
 
 const processingSticky = new Set();
 const stickyCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });

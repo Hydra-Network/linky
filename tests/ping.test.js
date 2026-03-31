@@ -9,9 +9,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import pingCommand from "../commands/utilities/ping.js";
+import pingCommand from "@/commands/utilities/ping.js";
 
 describe("ping command", () => {
   beforeEach(() => {

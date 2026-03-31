@@ -3,14 +3,14 @@ import {
   getBlockerEmoji,
   getBlockerName,
   getBlockerRole,
-} from "../utils/checker.js";
-import { filterURL } from "../utils/urlfilter.js";
+} from "@/utils/checker.js";
+import { filterURL } from "@/utils/urlfilter.js";
 import {
   LinkInputSchema,
   LinkSchema,
   SiteSchema,
   validateWithSchema,
-} from "../utils/validation.js";
+} from "@/utils/validation.js";
 
 describe("validation benchmarks", () => {
   const validLinkData = {

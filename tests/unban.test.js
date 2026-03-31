@@ -9,9 +9,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import unbanCommand from "../commands/moderation/unban.js";
+import unbanCommand from "@/commands/moderation/unban.js";
 
 describe("unban command", () => {
   beforeEach(() => {

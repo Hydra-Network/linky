@@ -71,9 +71,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import showCommand from "../commands/emojis/show.js";
+import showCommand from "@/commands/emojis/show.js";
 
 describe("show command", () => {
   beforeEach(() => {

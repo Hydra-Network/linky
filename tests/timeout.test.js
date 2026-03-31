@@ -9,9 +9,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import timeoutCommand from "../commands/moderation/timeout.js";
+import timeoutCommand from "@/commands/moderation/timeout.js";
 
 describe("timeout command", () => {
   beforeEach(() => {

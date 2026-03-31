@@ -3,7 +3,7 @@ import {
   CHANNEL_PATTERNS,
   DATABASE_KEYS,
   ERROR_MESSAGES,
-} from "../../config/index.js";
+} from "@/config/index.js";
 
 export default {
   data: new SlashCommandBuilder()

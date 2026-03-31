@@ -44,9 +44,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import copyCommand from "../commands/emojis/copy.js";
+import copyCommand from "@/commands/emojis/copy.js";
 
 describe("copy command", () => {
   beforeEach(() => {

@@ -5,11 +5,11 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { ERROR_MESSAGES } from "../../config/index.js";
+import { ERROR_MESSAGES } from "@/config/index.js";
 import {
   TimeoutDurationSchema,
   validateWithSchema,
-} from "../../utils/validation.js";
+} from "@/utils/validation.js";
 
 export default {
   data: new SlashCommandBuilder()

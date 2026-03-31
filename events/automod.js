@@ -1,6 +1,6 @@
 import { Events, MessageFlags } from "discord.js";
 import NodeCache from "node-cache";
-import { DATABASE_KEYS } from "../config/index.js";
+import { DATABASE_KEYS } from "@/config/index.js";
 
 const automodCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 

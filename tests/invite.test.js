@@ -3,11 +3,11 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 const mockReply = vi.fn();
 const mockGetLinks = vi.fn();
 
-vi.mock("../db.js", () => ({
+vi.mock("@/db.js", () => ({
   getLinks: mockGetLinks,
 }));
 
-import inviteCommand from "../commands/utilities/invite.js";
+import inviteCommand from "@/commands/utilities/invite.js";
 
 describe("invite command", () => {
   beforeEach(() => {

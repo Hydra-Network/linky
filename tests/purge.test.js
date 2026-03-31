@@ -9,9 +9,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import purgeCommand from "../commands/moderation/purge.js";
+import purgeCommand from "@/commands/moderation/purge.js";
 
 describe("purge command", () => {
   beforeEach(() => {

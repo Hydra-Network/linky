@@ -1,5 +1,5 @@
 import { Events, PermissionFlagsBits } from "discord.js";
-import { DATABASE_KEYS } from "../config/index.js";
+import { DATABASE_KEYS } from "@/config/index.js";
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 

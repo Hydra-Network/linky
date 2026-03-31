@@ -1,5 +1,5 @@
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
-import { CHANNEL_PATTERNS, ERROR_MESSAGES } from "../../config/index.js";
+import { CHANNEL_PATTERNS, ERROR_MESSAGES } from "@/config/index.js";
 
 export default {
   data: new SlashCommandBuilder()

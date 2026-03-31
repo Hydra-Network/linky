@@ -9,9 +9,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import kickCommand from "../commands/moderation/kick.js";
+import kickCommand from "@/commands/moderation/kick.js";
 
 describe("kick command", () => {
   beforeEach(() => {

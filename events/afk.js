@@ -1,5 +1,5 @@
 import { Events, MessageFlags } from "discord.js";
-import { DATABASE_KEYS } from "../config/index.js";
+import { DATABASE_KEYS } from "@/config/index.js";
 
 export default {
   name: Events.MessageCreate,

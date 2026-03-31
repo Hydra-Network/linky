@@ -9,9 +9,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import lockCommand from "../commands/moderation/lock.js";
+import lockCommand from "@/commands/moderation/lock.js";
 
 describe("lock command", () => {
   beforeEach(() => {

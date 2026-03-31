@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockReply = vi.fn();
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import ticketpanelCommand from "../commands/tickets/ticketpanel.js";
+import ticketpanelCommand from "@/commands/tickets/ticketpanel.js";
 
 describe("ticketpanel command", () => {
   beforeEach(() => {

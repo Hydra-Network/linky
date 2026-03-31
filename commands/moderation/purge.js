@@ -6,8 +6,8 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { z } from "zod";
-import { ERROR_MESSAGES } from "../../config/index.js";
-import { validateWithSchema } from "../../utils/validation.js";
+import { ERROR_MESSAGES } from "@/config/index.js";
+import { validateWithSchema } from "@/utils/validation.js";
 
 const PurgeAmountSchema = z.number().int().min(1).max(100);
 

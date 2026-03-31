@@ -41,9 +41,9 @@ const mockContainer = {
   }),
 };
 
-vi.mock("../db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
 
-import uploadCommand from "../commands/emojis/upload.js";
+import uploadCommand from "@/commands/emojis/upload.js";
 
 describe("upload command", () => {
   beforeEach(() => {
