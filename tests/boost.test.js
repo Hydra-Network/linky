@@ -7,7 +7,7 @@ const mockChannel = {
   send: mockSend,
 };
 
-vi.mock("@/db.js", () => {
+vi.mock("@/db/index.js", () => {
   return {
     __esModule: true,
     getItem: (...args) => mockGetItem(...args),

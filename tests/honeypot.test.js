@@ -1,18 +1,18 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-vi.mock("@/db.js", () => ({
+vi.mock("@/db/index.js", () => ({
   getItem: vi.fn(),
   setItem: vi.fn(),
 }));
 
-vi.mock("@/utils/logger.js", () => ({
+vi.mock("@/services/logger.js", () => ({
   default: {
     error: vi.fn(),
     info: vi.fn(),
   },
 }));
 
-const { getItem } = await import("@/db.js");
+const { getItem } = await import("@/db/index.js");
 
 const mockContainer = {
   get: vi.fn((key) => {

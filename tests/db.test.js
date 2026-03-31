@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { DATABASE_KEYS } from "@/config/constants.js";
-import { clear, getItem, init, setItem } from "@/db.js";
+import { clear, getItem, init, setItem } from "@/db/index.js";
 
 describe("database operations", () => {
   let client;

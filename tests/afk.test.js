@@ -33,7 +33,7 @@ vi.mock("discord.js", () => {
   };
 });
 
-vi.mock("@/db.js", () => ({
+vi.mock("@/db/index.js", () => ({
   getItem: vi.fn().mockResolvedValue({}),
   setItem: vi.fn().mockResolvedValue(undefined),
 }));
@@ -43,7 +43,7 @@ vi.mock("@/config/index.js", () => ({
 }));
 
 import afkCommand from "@/commands/utilities/afk.js";
-import { getItem, setItem } from "@/db.js";
+import { getItem, setItem } from "@/db/index.js";
 
 const mockContainer = {
   get: vi.fn((key) => {

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-vi.mock("@/db.js", () => ({ getItem: vi.fn() }));
+vi.mock("@/db/index.js", () => ({ getItem: vi.fn() }));
 
 import helpCommand from "@/commands/utilities/help.js";
 
