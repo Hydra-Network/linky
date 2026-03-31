@@ -62,12 +62,12 @@ container.register("client", client);
 container.register("db", { getItem, setItem });
 
 const foldersPath = path.join(__dirname, "commands");
-const commandFolders = fs.readdirSync(foldersPath);
+const commandFolders = await fs.promises.readdir(foldersPath);
 for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
-  const commandFiles = fs
-    .readdirSync(commandsPath)
-    .filter((file) => file.endsWith(".js"));
+  const commandFiles = (await fs.promises.readdir(commandsPath)).filter(
+    (file) => file.endsWith(".js"),
+  );
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
     const commandModule = await import(pathToFileURL(filePath).href);
@@ -88,9 +88,9 @@ for (const folder of commandFolders) {
 }
 
 const eventsPath = path.join(__dirname, "events");
-const eventFiles = fs
-  .readdirSync(eventsPath)
-  .filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
+const eventFiles = (await fs.promises.readdir(eventsPath)).filter(
+  (file) => file.endsWith(".js") || file.endsWith(".ts"),
+);
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
   const eventModule = await import(pathToFileURL(filePath).href);

@@ -11,11 +11,10 @@
 
 | Priority     | Issue                                    | Location                       | Solution                                                                              |
 | ------------ | ---------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
-| **Critical** | Blocking file reads                      | `index.js:119-124`             | Use `fs.readdir` with promises                                                        |
-| **Critical** | No caching for frequently read data      | `messageCreate.js`             | Implement in-memory cache (e.g., node-cache) for sticky, automod words, link channels |
-| **High**     | N+1 DB writes                            | `db.js:126-131`                | Use batch inserts with transactions                                                   |
-| **High**     | Duplicate getItem calls                  | `commands/links/add.js:73,136` | Cache result, reuse                                                                   |
-| **Medium**   | Sticky message DB write on every message | `messageCreate.js:41`          | Write to cache, flush periodically or on shutdown                                     |
+| **Critical** | No caching for frequently read data      | `events/sticky.js, events/automod.js, events/links.js` | Implement in-memory cache (e.g., node-cache) for sticky, automod words, link channels |
+| **High**     | N+1 DB writes                            | `db.js:138-143`                | Use batch inserts with transactions                                                   |
+| **High**     | Duplicate getItem calls                  | `commands/links/check.js:69`   | Cache result, reuse                                                                   |
+| **Medium**   | Sticky message DB write on every message | `events/sticky.js:48`          | Write to cache, flush periodically or on shutdown                                     |
 | **Low**      | No DB indexes                            | `db.js`                        | Add indexes on frequently queried columns (guild_id, channel_id, site)                |
 
 ## 3. Database Optimizations
@@ -64,7 +63,6 @@ try {
 src/
 ├── commands/
 │   └── links/
-│       ├── add.js
 │       ├── check.js
 │       └── index.js (subcommand group)
 ├── events/
