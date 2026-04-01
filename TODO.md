@@ -49,12 +49,12 @@
   - Replace `resolveConfig` dual-lookup (key + table name) with single key-based lookup
   - Remove the special-case `TICKET_CATEGORY` branch; normalize its schema
 
-- [ ] **Implement shared caching service**
+- [x] **Implement shared caching service**
   - Add cache layer for frequently-read keys (settings, automod words, honeypot channel)
   - Invalidate cache on `setItem` calls
   - Replace ad-hoc `NodeCache` in `automod.ts` with shared cache service
 
-- [ ] **Optimize transaction patterns**
+- [x] **Optimize transaction patterns**
   - Replace `DELETE FROM table` + re-insert with `INSERT OR REPLACE` upserts where possible
   - Batch index creation into a single migration step
 

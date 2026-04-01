@@ -91,22 +91,6 @@ export const init = async () => {
     ),
   );
 
-  await Promise.all([
-    client!.execute("CREATE INDEX IF NOT EXISTS idx_links_url ON links(url)"),
-    client!.execute(
-      "CREATE INDEX IF NOT EXISTS idx_link_channels_channel_id ON link_channels(channel_id)",
-    ),
-    client!.execute(
-      "CREATE INDEX IF NOT EXISTS idx_automod_words_guild_id ON automod_words(guild_id)",
-    ),
-    client!.execute(
-      "CREATE INDEX IF NOT EXISTS idx_afk_user_id ON afk(user_id)",
-    ),
-    client!.execute(
-      "CREATE INDEX IF NOT EXISTS idx_honeypot_channel_id ON honeypot(channel_id)",
-    ),
-  ]);
-
   await runMigrations(client);
 
   return client;
@@ -185,13 +169,11 @@ export const setItem = async (
     return;
   }
 
-  await client.execute(`DELETE FROM ${cfg.table}`);
-
   const tx = await client.transaction();
   try {
     if (Array.isArray(value)) {
       const stmts = value.map((item) => ({
-        sql: `INSERT INTO ${cfg.table} (${cfg.keyCol}, ${cfg.valCol}) VALUES (?, ?)`,
+        sql: `INSERT OR REPLACE INTO ${cfg.table} (${cfg.keyCol}, ${cfg.valCol}) VALUES (?, ?)`,
         args: [item.id || item.url, JSON.stringify(item)],
       }));
       await tx.batch(stmts);
