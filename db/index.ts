@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@libsql/client";
 import { DATABASE_KEYS } from "../config/constants.js";
+import { runMigrations } from "./migrations/runner.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +22,7 @@ interface SchemaConfig {
   keyCol: string;
   valCol: string;
   parse: (val: string) => unknown;
+  singleValue?: boolean;
 }
 
 const SCHEMA: Record<string, SchemaConfig> = {
@@ -43,10 +45,11 @@ const SCHEMA: Record<string, SchemaConfig> = {
     parse: JSON.parse,
   },
   [DATABASE_KEYS.TICKET_CATEGORY]: {
-    table: "config",
+    table: "ticket_category",
     keyCol: "key",
     valCol: "value",
     parse: (v) => v,
+    singleValue: true,
   },
   [DATABASE_KEYS.LINK_CHANNELS]: {
     table: "link_channels",
@@ -103,6 +106,8 @@ export const init = async () => {
     ),
   ]);
 
+  await runMigrations(client);
+
   return client;
 };
 
@@ -111,11 +116,8 @@ interface ResolvedConfig extends SchemaConfig {
 }
 
 const resolveConfig = (key: string): ResolvedConfig | null => {
-  if (SCHEMA[key]) return { key, ...SCHEMA[key] };
-  for (const [k, cfg] of Object.entries(SCHEMA)) {
-    if (cfg.table === key) return { key: k, ...cfg };
-  }
-  return null;
+  const cfg = SCHEMA[key];
+  return cfg ? { key, ...cfg } : null;
 };
 
 export const getItem = (key: string) => {
@@ -124,9 +126,12 @@ export const getItem = (key: string) => {
   const cfg = resolveConfig(key);
   if (!cfg) return undefined;
 
-  if (cfg.key === DATABASE_KEYS.TICKET_CATEGORY) {
+  if (cfg.singleValue) {
     return client
-      .execute({ sql: "SELECT value FROM config WHERE key = ?", args: [key] })
+      .execute({
+        sql: `SELECT value FROM ${cfg.table} WHERE key = ?`,
+        args: [cfg.key],
+      })
       .then((r) => r.rows[0]?.value ?? null);
   }
 
@@ -151,10 +156,10 @@ export const setItem = async (key: string, value: unknown) => {
   const cfg = resolveConfig(key);
   if (!cfg) return;
 
-  if (cfg.key === DATABASE_KEYS.TICKET_CATEGORY) {
+  if (cfg.singleValue) {
     await client.execute({
-      sql: "INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)",
-      args: [key, value as string],
+      sql: `INSERT OR REPLACE INTO ${cfg.table} (key, value) VALUES (?, ?)`,
+      args: [cfg.key, value as string],
     });
     return;
   }

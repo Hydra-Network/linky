@@ -45,7 +45,7 @@
 
 ### Phase 2: Database Layer Optimization
 
-- [ ] **Simplify `db/index.ts` schema resolution**
+- [x] **Simplify `db/index.ts` schema resolution**
   - Replace `resolveConfig` dual-lookup (key + table name) with single key-based lookup
   - Remove the special-case `TICKET_CATEGORY` branch; normalize its schema
 
