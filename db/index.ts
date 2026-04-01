@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@libsql/client";
 import { DATABASE_KEYS } from "../config/constants.js";
+import type { CacheService } from "../services/cache.js";
 import { runMigrations } from "./migrations/runner.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -120,11 +121,16 @@ const resolveConfig = (key: string): ResolvedConfig | null => {
   return cfg ? { key, ...cfg } : null;
 };
 
-export const getItem = (key: string) => {
+export const getItem = (key: string, cache?: CacheService) => {
   if (!client) throw new Error("Database not initialized.");
 
   const cfg = resolveConfig(key);
   if (!cfg) return undefined;
+
+  if (cache) {
+    const cached = cache.get(key);
+    if (cached !== undefined) return cached;
+  }
 
   if (cfg.singleValue) {
     return client
@@ -132,7 +138,11 @@ export const getItem = (key: string) => {
         sql: `SELECT value FROM ${cfg.table} WHERE key = ?`,
         args: [cfg.key],
       })
-      .then((r) => r.rows[0]?.value ?? null);
+      .then((r) => {
+        const result = r.rows[0]?.value ?? null;
+        cache?.set(key, result);
+        return result;
+      });
   }
 
   const query =
@@ -141,16 +151,26 @@ export const getItem = (key: string) => {
       : `SELECT ${cfg.keyCol}, ${cfg.valCol} FROM ${cfg.table}`;
 
   return client.execute(query).then((r) => {
-    if (cfg.key === DATABASE_KEYS.LINKS) return r.rows;
-    const obj: Record<string, unknown> = {};
-    for (const row of r.rows) {
-      obj[row[cfg.keyCol] as string] = cfg.parse(row[cfg.valCol] as string);
+    let result: unknown;
+    if (cfg.key === DATABASE_KEYS.LINKS) {
+      result = r.rows;
+    } else {
+      const obj: Record<string, unknown> = {};
+      for (const row of r.rows) {
+        obj[row[cfg.keyCol] as string] = cfg.parse(row[cfg.valCol] as string);
+      }
+      result = obj;
     }
-    return obj;
+    cache?.set(key, result);
+    return result;
   });
 };
 
-export const setItem = async (key: string, value: unknown) => {
+export const setItem = async (
+  key: string,
+  value: unknown,
+  cache?: CacheService,
+) => {
   if (!client) throw new Error("Database not initialized.");
 
   const cfg = resolveConfig(key);
@@ -161,6 +181,7 @@ export const setItem = async (key: string, value: unknown) => {
       sql: `INSERT OR REPLACE INTO ${cfg.table} (key, value) VALUES (?, ?)`,
       args: [cfg.key, value as string],
     });
+    cache?.set(key, value);
     return;
   }
 
@@ -184,6 +205,7 @@ export const setItem = async (key: string, value: unknown) => {
       await tx.batch(stmts);
     }
     await tx.commit();
+    cache?.set(key, value);
   } finally {
     tx.close();
   }

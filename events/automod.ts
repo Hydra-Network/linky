@@ -1,10 +1,7 @@
 import type { Client, Message } from "discord.js";
 import { Events } from "discord.js";
-import NodeCache from "node-cache";
 import { DATABASE_KEYS } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
-
-const automodCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 export default {
   name: Events.MessageCreate,
@@ -17,17 +14,12 @@ export default {
 
     const messageContent = message.content.toLowerCase();
 
-    let automodWords = automodCache.get(message.guildId!) as
-      | string[]
+    const dbData = (await getItem(DATABASE_KEYS.AUTOMOD_WORDS)) as
+      | Record<string, string[]>
       | undefined;
-    if (automodWords === undefined) {
-      const dbData = (await getItem(DATABASE_KEYS.AUTOMOD_WORDS)) as
-        | Record<string, string[]>
-        | undefined;
-      automodWords = dbData?.[message.guildId!] || [];
-      automodCache.set(message.guildId!, automodWords);
-    }
-    if (automodWords && automodWords.length > 0) {
+    const automodWords = dbData?.[message.guildId!] || [];
+
+    if (automodWords.length > 0) {
       const containsBlockedWord = automodWords.some((word) =>
         messageContent.includes(word.toLowerCase()),
       );

@@ -49,10 +49,6 @@
   - Replace `resolveConfig` dual-lookup (key + table name) with single key-based lookup
   - Remove the special-case `TICKET_CATEGORY` branch; normalize its schema
 
-- [ ] **Add per-key typed get/set methods**
-  - Replace generic `getItem(key)` / `setItem(key, value)` with typed methods like `getAutomodWords(guildId)`, `setAfk(userId, data)`
-  - Enables better caching, type safety, and query optimization
-
 - [ ] **Implement shared caching service**
   - Add cache layer for frequently-read keys (settings, automod words, honeypot channel)
   - Invalidate cache on `setItem` calls

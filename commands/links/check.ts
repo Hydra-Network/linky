@@ -2,19 +2,15 @@ import type { ChatInputCommandInteraction } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
-  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
-import NodeCache from "node-cache";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
 import {
   checkWithDetails,
   getBlockerName,
   NORMAL_BLOCKERS,
 } from "@/utils/checker.js";
-
-const checkCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 const CHOICES = [
   { name: "All", value: "normal" },
@@ -52,21 +48,22 @@ export default {
     container: AppContainer,
   ) {
     const { getItem } = container.get("db");
+    const cache = container.get("cache");
 
     const url = interaction.options.getString("url")!;
     const blockers = interaction.options.getString("blockers")!;
 
     await interaction.deferReply();
 
-    const cacheKey = `${url}:${blockers.toLowerCase().trim()}`;
-    let results = checkCache.get(cacheKey) as
+    const cacheKey = `check:${url}:${blockers.toLowerCase().trim()}`;
+    let results = cache.get(cacheKey) as
       | Awaited<ReturnType<typeof checkWithDetails>>
       | undefined;
 
     if (!results) {
       try {
         results = await checkWithDetails(url, blockers.toLowerCase().trim());
-        checkCache.set(cacheKey, results);
+        cache.set(cacheKey, results);
       } catch (err) {
         return interaction.editReply({
           content: `Error: ${(err as Error).message}`,

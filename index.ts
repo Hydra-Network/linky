@@ -7,6 +7,7 @@ import {
 } from "discord.js";
 import "dotenv/config";
 import { getItem, init, setItem } from "./db/index.js";
+import { cache } from "./services/cache.js";
 import { loadCommands } from "./services/command-loader.js";
 import { container } from "./services/container.js";
 import { loadEvents } from "./services/event-loader.js";
@@ -64,7 +65,11 @@ client.commands = new Collection();
 
 container.register("logger", logger);
 container.register("client", client);
-container.register("db", { getItem, setItem });
+container.register("db", {
+  getItem: (key: string) => getItem(key, cache),
+  setItem: (key: string, value: unknown) => setItem(key, value, cache),
+});
+container.register("cache", cache);
 
 await loadCommands(client, container);
 await loadEvents(client, container);

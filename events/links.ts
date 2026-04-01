@@ -1,11 +1,9 @@
 import type { Client, Message } from "discord.js";
 import { Events } from "discord.js";
-import NodeCache from "node-cache";
 import { DATABASE_KEYS } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
-const linkChannelCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 export default {
   name: Events.MessageCreate,
@@ -15,18 +13,17 @@ export default {
 
     const logger = container.get("logger");
     const { getItem } = container.get("db");
+    const cache = container.get("cache");
 
     const messageContent = message.content.toLowerCase();
 
-    let linkChannelIds = linkChannelCache.get(message.guildId!) as
-      | string[]
-      | undefined;
+    let linkChannelIds = cache.get(message.guildId!) as string[] | undefined;
     if (linkChannelIds === undefined) {
       const dbData = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
         | Record<string, string[]>
         | undefined;
       linkChannelIds = dbData?.[message.guildId!] || [];
-      linkChannelCache.set(message.guildId!, linkChannelIds);
+      cache.set(message.guildId!, linkChannelIds);
     }
     if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
       return;

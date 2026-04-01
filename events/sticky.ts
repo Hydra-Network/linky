@@ -1,6 +1,5 @@
 import type { Client, GuildTextBasedChannel, Message } from "discord.js";
 import { Events } from "discord.js";
-import NodeCache from "node-cache";
 import { DATABASE_KEYS } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 
@@ -11,7 +10,6 @@ interface StickyData {
 }
 
 const processingSticky = new Set<string>();
-const stickyCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 const debounceTimers = new Map<string, NodeJS.Timeout>();
 const DEBOUNCE_MS = 10000;
 
@@ -23,22 +21,20 @@ export default {
 
     const logger = container.get("logger");
     const { getItem, setItem } = container.get("db");
+    const cache = container.get("cache");
 
-    if (
-      stickyCache.getStats().hits === 0 &&
-      stickyCache.getStats().keys === 0
-    ) {
+    if (cache.keys().length === 0) {
       const dbData = (await getItem(DATABASE_KEYS.STICKY)) as
         | Record<string, StickyData>
         | undefined;
       if (dbData) {
         for (const [key, value] of Object.entries(dbData)) {
-          stickyCache.set(key, value);
+          cache.set(key, value);
         }
       }
     }
 
-    const sticky = stickyCache.get(message.channelId) as StickyData | undefined;
+    const sticky = cache.get(message.channelId) as StickyData | undefined;
     if (sticky) {
       if (processingSticky.has(message.channelId)) return;
       processingSticky.add(message.channelId);
@@ -63,7 +59,7 @@ export default {
         const channel = message.channel as GuildTextBasedChannel;
         const newStickyMessage = await channel.send(sticky.content);
 
-        stickyCache.set(message.channelId, {
+        cache.set(message.channelId, {
           ...sticky,
           lastMessageId: newStickyMessage.id,
         });
@@ -76,10 +72,10 @@ export default {
           message.channelId,
           setTimeout(async () => {
             try {
-              const allStickies = stickyCache
+              const allStickies = cache
                 .keys()
                 .reduce<Record<string, StickyData>>((acc, key) => {
-                  acc[key] = stickyCache.get(key) as StickyData;
+                  acc[key] = cache.get(key) as StickyData;
                   return acc;
                 }, {});
               await setItem(DATABASE_KEYS.STICKY, allStickies);

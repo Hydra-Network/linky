@@ -1,6 +1,7 @@
 import type { Client } from "discord.js";
 import type { Logger } from "pino";
 import type { getItem as dbGetItem, setItem as dbSetItem } from "@/db/index.js";
+import type { CacheService } from "./cache.js";
 
 interface DbMethods {
   getItem: typeof dbGetItem;
@@ -11,6 +12,7 @@ export interface AppContainer {
   get(key: "logger"): Logger;
   get(key: "client"): Client<true>;
   get(key: "db"): DbMethods;
+  get(key: "cache"): CacheService;
 }
 
 class Container implements AppContainer {
@@ -24,6 +26,7 @@ class Container implements AppContainer {
   get(key: "logger"): Logger;
   get(key: "client"): Client<true>;
   get(key: "db"): DbMethods;
+  get(key: "cache"): CacheService;
   get(key: string): unknown {
     const service = this.#services.get(key);
     if (!service) {
