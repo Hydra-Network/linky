@@ -26,7 +26,7 @@ process.on("unhandledRejection", (reason) => {
 
 await init();
 
-const token = process.env.token!;
+const token = process.env.token;
 
 const client = new Client({
   intents: [

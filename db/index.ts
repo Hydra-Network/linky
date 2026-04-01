@@ -85,7 +85,7 @@ export const init = async () => {
 
   await Promise.all(
     Object.values(SCHEMA).map(({ table, keyCol, valCol }) =>
-      client!.execute(
+      client?.execute(
         `CREATE TABLE IF NOT EXISTS ${table} (${keyCol} TEXT PRIMARY KEY, ${valCol} TEXT)`,
       ),
     ),
@@ -197,7 +197,7 @@ export const clear = async () => {
   if (!client) throw new Error("Database not initialized.");
   await Promise.all(
     Object.values(SCHEMA).map(({ table }) =>
-      client!.execute(`DELETE FROM ${table}`),
+      client?.execute(`DELETE FROM ${table}`),
     ),
   );
 };

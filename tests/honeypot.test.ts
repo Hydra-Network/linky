@@ -24,7 +24,17 @@ const mockContainer = {
 import messageCreate from "@/events/honeypot";
 
 describe("honeypot", () => {
-  let mockMessage;
+  const mockMessage = {
+    author: { bot: false, id: "123456789" },
+    channelId: "",
+    guildId: "",
+    content: "",
+    guild: {
+      id: "",
+      members: { me: { permissions: { has: vi.fn() } } },
+      bans: { create: vi.fn(), remove: vi.fn() },
+    },
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -40,29 +50,17 @@ describe("honeypot", () => {
       return Promise.resolve(null);
     });
 
-    mockMessage = {
-      author: {
-        bot: false,
-        id: "123456789",
-      },
-      channelId: "111222333",
-      guildId: "987654321",
-      content: "Hello world",
-      guild: {
-        id: "987654321",
-        members: {
-          me: {
-            permissions: {
-              has: vi.fn().mockReturnValue(true),
-            },
-          },
-        },
-        bans: {
-          create: vi.fn().mockResolvedValue(undefined),
-          remove: vi.fn().mockResolvedValue(undefined),
-        },
-      },
-    };
+    mockMessage.author.bot = false;
+    mockMessage.author.id = "123456789";
+    mockMessage.channelId = "111222333";
+    mockMessage.guildId = "987654321";
+    mockMessage.content = "Hello world";
+    mockMessage.guild.id = "987654321";
+    mockMessage.guild.members.me.permissions.has = vi
+      .fn()
+      .mockReturnValue(true);
+    mockMessage.guild.bans.create = vi.fn().mockResolvedValue(undefined);
+    mockMessage.guild.bans.remove = vi.fn().mockResolvedValue(undefined);
   });
 
   test("softbans user who messages in honeypot channel", async () => {

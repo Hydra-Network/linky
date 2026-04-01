@@ -29,12 +29,12 @@ vi.mock("discord.js", () => {
   };
 });
 
-const mockReply = vi.fn();
+const _mockReply = vi.fn();
 const mockDeferReply = vi.fn();
 const mockEditReply = vi.fn();
 const mockEmojisCreate = vi.fn();
 
-const mockContainer = {
+const _mockContainer = {
   get: vi.fn((key) => {
     if (key === "logger") return { error: vi.fn() };
     if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };

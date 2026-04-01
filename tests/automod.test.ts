@@ -23,7 +23,15 @@ const mockContainer = {
 import messageCreate from "@/events/automod";
 
 describe("automod", () => {
-  let mockMessage;
+  const mockMessage = {
+    author: { bot: false, id: "123456789", send: vi.fn() },
+    channelId: "",
+    channel: { toString: () => "" },
+    guildId: "",
+    guild: {} as { id: string },
+    content: "",
+    delete: vi.fn(),
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,18 +46,14 @@ describe("automod", () => {
       return Promise.resolve(null);
     });
 
-    mockMessage = {
-      author: {
-        bot: false,
-        id: "123456789",
-        send: vi.fn().mockResolvedValue(undefined),
-      },
-      channelId: "111222333",
-      channel: { toString: () => "#test-channel" },
-      guildId: "987654321",
-      content: "Hello world",
-      delete: vi.fn().mockResolvedValue(undefined),
-    };
+    mockMessage.author.bot = false;
+    mockMessage.author.id = "123456789";
+    mockMessage.author.send = vi.fn().mockResolvedValue(undefined);
+    mockMessage.channelId = "111222333";
+    mockMessage.channel = { toString: () => "#test-channel" };
+    mockMessage.guildId = "987654321";
+    mockMessage.content = "Hello world";
+    mockMessage.delete = vi.fn().mockResolvedValue(undefined);
   });
 
   test("deletes message containing blocked word", async () => {

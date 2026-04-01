@@ -5,7 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
 import {
   checkWithDetails,
   DNS_BLOCKERS,
@@ -49,8 +49,8 @@ export default {
   ) {
     const { getItem } = container.get("db");
 
-    const url = interaction.options.getString("url")!;
-    const blockers = interaction.options.getString("blockers")!;
+    const url = interaction.options.getString("url");
+    const blockers = interaction.options.getString("blockers");
 
     await interaction.deferReply();
 
@@ -60,7 +60,7 @@ export default {
     const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
       | Record<string, Record<string, unknown>>
       | undefined;
-    const settings = allSettings?.[interaction.guildId!] || {};
+    const settings = allSettings?.[interaction.guildId] || {};
     const useEmojis =
       (settings as Record<string, unknown>).checkEmojis !== false;
 

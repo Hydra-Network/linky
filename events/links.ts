@@ -1,4 +1,4 @@
-import { Events } from "discord.js";
+
 import { DATABASE_KEYS } from "@/config/index.js";
 import { defineMessageEvent } from "./base.js";
 
@@ -9,13 +9,13 @@ export default defineMessageEvent(
     const cache = container.get("cache");
     const messageContent = message.content.toLowerCase();
 
-    let linkChannelIds = cache.get(message.guildId!) as string[] | undefined;
+    let linkChannelIds = cache.get(message.guildId) as string[] | undefined;
     if (linkChannelIds === undefined) {
       const dbData = (await db.getItem(DATABASE_KEYS.LINK_CHANNELS)) as
         | Record<string, string[]>
         | undefined;
-      linkChannelIds = dbData?.[message.guildId!] || [];
-      cache.set(message.guildId!, linkChannelIds);
+      linkChannelIds = dbData?.[message.guildId] || [];
+      cache.set(message.guildId, linkChannelIds);
     }
     if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
       return;

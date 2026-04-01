@@ -64,7 +64,7 @@ vi.mock("discord.js", () => {
 
 const mockReply = vi.fn();
 
-const mockContainer = {
+const _mockContainer = {
   get: vi.fn((key) => {
     if (key === "logger") return { error: vi.fn() };
     if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };

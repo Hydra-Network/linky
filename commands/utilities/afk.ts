@@ -2,11 +2,10 @@ import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
-  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer, } from "@/services/container.js";
 
 interface AfkData {
   nickname: string;

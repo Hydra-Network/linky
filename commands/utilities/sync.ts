@@ -28,8 +28,8 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply();
 
-    const token = process.env.token!;
-    const clientId = process.env.clientId!;
+    const token = process.env.token;
+    const clientId = process.env.clientId;
 
     const commands: Record<string, unknown>[] = [];
     const foldersPath = path.join(__dirname, "..", "..", "commands");

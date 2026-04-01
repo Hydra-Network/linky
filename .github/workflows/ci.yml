@@ -5,9 +5,50 @@ on:
   push:
     branches: [main]
 
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Run lint
+        run: bun run lint
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Run typecheck
+        run: bun run typecheck
+
   test:
-    name: Bun Tests
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,11 +62,11 @@ jobs:
         run: bun ci
 
       - name: Run tests
-        run: bun run vitest run
+        run: bun run test run
 
   dockerci:
     name: Docker CI
-    needs: test
+    needs: [lint, typecheck, test]
     runs-on: ubuntu-latest
     permissions:
       contents: read

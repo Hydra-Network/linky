@@ -11,7 +11,7 @@ import {
   ERROR_MESSAGES,
   MIN_AGE_ERRORS,
 } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer, } from "@/services/container.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -159,10 +159,10 @@ export default {
         const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
           | Record<string, string[]>
           | undefined;
-        const channels = linkChannels?.[interaction.guildId!] || [];
+        const channels = linkChannels?.[interaction.guildId] || [];
         await setItem(DATABASE_KEYS.LINK_CHANNELS, {
           ...linkChannels,
-          [interaction.guildId!]: [...channels, channel.id],
+          [interaction.guildId]: [...channels, channel.id],
         });
         await interaction.reply(`Link channel added: ${channel.name}`);
         return;
@@ -175,7 +175,7 @@ export default {
         const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
           | Record<string, string[]>
           | undefined;
-        const channels = linkChannels?.[interaction.guildId!] || [];
+        const channels = linkChannels?.[interaction.guildId] || [];
         const index = channels.indexOf(channel.id);
         if (index === -1) {
           await interaction.reply(
@@ -184,7 +184,7 @@ export default {
         } else {
           await setItem(DATABASE_KEYS.LINK_CHANNELS, {
             ...linkChannels,
-            [interaction.guildId!]: channels.filter((c) => c !== channel.id),
+            [interaction.guildId]: channels.filter((c) => c !== channel.id),
           });
           await interaction.reply(`Link channel removed: ${channel.name}`);
         }
@@ -195,7 +195,7 @@ export default {
         const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
           | Record<string, string[]>
           | undefined;
-        const channels = linkChannels?.[interaction.guildId!] || [];
+        const channels = linkChannels?.[interaction.guildId] || [];
         if (channels.length === 0) {
           await interaction.reply("No link channels set");
         } else {
@@ -212,8 +212,8 @@ export default {
         | undefined;
       await setItem(DATABASE_KEYS.SETTINGS, {
         ...settings,
-        [interaction.guildId!]: {
-          ...(settings?.[interaction.guildId!] || {}),
+        [interaction.guildId]: {
+          ...(settings?.[interaction.guildId] || {}),
           boostChannel: channel.id,
         },
       });
@@ -227,7 +227,7 @@ export default {
         | Record<string, Record<string, unknown>>
         | undefined;
       const settings: Record<string, unknown> =
-        allSettings?.[interaction.guildId!] || {};
+        allSettings?.[interaction.guildId] || {};
 
       if (days === null || days === undefined) {
         const currentAge = settings.minAge as number | undefined;
@@ -245,7 +245,7 @@ export default {
         delete settings.minAge;
         await setItem(DATABASE_KEYS.SETTINGS, {
           ...allSettings,
-          [interaction.guildId!]: settings,
+          [interaction.guildId]: settings,
         });
         await interaction.reply(MIN_AGE_ERRORS.MIN_AGE_REMOVED);
         return;
@@ -253,7 +253,7 @@ export default {
 
       await setItem(DATABASE_KEYS.SETTINGS, {
         ...allSettings,
-        [interaction.guildId!]: { ...settings, minAge: days },
+        [interaction.guildId]: { ...settings, minAge: days },
       });
       await interaction.reply(
         MIN_AGE_ERRORS.MIN_AGE_SET.replace("{minAge}", String(days)),

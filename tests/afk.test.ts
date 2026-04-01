@@ -53,11 +53,11 @@ const mockContainer = {
 };
 
 describe("afk command", () => {
-  let mockSetNickname;
+  const mockSetNickname = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockSetNickname = vi.fn().mockResolvedValue(undefined);
+    mockSetNickname.mockResolvedValue(undefined);
   });
 
   test("sets AFK with default reason", async () => {

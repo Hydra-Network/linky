@@ -3,7 +3,7 @@ import { DATABASE_KEYS } from "@/config/constants";
 import { clear, getItem, init, setItem } from "@/db/index";
 
 describe("database operations", () => {
-  let client;
+  let client: Awaited<ReturnType<typeof init>>;
 
   beforeEach(async () => {
     client = await init();

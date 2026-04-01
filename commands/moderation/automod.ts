@@ -6,7 +6,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS, ERROR_MESSAGES } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer, } from "@/services/container.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -62,10 +62,10 @@ export default {
     const automodWords = (await getItem(DATABASE_KEYS.AUTOMOD_WORDS)) as
       | Record<string, string[]>
       | undefined;
-    const guildWords = automodWords?.[interaction.guildId!] || [];
+    const guildWords = automodWords?.[interaction.guildId] || [];
 
     if (subcommand === "add") {
-      const word = interaction.options.getString("word")!.toLowerCase().trim();
+      const word = interaction.options.getString("word")?.toLowerCase().trim();
       if (!word) {
         await interaction.reply("Please provide a valid word.");
         return;
@@ -76,21 +76,21 @@ export default {
       }
       await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
-        [interaction.guildId!]: [...guildWords, word],
+        [interaction.guildId]: [...guildWords, word],
       });
       await interaction.reply(`Added "${word}" to the blocklist.`);
       return;
     }
 
     if (subcommand === "remove") {
-      const word = interaction.options.getString("word")!.toLowerCase().trim();
+      const word = interaction.options.getString("word")?.toLowerCase().trim();
       if (!guildWords.includes(word)) {
         await interaction.reply(`"${word}" is not in the blocklist.`);
         return;
       }
       await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
-        [interaction.guildId!]: guildWords.filter((w) => w !== word),
+        [interaction.guildId]: guildWords.filter((w) => w !== word),
       });
       await interaction.reply(`Removed "${word}" from the blocklist.`);
       return;
@@ -114,7 +114,7 @@ export default {
       }
       await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
         ...automodWords,
-        [interaction.guildId!]: [],
+        [interaction.guildId]: [],
       });
       await interaction.reply("Cleared all words from the blocklist.");
       return;

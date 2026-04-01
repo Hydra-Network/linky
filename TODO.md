@@ -86,7 +86,7 @@
 - [ ] **Add health check endpoint**
   - Expand `commands/utilities/health.ts` to expose metrics (uptime, memory, DB status, cache hit rate)
 
-- [ ] **CI/CD pipeline**
+- [x] **CI/CD pipeline**
   - Add GitHub Actions workflow for lint, typecheck, and test on push/PR
   - Add Docker build step
 

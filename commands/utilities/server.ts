@@ -19,7 +19,7 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    container: AppContainer,
+    _container: AppContainer,
   ) {
     const { guild } = interaction;
     const fullGuild = await guild.fetch();
