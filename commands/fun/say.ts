@@ -23,19 +23,9 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    container: AppContainer,
+    _container: AppContainer,
   ) {
-    const logger = container.get("logger");
-
     const text = interaction.options.getString("text")!;
-    try {
-      await interaction.reply(text);
-    } catch (error) {
-      logger.error({ err: error as Error }, "Say command error");
-      await interaction.reply({
-        content: "There was an error while trying to send the message.",
-        ephemeral: true,
-      });
-    }
+    await interaction.reply(text);
   },
 };

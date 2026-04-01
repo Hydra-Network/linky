@@ -37,37 +37,28 @@ export default {
     interaction: ChatInputCommandInteraction,
     container: AppContainer,
   ) {
-    const logger = container.get("logger");
     const { getItem, setItem } = container.get("db");
 
     const reason = interaction.options.getString("reason") || "AFK";
     const user = interaction.member as GuildMember;
     const originalNickname = user.nickname || user.user.username;
 
-    try {
-      await user.setNickname(`[afk] ${originalNickname}`);
+    await user.setNickname(`[afk] ${originalNickname}`);
 
-      const afkData = {
-        ...((await getItem(DATABASE_KEYS.AFK)) as Record<string, AfkData>),
-        [interaction.user.id]: {
-          nickname: originalNickname,
-          reason,
-          timestamp: Date.now(),
-        },
-      };
+    const afkData = {
+      ...((await getItem(DATABASE_KEYS.AFK)) as Record<string, AfkData>),
+      [interaction.user.id]: {
+        nickname: originalNickname,
+        reason,
+        timestamp: Date.now(),
+      },
+    };
 
-      await setItem(DATABASE_KEYS.AFK, afkData);
+    await setItem(DATABASE_KEYS.AFK, afkData);
 
-      await interaction.reply({
-        content: `You're now AFK: ${reason}`,
-        ephemeral: true,
-      });
-    } catch (error) {
-      logger.error({ err: error }, "AFK command error");
-      await interaction.reply({
-        content: "There was an error while setting your AFK status.",
-        ephemeral: true,
-      });
-    }
+    await interaction.reply({
+      content: `You're now AFK: ${reason}`,
+      ephemeral: true,
+    });
   },
 };

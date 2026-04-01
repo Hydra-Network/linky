@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import { SlashCommandBuilder } from "discord.js";
 import { CHANNEL_PATTERNS, ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
+import { handleError } from "@/services/error-handler.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -49,10 +50,11 @@ export default {
       try {
         await channel.delete();
       } catch (error) {
-        logger.error({ err: error }, "Error deleting channel");
-        await interaction.followUp({
-          content: "Failed to delete the ticket channel.",
-          ephemeral: true,
+        await handleError(error, {
+          logger,
+          interaction,
+          context: "close-ticket-cleanup",
+          fallbackMessage: "Failed to delete the ticket channel.",
         });
       }
     }, 3000);

@@ -3,12 +3,11 @@ import {
   ApplicationIntegrationType,
   ChannelType,
   InteractionContextType,
-  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
 import { ERROR_MESSAGES } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -34,10 +33,8 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    container: AppContainer,
+    _container: AppContainer,
   ) {
-    const logger = container.get("logger");
-
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
@@ -71,38 +68,30 @@ export default {
       });
     }
 
-    try {
-      const everyoneRole = interaction.guild.roles.everyone;
-      const currentPermissions = channel.permissionOverwrites.cache.get(
-        everyoneRole.id,
-      );
+    const everyoneRole = interaction.guild.roles.everyone;
+    const currentPermissions = channel.permissionOverwrites.cache.get(
+      everyoneRole.id,
+    );
 
-      if (
-        currentPermissions?.deny.has(PermissionFlagsBits.SendMessages) ||
-        currentPermissions?.deny.has(PermissionFlagsBits.SendMessagesInThreads)
-      ) {
-        return interaction.reply({
-          content: `${channel} is already locked.`,
-          ephemeral: true,
-        });
-      }
-
-      await channel.permissionOverwrites.edit(everyoneRole, {
-        SendMessages: false,
-        SendMessagesInThreads: false,
-        AddReactions: false,
-      } as any);
-
-      await interaction.reply({
-        content: `🔒 Locked ${channel}. Reason: ${reason}`,
-        ephemeral: true,
-      });
-    } catch (error) {
-      logger.error({ err: error }, "Lock error");
-      await interaction.reply({
-        content: "There was an error while trying to lock this channel.",
+    if (
+      currentPermissions?.deny.has(PermissionFlagsBits.SendMessages) ||
+      currentPermissions?.deny.has(PermissionFlagsBits.SendMessagesInThreads)
+    ) {
+      return interaction.reply({
+        content: `${channel} is already locked.`,
         ephemeral: true,
       });
     }
+
+    await channel.permissionOverwrites.edit(everyoneRole, {
+      SendMessages: false,
+      SendMessagesInThreads: false,
+      AddReactions: false,
+    } as any);
+
+    await interaction.reply({
+      content: `🔒 Locked ${channel}. Reason: ${reason}`,
+      ephemeral: true,
+    });
   },
 };

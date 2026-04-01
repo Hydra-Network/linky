@@ -2,13 +2,12 @@ import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
-  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
 import { z } from "zod";
 import { ERROR_MESSAGES } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
 import { validateWithSchema } from "@/utils/validation.js";
 
 const PurgeAmountSchema = z.number().int().min(1).max(100);
@@ -33,10 +32,8 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    container: AppContainer,
+    _container: AppContainer,
   ) {
-    const logger = container.get("logger");
-
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
@@ -66,24 +63,10 @@ export default {
       });
     }
 
-    try {
-      await targetChannel
-        .bulkDelete(amount!, true)
-        .then(async (messages) => {
-          await interaction.reply({
-            content: `Successfully purged ${messages.size} messages.`,
-            ephemeral: true,
-          });
-        })
-        .catch((err: Error) =>
-          logger.error({ err }, "Purge bulk delete error"),
-        );
-    } catch (error) {
-      logger.error({ err: error }, "Purge error");
-      await interaction.reply({
-        content: ERROR_MESSAGES.PURGE_ERROR,
-        ephemeral: true,
-      });
-    }
+    const messages = await targetChannel.bulkDelete(amount!, true);
+    await interaction.reply({
+      content: `Successfully purged ${messages.size} messages.`,
+      ephemeral: true,
+    });
   },
 };

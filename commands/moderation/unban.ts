@@ -2,12 +2,11 @@ import type { ChatInputCommandInteraction } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
-  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
 import { ERROR_MESSAGES } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -33,10 +32,8 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    container: AppContainer,
+    _container: AppContainer,
   ) {
-    const logger = container.get("logger");
-
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
@@ -61,21 +58,12 @@ export default {
       });
     }
 
-    try {
-      await interaction.guild.bans.remove(target, reason);
-      await interaction.reply({
-        content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "unbanned")
-          .replace("{target}", target.tag)
-          .replace("{reason}", reason),
-        ephemeral: true,
-      });
-    } catch (error) {
-      logger.error({ err: error }, "Unban error");
-      await interaction.reply({
-        content:
-          "There was an error while trying to unban this user. They may not be banned.",
-        ephemeral: true,
-      });
-    }
+    await interaction.guild.bans.remove(target, reason);
+    await interaction.reply({
+      content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "unbanned")
+        .replace("{target}", target.tag)
+        .replace("{reason}", reason),
+      ephemeral: true,
+    });
   },
 };

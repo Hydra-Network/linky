@@ -21,7 +21,6 @@ export default {
     interaction: ChatInputCommandInteraction,
     container: AppContainer,
   ) {
-    const logger = container.get("logger");
     const { getItem } = container.get("db");
 
     const reason =
@@ -38,50 +37,40 @@ export default {
       return;
     }
 
-    try {
-      const ticketId = Date.now().toString().slice(-6);
-      const channelName = `${CHANNEL_PATTERNS.TICKET}${user.username}-${ticketId}`;
+    const ticketId = Date.now().toString().slice(-6);
+    const channelName = `${CHANNEL_PATTERNS.TICKET}${user.username}-${ticketId}`;
 
-      const ticketCategory = (await getItem(DATABASE_KEYS.TICKET_CATEGORY)) as
-        | string
-        | null;
+    const ticketCategory = (await getItem(DATABASE_KEYS.TICKET_CATEGORY)) as
+      | string
+      | null;
 
-      await guild.channels
-        .create({
-          name: channelName,
-          type: ChannelType.GuildText,
-          parent: ticketCategory ?? undefined,
-          permissionOverwrites: [
-            {
-              id: guild.id,
-              deny: ["ViewChannel"],
-            },
-            {
-              id: user.id,
-              allow: ["ViewChannel", "SendMessages", "AttachFiles"],
-            },
-            {
-              id: interaction.client.user?.id ?? "",
-              allow: ["ViewChannel", "SendMessages", "ManageChannels"],
-            },
-          ],
-        })
-        .then(async (ticketChannel) => {
-          await ticketChannel.send({
-            content: `🎫 **New Ticket** | ${user} (\`${user.id}\`)\n📝 **Reason:** ${reason}`,
-          });
-        });
+    const ticketChannel = await guild.channels.create({
+      name: channelName,
+      type: ChannelType.GuildText,
+      parent: ticketCategory ?? undefined,
+      permissionOverwrites: [
+        {
+          id: guild.id,
+          deny: ["ViewChannel"],
+        },
+        {
+          id: user.id,
+          allow: ["ViewChannel", "SendMessages", "AttachFiles"],
+        },
+        {
+          id: interaction.client.user?.id ?? "",
+          allow: ["ViewChannel", "SendMessages", "ManageChannels"],
+        },
+      ],
+    });
 
-      await interaction.reply({
-        content: `✅ Ticket created! Check your DMs or the channel list.`,
-        ephemeral: true,
-      });
-    } catch (error) {
-      logger.error({ err: error }, "Ticket command error");
-      await interaction.reply({
-        content: "There was an error while creating the ticket.",
-        ephemeral: true,
-      });
-    }
+    await ticketChannel.send({
+      content: `🎫 **New Ticket** | ${user} (\`${user.id}\`)\n📝 **Reason:** ${reason}`,
+    });
+
+    await interaction.reply({
+      content: `✅ Ticket created! Check your DMs or the channel list.`,
+      ephemeral: true,
+    });
   },
 };

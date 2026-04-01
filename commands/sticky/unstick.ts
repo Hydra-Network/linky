@@ -2,12 +2,12 @@ import type { ChatInputCommandInteraction } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
-  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
+import { handleError } from "@/services/error-handler.js";
 
 interface StickyData {
   guildId: string;
@@ -52,11 +52,12 @@ export default {
         await lastMessage.delete();
       }
     } catch (error) {
-      logger.error({ err: error }, "Failed to delete the last sticky message");
-      await interaction.followUp({
-        content:
+      await handleError(error, {
+        logger,
+        interaction,
+        context: "unstick-cleanup",
+        fallbackMessage:
           "Failed to delete the old sticky message, but sticky has been removed.",
-        ephemeral: true,
       });
     }
 

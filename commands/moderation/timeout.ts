@@ -7,7 +7,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { ERROR_MESSAGES } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
 import {
   TimeoutDurationSchema,
   validateWithSchema,
@@ -47,8 +47,6 @@ export default {
     interaction: ChatInputCommandInteraction,
     container: AppContainer,
   ) {
-    const logger = container.get("logger");
-
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
@@ -121,18 +119,10 @@ export default {
       });
     }
 
-    try {
-      await member.timeout(duration! * 60 * 1000, reason);
-      await interaction.reply({
-        content: `Successfully timed out ${target.tag} for ${duration} minute(s). Reason: ${reason}`,
-        ephemeral: true,
-      });
-    } catch (error) {
-      logger.error({ err: error }, "Timeout error");
-      await interaction.reply({
-        content: ERROR_MESSAGES.ACTION_ERROR.replace("{action}", "timeout"),
-        ephemeral: true,
-      });
-    }
+    await member.timeout(duration! * 60 * 1000, reason);
+    await interaction.reply({
+      content: `Successfully timed out ${target.tag} for ${duration} minute(s). Reason: ${reason}`,
+      ephemeral: true,
+    });
   },
 };

@@ -1,8 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import type { Client, Collection } from "discord.js";
+import type {
+  ChatInputCommandInteraction,
+  Client,
+  Collection,
+} from "discord.js";
 import type { AppContainer } from "./container.js";
+import { handleError } from "./error-handler.js";
 import logger from "./logger.js";
 
 interface CommandModule {
@@ -34,11 +39,26 @@ export async function loadCommands(
       const command = commandModule.default || commandModule;
       if ("data" in command && "execute" in command) {
         const originalExecute = command.execute;
-        const wrappedExecute = async (...args: unknown[]) => {
-          return originalExecute(...args, container);
+        const wrappedExecute = async (
+          interaction: ChatInputCommandInteraction,
+          ...args: unknown[]
+        ) => {
+          try {
+            return await originalExecute(interaction, container, ...args);
+          } catch (error) {
+            const cmdLogger = container.get("logger");
+            await handleError(error, {
+              logger: cmdLogger,
+              interaction,
+              context: command.data.name,
+            });
+          }
         };
         command.execute = wrappedExecute;
-        client.commands.set(command.data.name, command);
+        (client.commands as Collection<string, CommandModule>).set(
+          command.data.name,
+          command,
+        );
       } else {
         logger.warn(
           `The command at ${filePath} is missing a required "data" or "execute" property.`,
