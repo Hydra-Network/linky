@@ -1,26 +1,20 @@
-import type { Client, GuildMember } from "discord.js";
+import type { GuildMember } from "discord.js";
 import { Events } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import { defineEvent } from "./base.js";
 
-export default {
-  name: Events.GuildMemberUpdate,
-  once: false,
-  async execute(
-    oldMember: GuildMember,
-    newMember: GuildMember,
-    _client: Client,
-    container: AppContainer,
-  ) {
-    const logger = container.get("logger");
-    const { getItem } = container.get("db");
-
+export default defineEvent(
+  Events.GuildMemberUpdate,
+  async (
+    [oldMember, newMember]: [GuildMember, GuildMember],
+    { logger, db },
+  ) => {
     const oldWasBoosting = !!oldMember.premiumSince;
     const newIsBoosting = newMember.premiumSince;
 
     if (!oldWasBoosting && newIsBoosting) {
       const guildId = newMember.guild.id;
-      const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+      const allSettings = (await db.getItem(DATABASE_KEYS.SETTINGS)) as
         | Record<string, Record<string, string>>
         | undefined;
       const boostChannelId = allSettings?.[guildId]?.boostChannel;
@@ -70,4 +64,4 @@ export default {
       }
     }
   },
-};
+);

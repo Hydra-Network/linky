@@ -1,47 +1,36 @@
-import type { Client, Message } from "discord.js";
 import { Events } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer } from "@/services/container.js";
+import { defineMessageEvent } from "./base.js";
 
-export default {
-  name: Events.MessageCreate,
-  once: false,
-  async execute(message: Message, _client: Client, container: AppContainer) {
-    if (message.author.bot || !message.guild) return;
+export default defineMessageEvent(async (message, { logger, db }) => {
+  const messageContent = message.content.toLowerCase();
 
-    const logger = container.get("logger");
-    const { getItem } = container.get("db");
+  const dbData = (await db.getItem(DATABASE_KEYS.AUTOMOD_WORDS)) as
+    | Record<string, string[]>
+    | undefined;
+  const automodWords = dbData?.[message.guildId!] || [];
 
-    const messageContent = message.content.toLowerCase();
-
-    const dbData = (await getItem(DATABASE_KEYS.AUTOMOD_WORDS)) as
-      | Record<string, string[]>
-      | undefined;
-    const automodWords = dbData?.[message.guildId!] || [];
-
-    if (automodWords.length > 0) {
-      const containsBlockedWord = automodWords.some((word) =>
-        messageContent.includes(word.toLowerCase()),
-      );
-      if (containsBlockedWord) {
-        try {
-          await message.delete();
-          await message.author.send({
-            content: `Your message in ${message.channel} was deleted because it contained a blocked word.`,
-          });
-        } catch (error) {
-          logger.error(
-            {
-              err: error,
-              channelId: message.channelId,
-              userId: message.author?.id,
-              guildId: message.guildId,
-            },
-            "Error handling automod",
-          );
-        }
-        return;
+  if (automodWords.length > 0) {
+    const containsBlockedWord = automodWords.some((word) =>
+      messageContent.includes(word.toLowerCase()),
+    );
+    if (containsBlockedWord) {
+      try {
+        await message.delete();
+        await message.author.send({
+          content: `Your message in ${message.channel} was deleted because it contained a blocked word.`,
+        });
+      } catch (error) {
+        logger.error(
+          {
+            err: error,
+            channelId: message.channelId,
+            userId: message.author?.id,
+            guildId: message.guildId,
+          },
+          "Error handling automod",
+        );
       }
     }
-  },
-};
+  }
+});

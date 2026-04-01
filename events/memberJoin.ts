@@ -1,20 +1,16 @@
-import type { Client, GuildMember } from "discord.js";
+import type { GuildMember } from "discord.js";
 import { Events, PermissionFlagsBits } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer, container } from "@/services/container.js";
+import { defineEvent } from "./base.js";
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-export default {
-  name: Events.GuildMemberAdd,
-  once: false,
-  async execute(member: GuildMember, _client: Client, container: AppContainer) {
-    if (member.user.bot || !member.guild) return;
+export default defineEvent(
+  Events.GuildMemberAdd,
+  async ([member]: [GuildMember], { logger, db }) => {
+    if (member.user.bot) return;
 
-    const logger = container.get("logger");
-    const { getItem } = container.get("db");
-
-    const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    const allSettings = (await db.getItem(DATABASE_KEYS.SETTINGS)) as
       | Record<string, Record<string, unknown>>
       | undefined;
     const settings = allSettings?.[member.guild.id] || {};
@@ -63,4 +59,4 @@ export default {
       }
     }
   },
-};
+);

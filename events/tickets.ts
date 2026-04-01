@@ -1,7 +1,6 @@
 import type {
   ButtonInteraction,
   ChatInputCommandInteraction,
-  Client,
   ModalSubmitInteraction,
 } from "discord.js";
 import {
@@ -13,21 +12,17 @@ import {
   TextInputStyle,
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer } from "@/services/container.js";
+import { defineEvent, type EventContext } from "./base.js";
 
-export default {
-  name: Events.InteractionCreate,
-  once: false,
-  async execute(
-    interaction:
-      | ChatInputCommandInteraction
-      | ButtonInteraction
-      | ModalSubmitInteraction,
-    client: Client,
-    container: AppContainer,
-  ) {
-    const logger = container.get("logger");
-    const { getItem } = container.get("db");
+export default defineEvent(
+  Events.InteractionCreate,
+  async (
+    [interaction]: [
+      ChatInputCommandInteraction | ButtonInteraction | ModalSubmitInteraction,
+    ],
+    ctx: EventContext,
+  ) => {
+    const { logger, db, client, container } = ctx;
 
     if (interaction.isChatInputCommand()) {
       const command = interaction.client.commands.get(interaction.commandName);
@@ -111,9 +106,9 @@ export default {
         const ticketId = Date.now().toString().slice(-6);
         const channelName = `ticket-${user.username}-${ticketId}`;
 
-        const ticketCategory = (await getItem(DATABASE_KEYS.TICKET_CATEGORY)) as
-          | string
-          | null;
+        const ticketCategory = (await db.getItem(
+          DATABASE_KEYS.TICKET_CATEGORY,
+        )) as string | null;
 
         const ticketChannel = await guild.channels.create({
           name: channelName,
@@ -146,4 +141,4 @@ export default {
       }
     }
   },
-};
+);

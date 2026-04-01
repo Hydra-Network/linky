@@ -79,7 +79,7 @@
   - Move permission checks from individual commands into `utils/permissions.ts`
   - Support role-based and permission-bit checks
 
-- [ ] **Standardize event structure**
+- [x] **Standardize event structure**
   - Create `events/base.ts` with common patterns (bot check, guild check, logger access)
   - Reduce boilerplate in each event file
 

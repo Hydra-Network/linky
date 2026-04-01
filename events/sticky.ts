@@ -1,7 +1,7 @@
-import type { Client, GuildTextBasedChannel, Message } from "discord.js";
+import type { GuildTextBasedChannel } from "discord.js";
 import { Events } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer } from "@/services/container.js";
+import { defineMessageEvent } from "./base.js";
 
 interface StickyData {
   guildId: string;
@@ -13,18 +13,12 @@ const processingSticky = new Set<string>();
 const debounceTimers = new Map<string, NodeJS.Timeout>();
 const DEBOUNCE_MS = 10000;
 
-export default {
-  name: Events.MessageCreate,
-  once: false,
-  async execute(message: Message, _client: Client, container: AppContainer) {
-    if (message.author.bot || !message.guild) return;
-
-    const logger = container.get("logger");
-    const { getItem, setItem } = container.get("db");
+export default defineMessageEvent(
+  async (message, { logger, db, container }) => {
     const cache = container.get("cache");
 
     if (cache.keys().length === 0) {
-      const dbData = (await getItem(DATABASE_KEYS.STICKY)) as
+      const dbData = (await db.getItem(DATABASE_KEYS.STICKY)) as
         | Record<string, StickyData>
         | undefined;
       if (dbData) {
@@ -78,7 +72,7 @@ export default {
                   acc[key] = cache.get(key) as StickyData;
                   return acc;
                 }, {});
-              await setItem(DATABASE_KEYS.STICKY, allStickies);
+              await db.setItem(DATABASE_KEYS.STICKY, allStickies);
             } catch (err) {
               logger.error({ err }, "Sticky DB Write Error");
             } finally {
@@ -101,4 +95,4 @@ export default {
       }
     }
   },
-};
+);

@@ -1,25 +1,17 @@
-import type { Client, Message } from "discord.js";
 import { Events } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { AppContainer } from "@/services/container.js";
+import { defineMessageEvent } from "./base.js";
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
 
-export default {
-  name: Events.MessageCreate,
-  once: false,
-  async execute(message: Message, _client: Client, container: AppContainer) {
-    if (message.author.bot || !message.guild) return;
-
-    const logger = container.get("logger");
-    const { getItem } = container.get("db");
+export default defineMessageEvent(
+  async (message, { logger, db, container }) => {
     const cache = container.get("cache");
-
     const messageContent = message.content.toLowerCase();
 
     let linkChannelIds = cache.get(message.guildId!) as string[] | undefined;
     if (linkChannelIds === undefined) {
-      const dbData = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
+      const dbData = (await db.getItem(DATABASE_KEYS.LINK_CHANNELS)) as
         | Record<string, string[]>
         | undefined;
       linkChannelIds = dbData?.[message.guildId!] || [];
@@ -50,4 +42,4 @@ export default {
       }
     }
   },
-};
+);

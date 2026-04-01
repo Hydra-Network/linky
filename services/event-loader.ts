@@ -15,7 +15,10 @@ export async function loadEvents(
 
   const eventsPath = path.join(basePath, "events");
   const eventFiles = (await fs.promises.readdir(eventsPath)).filter(
-    (file) => file.endsWith(".ts") || file.endsWith(".js"),
+    (file) =>
+      (file.endsWith(".ts") || file.endsWith(".js")) &&
+      file !== "base.ts" &&
+      file !== "base.js",
   );
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
