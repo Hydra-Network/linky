@@ -90,6 +90,6 @@
   - Add GitHub Actions workflow for lint, typecheck, and test on push/PR
   - Add Docker build step
 
-- [ ] **Remove unused dependencies**
+- [x] **Remove unused dependencies**
   - Audit `lowdb` — appears unused since migrating to libsql
   - Audit `node-cron` — verify it's actually used
