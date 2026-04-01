@@ -39,7 +39,7 @@
   - Move shutdown logic to `services/shutdown.ts`
   - Keep `index.ts` as a thin bootstrap entry point
 
-- [ ] **Create command base class/interface**
+- [ ] ~~**Create command base class/interface**~~
   - Add `commands/base.ts` with shared permission checks, error handling, and validation
   - Reduce duplicated permission-check code across moderation commands
 
