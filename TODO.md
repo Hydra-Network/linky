@@ -60,20 +60,12 @@
 
 ### Phase 3: Performance Optimizations
 
-- [ ] **Optimize `checker.ts` API calls**
+- [x] **Optimize `checker.ts` API calls**
   - Deduplicate `check` and `checkWithDetails` — they both fetch the same endpoint
   - Add response caching with TTL for repeated URL checks
   - Share a single timeout utility
 
-- [ ] **Lazy-load commands**
-  - Register command metadata at startup but dynamically `import()` command modules on first use
-  - Reduces cold-start memory footprint
-
-- [ ] **Enable TypeScript strict mode incrementally**
-  - Turn on `strict: true`, then `noImplicitAny`, `strictNullChecks`
-  - Fix resulting type errors to catch bugs at compile time
-
-- [ ] **Add rate limiting for external API**
+- [x] **Add rate limiting for external API**
   - Implement request queue with concurrency limit for the blocker-check API
   - Add exponential backoff on failures
 
