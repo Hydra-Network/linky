@@ -43,13 +43,6 @@
   - Add `commands/base.ts` with shared permission checks, error handling, and validation
   - Reduce duplicated permission-check code across moderation commands
 
-- [ ] **Consolidate duplicate env files**
-  - Remove `.env` and `.example.env`, keep only `.env.example`
-  - Add env validation with Zod at startup
-
-- [ ] **Add path alias support at runtime**
-  - Configure `tsx` or `tsconfig-paths` so `@/*` aliases work beyond TypeScript
-
 ### Phase 2: Database Layer Optimization
 
 - [ ] **Simplify `db/index.ts` schema resolution**
