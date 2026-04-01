@@ -1,9 +1,7 @@
 import type { Client, GuildMember } from "discord.js";
 import { Events } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { container } from "@/services/container.js";
-
-import type { AppContainer } from "@/services/container.js";
+import type { AppContainer, container } from "@/services/container.js";
 
 export default {
   name: Events.GuildMemberUpdate,

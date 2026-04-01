@@ -7,13 +7,11 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { ERROR_MESSAGES } from "@/config/index.js";
-import type { container } from "@/services/container.js";
+import type { AppContainer, container } from "@/services/container.js";
 import {
   TimeoutDurationSchema,
   validateWithSchema,
 } from "@/utils/validation.js";
-
-import type { AppContainer } from "@/services/container.js";
 
 export default {
   data: new SlashCommandBuilder()

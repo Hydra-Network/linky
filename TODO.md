@@ -33,7 +33,7 @@
 
 ### Phase 1: Project Structure Improvements
 
-- [ ] **Extract command/event loaders from `index.ts`**
+- [x] **Extract command/event loaders from `index.ts`**
   - Move command loading logic to `services/command-loader.ts`
   - Move event loading logic to `services/event-loader.ts`
   - Move shutdown logic to `services/shutdown.ts`

@@ -5,14 +5,12 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
-import type { container } from "@/services/container.js";
+import type { AppContainer, container } from "@/services/container.js";
 import {
   checkWithDetails,
   DNS_BLOCKERS,
   getBlockerName,
 } from "@/utils/checker.js";
-
-import type { AppContainer } from "@/services/container.js";
 
 const CHOICES = [
   { name: "All", value: "normal" },

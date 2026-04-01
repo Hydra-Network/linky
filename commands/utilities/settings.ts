@@ -11,9 +11,7 @@ import {
   ERROR_MESSAGES,
   MIN_AGE_ERRORS,
 } from "@/config/index.js";
-import type { container } from "@/services/container.js";
-
-import type { AppContainer } from "@/services/container.js";
+import type { AppContainer, container } from "@/services/container.js";
 
 export default {
   data: new SlashCommandBuilder()
