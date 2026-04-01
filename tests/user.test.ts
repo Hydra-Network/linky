@@ -1,4 +1,6 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import type { AppContainer } from "@/services/container.js";
 
 vi.mock("@/db/index", () => ({ getItem: vi.fn() }));
 
@@ -11,7 +13,7 @@ const mockContainer = {
     if (key === "logger") return { error: vi.fn() };
     if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
   }),
-};
+} as unknown as AppContainer;
 
 describe("user command", () => {
   beforeEach(() => {
@@ -41,7 +43,10 @@ describe("user command", () => {
       },
     };
 
-    await userCommand.execute(interaction, mockContainer);
+    await userCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -76,7 +81,10 @@ describe("user command", () => {
       },
     };
 
-    await userCommand.execute(interaction, mockContainer);
+    await userCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

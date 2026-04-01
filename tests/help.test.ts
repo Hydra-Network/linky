@@ -1,3 +1,4 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("@/db/index", () => ({ getItem: vi.fn() }));
@@ -22,7 +23,9 @@ describe("help command", () => {
       },
     };
 
-    await helpCommand.execute(interaction);
+    await helpCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -48,7 +51,9 @@ describe("help command", () => {
       },
     };
 
-    await helpCommand.execute(interaction);
+    await helpCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

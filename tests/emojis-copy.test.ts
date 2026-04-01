@@ -1,3 +1,4 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("discord.js", () => {
@@ -59,7 +60,9 @@ describe("copy command", () => {
       options: { getString: vi.fn().mockReturnValue("not-an-emoji") },
     };
 
-    await copyCommand.execute(interaction);
+    await copyCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalledWith({
       content: "Invalid emoji! Make sure it's a custom emoji from a server.",
@@ -73,7 +76,9 @@ describe("copy command", () => {
       options: { getString: vi.fn().mockReturnValue("😀") },
     };
 
-    await copyCommand.execute(interaction);
+    await copyCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalledWith({
       content: "Invalid emoji! Make sure it's a custom emoji from a server.",
@@ -92,7 +97,9 @@ describe("copy command", () => {
 
     mockEmojisCreate.mockResolvedValue(mockCreatedEmoji);
 
-    await copyCommand.execute(interaction);
+    await copyCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockDeferReply).toHaveBeenCalled();
     expect(mockEmojisCreate).toHaveBeenCalledWith({
@@ -115,7 +122,9 @@ describe("copy command", () => {
 
     mockEmojisCreate.mockResolvedValue(mockCreatedEmoji);
 
-    await copyCommand.execute(interaction);
+    await copyCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockEmojisCreate).toHaveBeenCalledWith({
       attachment: "https://cdn.discordapp.com/emojis/123456789.gif",
@@ -136,7 +145,9 @@ describe("copy command", () => {
 
     mockEmojisCreate.mockRejectedValue(new Error("Emoji slots full"));
 
-    await copyCommand.execute(interaction);
+    await copyCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockEditReply).toHaveBeenCalledWith(
       "Failed to add emoji. Check if the server has open slots or if the file size is too big.",

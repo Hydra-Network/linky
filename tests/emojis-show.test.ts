@@ -1,3 +1,4 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("discord.js", () => {
@@ -86,7 +87,9 @@ describe("show command", () => {
       options: { getString: vi.fn().mockReturnValue("not-an-emoji") },
     };
 
-    await showCommand.execute(interaction);
+    await showCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalledWith({
       content: "Invalid emoji! Make sure it's a custom emoji from a server.",
@@ -100,7 +103,9 @@ describe("show command", () => {
       options: { getString: vi.fn().mockReturnValue("<:test:123456789>") },
     };
 
-    await showCommand.execute(interaction);
+    await showCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const replyCall = mockReply.mock.calls[0][0];
@@ -114,7 +119,9 @@ describe("show command", () => {
       options: { getString: vi.fn().mockReturnValue("<a:animated:123456789>") },
     };
 
-    await showCommand.execute(interaction);
+    await showCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const replyCall = mockReply.mock.calls[0][0];

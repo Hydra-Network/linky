@@ -1,3 +1,4 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockReply = vi.fn();
@@ -19,7 +20,9 @@ describe("invite command", () => {
       reply: mockReply,
     };
 
-    await inviteCommand.execute(interaction);
+    await inviteCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

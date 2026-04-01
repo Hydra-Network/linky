@@ -1,3 +1,4 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("discord.js", () => {
@@ -44,13 +45,14 @@ vi.mock("@/config/index", () => ({
 
 import afkCommand from "@/commands/utilities/afk";
 import { getItem, setItem } from "@/db/index";
+import type { AppContainer } from "@/services/container.js";
 
 const mockContainer = {
   get: vi.fn((key) => {
     if (key === "logger") return { error: vi.fn() };
     if (key === "db") return { getItem, setItem };
   }),
-};
+} as unknown as AppContainer;
 
 describe("afk command", () => {
   const mockSetNickname = vi.fn();
@@ -74,7 +76,10 @@ describe("afk command", () => {
       },
     };
 
-    await afkCommand.execute(interaction, mockContainer);
+    await afkCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockSetNickname).toHaveBeenCalledWith("[afk] testuser");
     expect(setItem).toHaveBeenCalledWith("afk", {
@@ -105,7 +110,10 @@ describe("afk command", () => {
       },
     };
 
-    await afkCommand.execute(interaction, mockContainer);
+    await afkCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockSetNickname).toHaveBeenCalledWith("[afk] OldNick");
     expect(setItem).toHaveBeenCalledWith("afk", {
@@ -123,7 +131,7 @@ describe("afk command", () => {
   });
 
   test("preserves existing AFK data", async () => {
-    getItem.mockResolvedValueOnce({
+    (getItem as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       987654321: {
         nickname: "OtherUser",
         reason: "Sleeping",
@@ -144,7 +152,10 @@ describe("afk command", () => {
       },
     };
 
-    await afkCommand.execute(interaction, mockContainer);
+    await afkCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(setItem).toHaveBeenCalledWith("afk", {
       987654321: {

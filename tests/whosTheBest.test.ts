@@ -1,3 +1,4 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const mockReply = vi.fn();
@@ -16,7 +17,9 @@ describe("whosTheBest command", () => {
       reply: mockReply,
     };
 
-    await whosTheBestCommand.execute(interaction);
+    await whosTheBestCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockReply).toHaveBeenCalledWith("testuserforlearning is the best!");
   });

@@ -1,4 +1,6 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import type { AppContainer } from "@/services/container.js";
 
 vi.mock("discord.js", () => {
   class MockSlashCommandBuilder {
@@ -35,7 +37,7 @@ const mockContainer = {
     if (key === "logger") return { error: vi.fn() };
     if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
   }),
-};
+} as unknown as AppContainer;
 
 vi.mock("@/db/index", () => ({ getItem: vi.fn() }));
 
@@ -54,7 +56,10 @@ describe("say command", () => {
       },
     };
 
-    await sayCommand.execute(interaction, mockContainer);
+    await sayCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockReply).toHaveBeenCalledWith("Hello, world!");
   });

@@ -1,3 +1,4 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("discord.js", () => {
@@ -66,7 +67,9 @@ describe("upload command", () => {
 
     mockEmojisCreate.mockResolvedValue(mockCreatedEmoji);
 
-    await uploadCommand.execute(interaction);
+    await uploadCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockEmojisCreate).toHaveBeenCalledWith({
       attachment: "https://cdn.discordapp.com/emojis/123456789.gif",
@@ -93,7 +96,9 @@ describe("upload command", () => {
 
     mockEmojisCreate.mockResolvedValue(mockCreatedEmoji);
 
-    await uploadCommand.execute(interaction);
+    await uploadCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockEmojisCreate).toHaveBeenCalledWith({
       attachment: "https://example.com/image.png",
@@ -116,7 +121,9 @@ describe("upload command", () => {
 
     mockEmojisCreate.mockRejectedValue(new Error("File too large"));
 
-    await uploadCommand.execute(interaction);
+    await uploadCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+    );
 
     expect(mockEditReply).toHaveBeenCalledWith(
       expect.stringContaining("Failed to upload emoji"),

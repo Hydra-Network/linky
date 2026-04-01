@@ -1,4 +1,6 @@
+import type { ChatInputCommandInteraction } from "discord.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import type { AppContainer } from "@/services/container.js";
 
 const mockReply = vi.fn();
 
@@ -7,7 +9,7 @@ const mockContainer = {
     if (key === "logger") return { error: vi.fn() };
     if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
   }),
-};
+} as unknown as AppContainer;
 
 vi.mock("@/db/index", () => ({ getItem: vi.fn() }));
 
@@ -24,7 +26,10 @@ describe("lock command", () => {
       guild: null,
     };
 
-    await lockCommand.execute(interaction, mockContainer);
+    await lockCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -53,7 +58,10 @@ describe("lock command", () => {
       },
     };
 
-    await lockCommand.execute(interaction, mockContainer);
+    await lockCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -92,7 +100,10 @@ describe("lock command", () => {
       },
     };
 
-    await lockCommand.execute(interaction, mockContainer);
+    await lockCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -130,7 +141,10 @@ describe("lock command", () => {
       },
     };
 
-    await lockCommand.execute(interaction, mockContainer);
+    await lockCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
 
     expect(mockChannel.permissionOverwrites.edit).toHaveBeenCalledWith(
       mockRole,
