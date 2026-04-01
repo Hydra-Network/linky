@@ -1,0 +1,121 @@
+import type { ChatInputCommandInteraction } from "discord.js";
+import {
+  ApplicationIntegrationType,
+  InteractionContextType,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js";
+import NodeCache from "node-cache";
+import { DATABASE_KEYS } from "@/config/index.js";
+import type { AppContainer, container } from "@/services/container.js";
+import {
+  checkWithDetails,
+  getBlockerName,
+  NORMAL_BLOCKERS,
+} from "@/utils/checker.js";
+
+const checkCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
+
+const CHOICES = [
+  { name: "All", value: "normal" },
+  { name: "All (Non-DNS)", value: "non_dns" },
+  { name: "All (DNS)", value: "dns" },
+  ...NORMAL_BLOCKERS.map((b) => ({ name: getBlockerName(b), value: b })),
+];
+
+export default {
+  data: new SlashCommandBuilder()
+    .setName("check")
+    .setDescription("Check blockers for a link")
+    .setIntegrationTypes([
+      ApplicationIntegrationType.GuildInstall,
+      ApplicationIntegrationType.UserInstall,
+    ])
+    .setContexts([
+      InteractionContextType.Guild,
+      InteractionContextType.BotDM,
+      InteractionContextType.PrivateChannel,
+    ])
+    .addStringOption((o) =>
+      o
+        .setName("blockers")
+        .addChoices(...CHOICES)
+        .setDescription("Comma-separated blockers or 'all'")
+        .setRequired(true),
+    )
+    .addStringOption((o) =>
+      o.setName("url").setDescription("The link to check").setRequired(true),
+    ),
+
+  async execute(
+    interaction: ChatInputCommandInteraction,
+    container: AppContainer,
+  ) {
+    const { getItem } = container.get("db");
+
+    const url = interaction.options.getString("url")!;
+    const blockers = interaction.options.getString("blockers")!;
+
+    await interaction.deferReply();
+
+    const cacheKey = `${url}:${blockers.toLowerCase().trim()}`;
+    let results = checkCache.get(cacheKey) as
+      | Awaited<ReturnType<typeof checkWithDetails>>
+      | undefined;
+
+    if (!results) {
+      try {
+        results = await checkWithDetails(url, blockers.toLowerCase().trim());
+        checkCache.set(cacheKey, results);
+      } catch (err) {
+        return interaction.editReply({
+          content: `Error: ${(err as Error).message}`,
+        });
+      }
+    }
+    if (!results.length)
+      return interaction.editReply({
+        content: "No results returned.",
+      });
+
+    const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+      | Record<string, Record<string, unknown>>
+      | undefined;
+    const settings = allSettings?.[interaction.guildId!] || {};
+    const useEmojis =
+      (settings as Record<string, unknown>).checkEmojis !== false;
+
+    const unblocked = results.filter((r) => !r.blocked);
+    const blocked = results.filter((r) => r.blocked);
+
+    const fmt = (list: typeof results) =>
+      list.length
+        ? list
+            .map((r) =>
+              useEmojis
+                ? `${r.emoji} **${r.name}** (${r.category})`
+                : `**${r.name}** (${r.category})`,
+            )
+            .join("\n")
+        : "None";
+
+    await interaction.editReply({
+      embeds: [
+        {
+          color: 0x0099ff,
+          title: `Results for ${url}`,
+          timestamp: new Date().toISOString(),
+          description: `
+ ${unblocked.length} unblocked • ${blocked.length} blocked
+### :white_check_mark: **Unblocked (${unblocked.length})**
+${fmt(unblocked)}
+### :x: **Blocked (${blocked.length})**
+${fmt(blocked)}`,
+          footer: {
+            text: `Credits to regentstew for Gaggle, NextDNS, and Barracuda. Credits to Beercat for Smoothwall.`,
+          },
+        },
+      ],
+    });
+  },
+};

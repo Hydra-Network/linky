@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "dev": "NODE_ENV=development bun run deploy-commands.js && NODE_ENV=development bun run index.js",
-    "start": "bun run deploy-commands.js && bun run index.js",
+    "dev": "NODE_ENV=development bun run deploy-commands.ts && NODE_ENV=development bun run index.ts",
+    "start": "bun run deploy-commands.ts && bun run index.ts",
     "test": "vitest",
     "bench": "vitest bench",
+    "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "lint": "biome lint .",
     "check": "biome check --write ."
@@ -29,6 +30,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.10",
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.2",
     "vitest": "^4.1.2"
   }
 }

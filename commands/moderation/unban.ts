@@ -1,0 +1,81 @@
+import type { ChatInputCommandInteraction } from "discord.js";
+import {
+  ApplicationIntegrationType,
+  InteractionContextType,
+  MessageFlags,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from "discord.js";
+import { ERROR_MESSAGES } from "@/config/index.js";
+import type { AppContainer, container } from "@/services/container.js";
+
+export default {
+  data: new SlashCommandBuilder()
+    .setName("unban")
+    .setDescription("Unbans a member from the server.")
+    .addUserOption((option) =>
+      option
+        .setName("target")
+        .setDescription("The user to unban")
+        .setRequired(true),
+    )
+    .addStringOption((option) =>
+      option
+        .setName("reason")
+        .setDescription("Reason for unbanning (optional)")
+        .setMaxLength(512),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+    .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
+    .setContexts([
+      InteractionContextType.Guild,
+      InteractionContextType.PrivateChannel,
+    ]),
+  async execute(
+    interaction: ChatInputCommandInteraction,
+    container: AppContainer,
+  ) {
+    const logger = container.get("logger");
+
+    if (!interaction.guild) {
+      return interaction.reply({
+        content: ERROR_MESSAGES.GUILD_ONLY,
+        ephemeral: true,
+      });
+    }
+
+    const target = interaction.options.getUser("target", true);
+    const reason =
+      interaction.options.getString("reason") ||
+      ERROR_MESSAGES.NO_REASON_PROVIDED;
+
+    const botMemberPermissions = interaction.guild.members.me.permissions;
+
+    if (
+      !interaction.memberPermissions.has(PermissionFlagsBits.BanMembers) ||
+      !botMemberPermissions.has(PermissionFlagsBits.BanMembers)
+    ) {
+      return interaction.reply({
+        content: ERROR_MESSAGES.UNBAN_PERMISSION,
+        ephemeral: true,
+      });
+    }
+
+    try {
+      await interaction.guild.bans.remove(target, reason);
+      await interaction.reply({
+        content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "unbanned")
+          .replace("{target}", target.tag)
+          .replace("{reason}", reason),
+        ephemeral: true,
+      });
+    } catch (error) {
+      logger.error({ err: error }, "Unban error");
+      await interaction.reply({
+        content:
+          "There was an error while trying to unban this user. They may not be banned.",
+        ephemeral: true,
+      });
+    }
+  },
+};
