@@ -1,4 +1,4 @@
 node_modules/
 .env
-data/database.json
-data/database.db
+db/data/database.json
+db/data/database.db
