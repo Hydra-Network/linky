@@ -13,9 +13,10 @@ const mockContainer = {
 
 vi.mock("@/db/index", () => ({ getItem: vi.fn() }));
 
-import timeoutCommand from "@/commands/moderation/timeout";
+import muteCommand from "@/commands/moderation/mute";
+import unmuteCommand from "@/commands/moderation/unmute";
 
-describe("timeout command", () => {
+describe("mute command", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -26,7 +27,7 @@ describe("timeout command", () => {
       guild: null,
     };
 
-    await timeoutCommand.execute(
+    await muteCommand.execute(
       interaction as unknown as ChatInputCommandInteraction,
       mockContainer,
     );
@@ -51,7 +52,53 @@ describe("timeout command", () => {
       },
     };
 
-    await timeoutCommand.execute(
+    await muteCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
+
+    expect(mockReply).toHaveBeenCalled();
+    const callArg = mockReply.mock.calls[0][0];
+    expect(callArg.content).toBe("That member is not in this server.");
+  });
+});
+
+describe("unmute command", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("fails when not in a guild", async () => {
+    const interaction = {
+      reply: mockReply,
+      guild: null,
+    };
+
+    await unmuteCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
+
+    expect(mockReply).toHaveBeenCalled();
+    const callArg = mockReply.mock.calls[0][0];
+    expect(callArg.content).toBe("This command can only be used in a server.");
+  });
+
+  test("fails when target not in server", async () => {
+    const interaction = {
+      reply: mockReply,
+      options: {
+        getUser: vi.fn().mockReturnValue({ id: "123", tag: "user#1234" }),
+        getString: vi.fn().mockReturnValue(null),
+      },
+      guild: {
+        members: {
+          cache: new Map(),
+        },
+      },
+    };
+
+    await unmuteCommand.execute(
       interaction as unknown as ChatInputCommandInteraction,
       mockContainer,
     );

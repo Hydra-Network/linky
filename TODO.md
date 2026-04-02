@@ -20,6 +20,7 @@
 - [ ] ai
 - [ ] antinuke features
 - [ ] change nickname of someone
+- [ ] invite message
 - [ ] reaction roles
 - [ ] modlogs
 - [ ] set slowmode
