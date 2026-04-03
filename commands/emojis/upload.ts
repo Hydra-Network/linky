@@ -49,8 +49,7 @@ export default {
 			return interaction.editReply(
 				`:white_check_mark: Successfully uploaded ${createdEmoji} as \`:${name}:\``,
 			);
-		} catch (error) {
-			console.error(error);
+		} catch {
 
 			return interaction.editReply(
 				"Failed to upload emoji. \n" +

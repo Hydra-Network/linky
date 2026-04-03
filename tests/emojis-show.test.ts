@@ -68,8 +68,8 @@ const mockReply = vi.fn();
 
 const _mockContainer = {
   get: vi.fn((key) => {
-    if (key === "logger") return { error: vi.fn() };
-    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+    if (key === "logger") { return { error: vi.fn() }; }
+    if (key === "db") { return { getItem: vi.fn(), setItem: vi.fn() }; }
   }),
 };
 

@@ -26,7 +26,7 @@ export class RequestQueue<T> {
 		while (this.active < this.concurrency && this.queue.length > 0) {
 			const item = this.queue.shift();
 			this.active++;
-			this.execute(item).finally(() => {
+			await this.execute(item).finally(() => {
 				this.active--;
 				this.process();
 			});

@@ -255,7 +255,7 @@ export default {
       }
 
       if (days === 0) {
-        delete settings.minAge;
+        settings.minAge = undefined;
         await setItem(DATABASE_KEYS.SETTINGS, {
           ...allSettings,
           [interaction.guildId]: settings,
@@ -271,7 +271,6 @@ export default {
       await interaction.reply(
         MIN_AGE_ERRORS.MIN_AGE_SET.replace("{minAge}", String(days)),
       );
-      return;
     }
   },
 };

@@ -70,10 +70,11 @@ export default {
 				});
 			}
 		}
-		if (!results.length)
+		if (results.length === 0) {
 			return interaction.editReply({
 				content: "No results returned.",
 			});
+		}
 
 		const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
 			| Record<string, Record<string, unknown>>
@@ -86,7 +87,7 @@ export default {
 		const blocked = results.filter((r) => r.blocked);
 
 		const fmt = (list: typeof results) =>
-			list.length
+			list.length > 0
 				? list
 					.map((r) =>
 						useEmojis

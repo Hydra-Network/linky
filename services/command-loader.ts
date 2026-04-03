@@ -19,9 +19,9 @@ export async function loadCommands(
   client: Client,
   container: AppContainer,
 ): Promise<void> {
-  const __filename = new URL(import.meta.url).pathname;
-  const __dirname = path.dirname(__filename);
-  const basePath = path.resolve(__dirname, "..");
+  const Filename = new URL(import.meta.url).pathname;
+  const Dirname = path.dirname(Filename);
+  const basePath = path.resolve(Dirname, "..");
 
   const foldersPath = path.join(basePath, "commands");
   const commandFolders = await fs.promises.readdir(foldersPath);

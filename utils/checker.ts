@@ -141,7 +141,7 @@ export const check = async (
 	url: string,
 	blockerFilter = "all",
 ): Promise<CheckResult> => {
-	const unblocked_roles: string[] = [];
+	const unblockedRoles: string[] = [];
 	const unblocked: string[] = [];
 
 	const list = await queue.enqueue(() => fetchApi(url, blockerFilter));
@@ -152,11 +152,11 @@ export const check = async (
 			unblocked.push(getBlockerName(blocker));
 			const roleId = ROLES.BLOCKERS[blocker as keyof typeof ROLES.BLOCKERS];
 			if (roleId) {
-				unblocked_roles.push(`<@&${roleId}>`);
+				unblockedRoles.push(`<@&${roleId}>`);
 			}
 		}
 	}
-	return { unblocked, unblocked_roles };
+	return { unblocked, unblocked_roles: unblockedRoles };
 };
 
 export const checkWithDetails = async (

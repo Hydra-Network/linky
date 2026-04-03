@@ -10,9 +10,9 @@ import {
 } from "discord.js";
 import type { AppContainer } from "@/services/container.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dbPath = path.join(__dirname, "../../data/database.db");
+const Filename = fileURLToPath(import.meta.url);
+const Dirname = path.dirname(Filename);
+const dbPath = path.join(Dirname, "../../data/database.db");
 
 export default {
 	data: new SlashCommandBuilder()
@@ -113,11 +113,11 @@ export default {
 };
 
 function formatBytes(bytes: number): string {
-	if (bytes === 0) return "0 B";
+	if (bytes === 0) { return "0 B"; }
 	const k = 1024;
 	const sizes = ["B", "KB", "MB", "GB"];
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+	return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
 }
 
 function formatUptime(seconds: number): string {
@@ -126,9 +126,9 @@ function formatUptime(seconds: number): string {
 	const minutes = Math.floor((seconds % 3600) / 60);
 
 	const parts: string[] = [];
-	if (days > 0) parts.push(`${days}d`);
-	if (hours > 0) parts.push(`${hours}h`);
-	if (minutes > 0) parts.push(`${minutes}m`);
+	if (days > 0) { parts.push(`${days}d`); }
+	if (hours > 0) { parts.push(`${hours}h`); }
+	if (minutes > 0) { parts.push(`${minutes}m`); }
 
 	return parts.length > 0 ? parts.join(" ") : "< 1m";
 }

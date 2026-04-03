@@ -3,14 +3,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Client } from "@libsql/client";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const Filename = fileURLToPath(import.meta.url);
+const Dirname = path.dirname(Filename);
 
-const migrationsDir = path.join(__dirname, "migrations");
-const stateDir = path.join(__dirname, "data", "migrations");
+const migrationsDir = path.join(Dirname, "migrations");
+const stateDir = path.join(Dirname, "data", "migrations");
 
 const getPendingMigrations = (): string[] => {
-  if (!fs.existsSync(migrationsDir)) return [];
+  if (!fs.existsSync(migrationsDir)) { return []; }
 
   const files = fs
     .readdirSync(migrationsDir)
@@ -18,7 +18,7 @@ const getPendingMigrations = (): string[] => {
     .map((f) => f.replace(/\.(js|ts)$/, ""))
     .sort();
 
-  if (!fs.existsSync(stateDir)) return files;
+  if (!fs.existsSync(stateDir)) { return files; }
 
   const completed = new Set(
     fs.readdirSync(stateDir).map((f) => f.replace(/\.done$/, "")),
@@ -37,7 +37,7 @@ export const runMigrations = async (client: Client) => {
 
   for (const name of pending) {
     const migrationPath = path.join(migrationsDir, `${name}.js`);
-    if (!fs.existsSync(migrationPath)) continue;
+    if (!fs.existsSync(migrationPath)) { continue; }
 
     const { default: migration } = await import(
       new URL(`${name}.js`, import.meta.url).href

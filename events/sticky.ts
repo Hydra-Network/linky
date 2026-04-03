@@ -29,7 +29,7 @@ export default defineMessageEvent(
 
     const sticky = cache.get(message.channelId) as StickyData | undefined;
     if (sticky) {
-      if (processingSticky.has(message.channelId)) return;
+      if (processingSticky.has(message.channelId)) { return; }
       processingSticky.add(message.channelId);
 
       try {

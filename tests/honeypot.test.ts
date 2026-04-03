@@ -16,8 +16,8 @@ const { getItem } = await import("@/db/index");
 
 const mockContainer = {
   get: vi.fn((key) => {
-    if (key === "logger") return { error: vi.fn(), info: vi.fn() };
-    if (key === "db") return { getItem, setItem: vi.fn() };
+    if (key === "logger") { return { error: vi.fn(), info: vi.fn() }; }
+    if (key === "db") { return { getItem, setItem: vi.fn() }; }
   }),
 };
 
@@ -43,10 +43,10 @@ describe("honeypot", () => {
     mockGetItem.mockReset();
 
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") return Promise.resolve({});
-      if (key === "automodWords") return Promise.resolve({});
-      if (key === "linkChannels") return Promise.resolve({});
-      if (key === "honeypotChannel") return Promise.resolve({});
+      if (key === "sticky") { return Promise.resolve({}); }
+      if (key === "automodWords") { return Promise.resolve({}); }
+      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "honeypotChannel") { return Promise.resolve({}); }
       return Promise.resolve(null);
     });
 
@@ -66,11 +66,12 @@ describe("honeypot", () => {
   test("softbans user who messages in honeypot channel", async () => {
     const mockGetItem = vi.mocked(getItem);
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") return Promise.resolve({});
-      if (key === "automodWords") return Promise.resolve({});
-      if (key === "linkChannels") return Promise.resolve({});
-      if (key === "honeypotChannel")
+      if (key === "sticky") { return Promise.resolve({}); }
+      if (key === "automodWords") { return Promise.resolve({}); }
+      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "honeypotChannel") {
         return Promise.resolve({ 987654321: "111222333" });
+      }
       return Promise.resolve(null);
     });
 
@@ -90,11 +91,12 @@ describe("honeypot", () => {
   test("does not softban when not in honeypot channel", async () => {
     const mockGetItem = vi.mocked(getItem);
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") return Promise.resolve({});
-      if (key === "automodWords") return Promise.resolve({});
-      if (key === "linkChannels") return Promise.resolve({});
-      if (key === "honeypotChannel")
+      if (key === "sticky") { return Promise.resolve({}); }
+      if (key === "automodWords") { return Promise.resolve({}); }
+      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "honeypotChannel") {
         return Promise.resolve({ 987654321: "999888777" });
+      }
       return Promise.resolve(null);
     });
 
@@ -109,10 +111,10 @@ describe("honeypot", () => {
   test("does nothing when no honeypot channel configured", async () => {
     const mockGetItem = vi.mocked(getItem);
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") return Promise.resolve({});
-      if (key === "automodWords") return Promise.resolve({});
-      if (key === "linkChannels") return Promise.resolve({});
-      if (key === "honeypotChannel") return Promise.resolve({});
+      if (key === "sticky") { return Promise.resolve({}); }
+      if (key === "automodWords") { return Promise.resolve({}); }
+      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "honeypotChannel") { return Promise.resolve({}); }
       return Promise.resolve(null);
     });
 

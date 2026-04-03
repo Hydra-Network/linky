@@ -121,7 +121,6 @@ export default {
         [interaction.guildId]: [],
       });
       await interaction.reply("Cleared all words from the blocklist.");
-      return;
     }
   },
 };

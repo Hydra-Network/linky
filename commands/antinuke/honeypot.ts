@@ -115,7 +115,6 @@ export default {
       await interaction.reply(
         `Honeypot channel: ${channel ? channel : `<#${currentChannelId}>`}`,
       );
-      return;
     }
   },
 };

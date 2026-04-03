@@ -62,7 +62,7 @@ export const checkUserAndBotPermissions = (
   const userHas = userPermissions.has(permission);
   const botHas = botPermissions.has(permission);
 
-  if (!userHas && !botHas) {
+  if (!(userHas || botHas)) {
     return {
       ok: false,
       reason: "Both you and the bot need the required permission.",

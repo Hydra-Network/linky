@@ -17,8 +17,9 @@ export default defineMessageEvent(
       linkChannelIds = dbData?.[message.guildId] || [];
       cache.set(message.guildId, linkChannelIds);
     }
-    if (!linkChannelIds.length || !linkChannelIds.includes(message.channelId))
+    if (!(linkChannelIds.length > 0&& linkChannelIds.includes(message.channelId))) {
       return;
+    }
 
     const hasLink = messageContent.match(URL_REGEX) !== null;
 

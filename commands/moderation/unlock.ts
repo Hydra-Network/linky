@@ -79,8 +79,7 @@ export default {
     );
 
     if (
-      !currentPermissions?.deny.has(PermissionFlagsBits.SendMessages) &&
-      !currentPermissions?.deny.has(PermissionFlagsBits.SendMessagesInThreads)
+      !(currentPermissions?.deny.has(PermissionFlagsBits.SendMessages) ||currentPermissions?.deny.has(PermissionFlagsBits.SendMessagesInThreads))
     ) {
       return interaction.reply({
         content: `${channel} is not locked.`,

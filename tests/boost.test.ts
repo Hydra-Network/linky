@@ -16,8 +16,8 @@ vi.mock("@/db/index", () => {
 
 const mockContainer = {
   get: vi.fn((key) => {
-    if (key === "logger") return { error: vi.fn() };
-    if (key === "db") return { getItem: mockGetItem, setItem: vi.fn() };
+    if (key === "logger") { return { error: vi.fn() }; }
+    if (key === "db") { return { getItem: mockGetItem, setItem: vi.fn() }; }
   }),
 };
 

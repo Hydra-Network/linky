@@ -6,10 +6,10 @@ import { DATABASE_KEYS } from "../config/constants.js";
 import type { CacheService } from "../services/cache.js";
 import { runMigrations } from "./migrations/runner.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const Filename = fileURLToPath(import.meta.url);
+const Dirname = path.dirname(Filename);
 
-const dataDir = path.join(__dirname, "data");
+const dataDir = path.join(Dirname, "data");
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -106,14 +106,14 @@ const resolveConfig = (key: string): ResolvedConfig | null => {
 };
 
 export const getItem = (key: string, cache?: CacheService) => {
-  if (!client) throw new Error("Database not initialized.");
+  if (!client) { throw new Error("Database not initialized."); }
 
   const cfg = resolveConfig(key);
-  if (!cfg) return undefined;
+  if (!cfg) { return ; }
 
   if (cache) {
     const cached = cache.get(key);
-    if (cached !== undefined) return cached;
+    if (cached !== undefined) { return cached; }
   }
 
   if (cfg.singleValue) {
@@ -155,10 +155,10 @@ export const setItem = async (
   value: unknown,
   cache?: CacheService,
 ) => {
-  if (!client) throw new Error("Database not initialized.");
+  if (!client) { throw new Error("Database not initialized."); }
 
   const cfg = resolveConfig(key);
-  if (!cfg) return;
+  if (!cfg) { return; }
 
   if (cfg.singleValue) {
     await client.execute({
@@ -194,7 +194,7 @@ export const setItem = async (
 };
 
 export const clear = async () => {
-  if (!client) throw new Error("Database not initialized.");
+  if (!client) { throw new Error("Database not initialized."); }
   await Promise.all(
     Object.values(SCHEMA).map(({ table }) =>
       client?.execute(`DELETE FROM ${table}`),

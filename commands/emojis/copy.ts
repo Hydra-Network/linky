@@ -54,8 +54,7 @@ export default {
       return interaction.editReply(
         `:white_check_mark: Uploaded emoji: ${createdEmoji}`,
       );
-    } catch (error) {
-      console.error(error);
+    } catch {
       return interaction.editReply(
         "Failed to add emoji. Check if the server has open slots or if the file size is too big.",
       );

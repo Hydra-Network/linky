@@ -9,7 +9,7 @@ export default defineEvent(
     [oldMember, newMember]: [GuildMember, GuildMember],
     { logger, db },
   ) => {
-    const oldWasBoosting = !!oldMember.premiumSince;
+    const oldWasBoosting = Boolean(oldMember.premiumSince);
     const newIsBoosting = newMember.premiumSince;
 
     if (!oldWasBoosting && newIsBoosting) {
@@ -19,11 +19,11 @@ export default defineEvent(
         | undefined;
       const boostChannelId = allSettings?.[guildId]?.boostChannel;
 
-      if (!boostChannelId) return;
+      if (!boostChannelId) { return; }
 
       try {
         const channel = await newMember.guild.channels.fetch(boostChannelId);
-        if (!channel || !("send" in channel)) return;
+        if (!(channel && ("send" in channel))) { return; }
 
         const months = newMember.premiumSinceTimestamp
           ? Math.floor(

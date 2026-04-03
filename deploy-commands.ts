@@ -4,8 +4,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { REST, Routes } from "discord.js";
 import logger from "@/services/logger.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const Filename = fileURLToPath(import.meta.url);
+const Dirname = path.dirname(Filename);
 
 import "dotenv/config";
 const token = process.env.token;
@@ -17,7 +17,7 @@ interface CommandModule {
 }
 
 const commands: Record<string, unknown>[] = [];
-const foldersPath = path.join(__dirname, "commands");
+const foldersPath = path.join(Dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
@@ -58,9 +58,7 @@ const rest = new REST().setToken(token);
 			commands.map((cmd) => (cmd as Record<string, string>).name),
 		);
 
-		for (const existingCmd of existingCommands as Array<
-			Record<string, string>
-		>) {
+		for (const existingCmd of existingCommands as Record<string, string>[]) {
 			if (!localCommandNames.has(existingCmd.name)) {
 				logger.info(`Removing command: ${existingCmd.name}`);
 				await rest.delete(Routes.applicationCommand(clientId, existingCmd.id));
@@ -72,7 +70,7 @@ const rest = new REST().setToken(token);
 		});
 
 		logger.info(
-			`Successfully reloaded ${(data as Array<unknown>).length} application (/) commands.`,
+			`Successfully reloaded ${(data as unknown[]).length} application (/) commands.`,
 		);
 	} catch (error) {
 		logger.error({ err: error });

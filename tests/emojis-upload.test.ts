@@ -37,8 +37,8 @@ const mockEmojisCreate = vi.fn();
 
 const _mockContainer = {
   get: vi.fn((key) => {
-    if (key === "logger") return { error: vi.fn() };
-    if (key === "db") return { getItem: vi.fn(), setItem: vi.fn() };
+    if (key === "logger") { return { error: vi.fn() }; }
+    if (key === "db") { return { getItem: vi.fn(), setItem: vi.fn() }; }
   }),
 };
 
@@ -58,8 +58,8 @@ describe("upload command", () => {
       editReply: mockEditReply,
       options: {
         getString: vi.fn((key) => {
-          if (key === "id-or-url") return "123456789";
-          if (key === "name") return "myname";
+          if (key === "id-or-url") { return "123456789"; }
+          if (key === "name") { return "myname"; }
         }),
       },
       guild: { emojis: { create: mockEmojisCreate } },
@@ -87,8 +87,8 @@ describe("upload command", () => {
       editReply: mockEditReply,
       options: {
         getString: vi.fn((key) => {
-          if (key === "id-or-url") return "https://example.com/image.png";
-          if (key === "name") return "urlname";
+          if (key === "id-or-url") { return "https://example.com/image.png"; }
+          if (key === "name") { return "urlname"; }
         }),
       },
       guild: { emojis: { create: mockEmojisCreate } },
@@ -112,8 +112,8 @@ describe("upload command", () => {
       editReply: mockEditReply,
       options: {
         getString: vi.fn((key) => {
-          if (key === "id-or-url") return "123456789";
-          if (key === "name") return "myname";
+          if (key === "id-or-url") { return "123456789"; }
+          if (key === "name") { return "myname"; }
         }),
       },
       guild: { emojis: { create: mockEmojisCreate } },

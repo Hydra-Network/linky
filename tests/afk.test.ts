@@ -49,8 +49,8 @@ import type { AppContainer } from "@/services/container.js";
 
 const mockContainer = {
 	get: vi.fn((key) => {
-		if (key === "logger") return { error: vi.fn() };
-		if (key === "db") return { getItem, setItem };
+		if (key === "logger") { return { error: vi.fn() }; }
+		if (key === "db") { return { getItem, setItem }; }
 	}),
 } as unknown as AppContainer;
 

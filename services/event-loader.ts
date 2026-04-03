@@ -9,9 +9,9 @@ export async function loadEvents(
   client: Client,
   container: AppContainer,
 ): Promise<void> {
-  const __filename = new URL(import.meta.url).pathname;
-  const __dirname = path.dirname(__filename);
-  const basePath = path.resolve(__dirname, "..");
+  const Filename = new URL(import.meta.url).pathname;
+  const Dirname = path.dirname(Filename);
+  const basePath = path.resolve(Dirname, "..");
 
   const eventsPath = path.join(basePath, "events");
   const eventFiles = (await fs.promises.readdir(eventsPath)).filter(
