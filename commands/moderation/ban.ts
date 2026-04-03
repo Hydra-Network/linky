@@ -96,6 +96,11 @@ export default {
       });
     }
 
+    await target
+      .send(
+        `You have been banned from ${interaction.guild.name}. Reason: ${reason}`,
+      )
+      .catch(() => {});
     await member.ban({ reason: reason });
     await interaction.reply({
       content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "banned")

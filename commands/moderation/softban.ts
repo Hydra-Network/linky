@@ -22,6 +22,12 @@ export default {
         .setDescription("The member to softban")
         .setRequired(true),
     )
+    .addStringOption((option) =>
+      option
+        .setName("reason")
+        .setDescription("Reason for softbanning (optional)")
+        .setMaxLength(512),
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
     .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
     .setContexts([
@@ -40,6 +46,9 @@ export default {
     }
 
     const target = interaction.options.getUser("target");
+    const reason =
+      interaction.options.getString("reason") ||
+      ERROR_MESSAGES.NO_REASON_PROVIDED;
     if (!target) {
       return interaction.reply({
         content: ERROR_MESSAGES.VALID_MEMBER.replace("{action}", "softban"),
@@ -86,7 +95,12 @@ export default {
       });
     }
 
-    await member.ban();
+    await target
+      .send(
+        `You have been softbanned from ${interaction.guild.name}. Reason: ${reason}`,
+      )
+      .catch(() => {});
+    await member.ban({ reason });
     await interaction.guild.bans.remove(target);
     await interaction.reply({
       content: ERROR_MESSAGES.ACTION_SUCCESS.replace(

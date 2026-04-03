@@ -61,6 +61,11 @@ export default {
       });
     }
 
+    await target
+      .send(
+        `You have been unbanned from ${interaction.guild.name}. Reason: ${reason}`,
+      )
+      .catch(() => {});
     await interaction.guild.bans.remove(target, reason);
     await interaction.reply({
       content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "unbanned")

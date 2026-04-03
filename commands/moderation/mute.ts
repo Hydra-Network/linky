@@ -120,6 +120,11 @@ export default {
       });
     }
 
+    await target
+      .send(
+        `You have been muted in ${interaction.guild.name} for ${duration} minute(s). Reason: ${reason}`,
+      )
+      .catch(() => {});
     await member.timeout(duration * 60 * 1000, reason);
     await interaction.reply({
       content: `Successfully muted ${target.tag} for ${duration} minute(s). Reason: ${reason}`,

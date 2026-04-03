@@ -96,6 +96,11 @@ export default {
       });
     }
 
+    await target
+      .send(
+        `You have been kicked from ${interaction.guild.name}. Reason: ${reason}`,
+      )
+      .catch(() => {});
     await member.kick(reason);
     await interaction.reply({
       content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "kicked")

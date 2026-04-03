@@ -103,6 +103,11 @@ export default {
       });
     }
 
+    await target
+      .send(
+        `You have been unmuted in ${interaction.guild.name}. Reason: ${reason}`,
+      )
+      .catch(() => {});
     await member.timeout(null, reason);
     await interaction.reply({
       content: `Successfully unmuted ${target.tag}. Reason: ${reason}`,
