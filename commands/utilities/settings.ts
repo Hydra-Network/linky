@@ -18,6 +18,167 @@ import {
 import type { AppContainer } from "@/services/container.js";
 import { hasPermission } from "@/utils/permissions.js";
 
+type DbGetItem = (key: string) => unknown;
+type DbSetItem = (key: string, value: unknown) => void;
+
+async function handleCheckEmoji(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  if (!interaction.guildId) {
+    await interaction.reply("This setting can only be used in a server.");
+    return;
+  }
+  if (
+    !hasPermission(
+      interaction.member as GuildMember,
+      PermissionFlagsBits.Administrator,
+    )
+  ) {
+    await interaction.reply(ERROR_MESSAGES.ADMIN_REQUIRED);
+    return;
+  }
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+  const currentValue =
+    (settings as Record<string, unknown>).checkEmojis !== false;
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...allSettings,
+    [interaction.guildId]: { ...settings, checkEmojis: !currentValue },
+  });
+  await interaction.reply(
+    `Check emojis ${!currentValue ? "enabled" : "disabled"} for this server`,
+  );
+}
+
+async function handleTicketCategory(
+  interaction: ChatInputCommandInteraction,
+  setItem: DbSetItem,
+) {
+  const category = interaction.options.getChannel("category") as GuildChannel;
+  await setItem(DATABASE_KEYS.TICKET_CATEGORY, category.id);
+  await interaction.reply(`Ticket category set to ${category.name}`);
+}
+
+async function handleLinkChannelAdd(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const channel = interaction.options.getChannel("channel") as GuildChannel;
+  const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
+    | Record<string, string[]>
+    | undefined;
+  const channels = linkChannels?.[interaction.guildId] || [];
+  await setItem(DATABASE_KEYS.LINK_CHANNELS, {
+    ...linkChannels,
+    [interaction.guildId]: [...channels, channel.id],
+  });
+  await interaction.reply(`Link channel added: ${channel.name}`);
+}
+
+async function handleLinkChannelRemove(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const channel = interaction.options.getChannel("channel") as GuildChannel;
+  const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
+    | Record<string, string[]>
+    | undefined;
+  const channels = linkChannels?.[interaction.guildId] || [];
+  const index = channels.indexOf(channel.id);
+  if (index === -1) {
+    await interaction.reply(`Channel ${channel.name} is not a link channel`);
+  } else {
+    await setItem(DATABASE_KEYS.LINK_CHANNELS, {
+      ...linkChannels,
+      [interaction.guildId]: channels.filter((c) => c !== channel.id),
+    });
+    await interaction.reply(`Link channel removed: ${channel.name}`);
+  }
+}
+
+async function handleLinkChannelList(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+) {
+  const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
+    | Record<string, string[]>
+    | undefined;
+  const channels = linkChannels?.[interaction.guildId] || [];
+  if (channels.length === 0) {
+    await interaction.reply("No link channels set");
+  } else {
+    await interaction.reply(`Link channels: ${channels.join(", ")}`);
+  }
+}
+
+async function handleBoostChannel(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const channel = interaction.options.getChannel("channel") as GuildChannel;
+  const settings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...settings,
+    [interaction.guildId]: {
+      ...(settings?.[interaction.guildId] || {}),
+      boostChannel: channel.id,
+    },
+  });
+  await interaction.reply(`Boost thank you channel set to ${channel.name}`);
+}
+
+async function handleMinAge(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const days = interaction.options.getInteger("days");
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings: Record<string, unknown> =
+    allSettings?.[interaction.guildId] || {};
+
+  if (days === null || days === undefined) {
+    const currentAge = settings.minAge as number | undefined;
+    if (currentAge) {
+      await interaction.reply(
+        `Current minimum account age: ${currentAge} days`,
+      );
+    } else {
+      await interaction.reply(MIN_AGE_ERRORS.NO_MIN_AGE_SET);
+    }
+    return;
+  }
+
+  if (days === 0) {
+    settings.minAge = undefined;
+    await setItem(DATABASE_KEYS.SETTINGS, {
+      ...allSettings,
+      [interaction.guildId]: settings,
+    });
+    await interaction.reply(MIN_AGE_ERRORS.MIN_AGE_REMOVED);
+    return;
+  }
+
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...allSettings,
+    [interaction.guildId]: { ...settings, minAge: days },
+  });
+  await interaction.reply(
+    MIN_AGE_ERRORS.MIN_AGE_SET.replace("{minAge}", String(days)),
+  );
+}
+
 export default {
   data: new SlashCommandBuilder()
     .setName("settings")
@@ -116,32 +277,7 @@ export default {
     const subcommandGroup = interaction.options.getSubcommandGroup();
 
     if (subcommand === "check-emoji") {
-      if (!interaction.guildId) {
-        await interaction.reply("This setting can only be used in a server.");
-        return;
-      }
-      if (
-        !hasPermission(
-          interaction.member as GuildMember,
-          PermissionFlagsBits.Administrator,
-        )
-      ) {
-        await interaction.reply(ERROR_MESSAGES.ADMIN_REQUIRED);
-        return;
-      }
-      const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
-        | Record<string, Record<string, unknown>>
-        | undefined;
-      const settings = allSettings?.[interaction.guildId] || {};
-      const currentValue =
-        (settings as Record<string, unknown>).checkEmojis !== false;
-      await setItem(DATABASE_KEYS.SETTINGS, {
-        ...allSettings,
-        [interaction.guildId]: { ...settings, checkEmojis: !currentValue },
-      });
-      await interaction.reply(
-        `Check emojis ${!currentValue ? "enabled" : "disabled"} for this server`,
-      );
+      await handleCheckEmoji(interaction, getItem, setItem);
       return;
     }
 
@@ -156,121 +292,28 @@ export default {
     }
 
     if (subcommand === "ticket-category") {
-      const category = interaction.options.getChannel(
-        "category",
-      ) as GuildChannel;
-      await setItem(DATABASE_KEYS.TICKET_CATEGORY, category.id);
-      await interaction.reply(`Ticket category set to ${category.name}`);
+      await handleTicketCategory(interaction, setItem);
       return;
     }
 
     if (subcommandGroup === "link-channel") {
       if (subcommand === "add") {
-        const channel = interaction.options.getChannel(
-          "channel",
-        ) as GuildChannel;
-        const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
-          | Record<string, string[]>
-          | undefined;
-        const channels = linkChannels?.[interaction.guildId] || [];
-        await setItem(DATABASE_KEYS.LINK_CHANNELS, {
-          ...linkChannels,
-          [interaction.guildId]: [...channels, channel.id],
-        });
-        await interaction.reply(`Link channel added: ${channel.name}`);
-        return;
+        await handleLinkChannelAdd(interaction, getItem, setItem);
+      } else if (subcommand === "remove") {
+        await handleLinkChannelRemove(interaction, getItem, setItem);
+      } else if (subcommand === "list") {
+        await handleLinkChannelList(interaction, getItem);
       }
-
-      if (subcommand === "remove") {
-        const channel = interaction.options.getChannel(
-          "channel",
-        ) as GuildChannel;
-        const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
-          | Record<string, string[]>
-          | undefined;
-        const channels = linkChannels?.[interaction.guildId] || [];
-        const index = channels.indexOf(channel.id);
-        if (index === -1) {
-          await interaction.reply(
-            `Channel ${channel.name} is not a link channel`,
-          );
-        } else {
-          await setItem(DATABASE_KEYS.LINK_CHANNELS, {
-            ...linkChannels,
-            [interaction.guildId]: channels.filter((c) => c !== channel.id),
-          });
-          await interaction.reply(`Link channel removed: ${channel.name}`);
-        }
-        return;
-      }
-
-      if (subcommand === "list") {
-        const linkChannels = (await getItem(DATABASE_KEYS.LINK_CHANNELS)) as
-          | Record<string, string[]>
-          | undefined;
-        const channels = linkChannels?.[interaction.guildId] || [];
-        if (channels.length === 0) {
-          await interaction.reply("No link channels set");
-        } else {
-          await interaction.reply(`Link channels: ${channels.join(", ")}`);
-        }
-        return;
-      }
+      return;
     }
 
     if (subcommand === "boost-channel") {
-      const channel = interaction.options.getChannel("channel") as GuildChannel;
-      const settings = (await getItem(DATABASE_KEYS.SETTINGS)) as
-        | Record<string, Record<string, unknown>>
-        | undefined;
-      await setItem(DATABASE_KEYS.SETTINGS, {
-        ...settings,
-        [interaction.guildId]: {
-          ...(settings?.[interaction.guildId] || {}),
-          boostChannel: channel.id,
-        },
-      });
-      await interaction.reply(`Boost thank you channel set to ${channel.name}`);
+      await handleBoostChannel(interaction, getItem, setItem);
       return;
     }
 
     if (subcommand === "min-age") {
-      const days = interaction.options.getInteger("days");
-      const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
-        | Record<string, Record<string, unknown>>
-        | undefined;
-      const settings: Record<string, unknown> =
-        allSettings?.[interaction.guildId] || {};
-
-      if (days === null || days === undefined) {
-        const currentAge = settings.minAge as number | undefined;
-        if (currentAge) {
-          await interaction.reply(
-            `Current minimum account age: ${currentAge} days`,
-          );
-        } else {
-          await interaction.reply(MIN_AGE_ERRORS.NO_MIN_AGE_SET);
-        }
-        return;
-      }
-
-      if (days === 0) {
-        settings.minAge = undefined;
-        await setItem(DATABASE_KEYS.SETTINGS, {
-          ...allSettings,
-          [interaction.guildId]: settings,
-        });
-        await interaction.reply(MIN_AGE_ERRORS.MIN_AGE_REMOVED);
-        return;
-      }
-
-      await setItem(DATABASE_KEYS.SETTINGS, {
-        ...allSettings,
-        [interaction.guildId]: { ...settings, minAge: days },
-      });
-      await interaction.reply(
-        MIN_AGE_ERRORS.MIN_AGE_SET.replace("{minAge}", String(days)),
-      );
+      await handleMinAge(interaction, getItem, setItem);
     }
   },
 };

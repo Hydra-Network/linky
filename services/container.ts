@@ -9,10 +9,12 @@ interface DbMethods {
 }
 
 export interface AppContainer {
-  get(key: "logger"): pino.Logger;
-  get(key: "client"): Client<true>;
-  get(key: "db"): DbMethods;
-  get(key: "cache"): CacheService;
+  get: {
+    (key: "logger"): pino.Logger;
+    (key: "client"): Client<true>;
+    (key: "db"): DbMethods;
+    (key: "cache"): CacheService;
+  };
 }
 
 class Container implements AppContainer {

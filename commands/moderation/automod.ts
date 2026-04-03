@@ -9,6 +9,66 @@ import { DATABASE_KEYS, ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import { hasPermission } from "@/utils/permissions.js";
 
+interface AutomodContext {
+  interaction: ChatInputCommandInteraction;
+  setItem: (key: string, value: unknown) => Promise<void>;
+  guildWords: string[];
+  automodWords: Record<string, string[]> | undefined;
+  guildId: string;
+}
+
+async function handleAdd(ctx: AutomodContext) {
+  const word = ctx.interaction.options.getString("word")?.toLowerCase().trim();
+  if (!word) {
+    await ctx.interaction.reply("Please provide a valid word.");
+    return;
+  }
+  if (ctx.guildWords.includes(word)) {
+    await ctx.interaction.reply(`"${word}" is already in the blocklist.`);
+    return;
+  }
+  await ctx.setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
+    ...ctx.automodWords,
+    [ctx.guildId]: [...ctx.guildWords, word],
+  });
+  await ctx.interaction.reply(`Added "${word}" to the blocklist.`);
+}
+
+async function handleRemove(ctx: AutomodContext) {
+  const word = ctx.interaction.options.getString("word")?.toLowerCase().trim();
+  if (!ctx.guildWords.includes(word)) {
+    await ctx.interaction.reply(`"${word}" is not in the blocklist.`);
+    return;
+  }
+  await ctx.setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
+    ...ctx.automodWords,
+    [ctx.guildId]: ctx.guildWords.filter((w) => w !== word),
+  });
+  await ctx.interaction.reply(`Removed "${word}" from the blocklist.`);
+}
+
+async function handleList(ctx: AutomodContext) {
+  if (ctx.guildWords.length === 0) {
+    await ctx.interaction.reply("No words in the blocklist.");
+  } else {
+    await ctx.interaction.reply(
+      `**Blocked words (${ctx.guildWords.length}):**\n${ctx.guildWords.join(", ")}`,
+    );
+  }
+}
+
+async function handleClear(ctx: AutomodContext) {
+  if (ctx.guildWords.length === 0) {
+    await ctx.interaction.reply("The blocklist is already empty.");
+    return;
+  }
+  await ctx.setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
+    ...ctx.automodWords,
+    [ctx.guildId]: [],
+  });
+  await ctx.interaction.reply("Cleared all words from the blocklist.");
+}
+
 export default {
   data: new SlashCommandBuilder()
     .setName("automod")
@@ -67,60 +127,31 @@ export default {
       | Record<string, string[]>
       | undefined;
     const guildWords = automodWords?.[interaction.guildId] || [];
+    const guildId = interaction.guildId;
 
-    if (subcommand === "add") {
-      const word = interaction.options.getString("word")?.toLowerCase().trim();
-      if (!word) {
-        await interaction.reply("Please provide a valid word.");
-        return;
-      }
-      if (guildWords.includes(word)) {
-        await interaction.reply(`"${word}" is already in the blocklist.`);
-        return;
-      }
-      await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
-        ...automodWords,
-        [interaction.guildId]: [...guildWords, word],
-      });
-      await interaction.reply(`Added "${word}" to the blocklist.`);
-      return;
-    }
+    const ctx: AutomodContext = {
+      interaction,
+      setItem,
+      guildWords,
+      automodWords,
+      guildId,
+    };
 
-    if (subcommand === "remove") {
-      const word = interaction.options.getString("word")?.toLowerCase().trim();
-      if (!guildWords.includes(word)) {
-        await interaction.reply(`"${word}" is not in the blocklist.`);
-        return;
-      }
-      await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
-        ...automodWords,
-        [interaction.guildId]: guildWords.filter((w) => w !== word),
-      });
-      await interaction.reply(`Removed "${word}" from the blocklist.`);
-      return;
-    }
-
-    if (subcommand === "list") {
-      if (guildWords.length === 0) {
-        await interaction.reply("No words in the blocklist.");
-      } else {
-        await interaction.reply(
-          `**Blocked words (${guildWords.length}):**\n${guildWords.join(", ")}`,
-        );
-      }
-      return;
-    }
-
-    if (subcommand === "clear") {
-      if (guildWords.length === 0) {
-        await interaction.reply("The blocklist is already empty.");
-        return;
-      }
-      await setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
-        ...automodWords,
-        [interaction.guildId]: [],
-      });
-      await interaction.reply("Cleared all words from the blocklist.");
+    switch (subcommand) {
+      case "add":
+        await handleAdd(ctx);
+        break;
+      case "remove":
+        await handleRemove(ctx);
+        break;
+      case "list":
+        await handleList(ctx);
+        break;
+      case "clear":
+        await handleClear(ctx);
+        break;
+      default:
+        break;
     }
   },
 };

@@ -25,9 +25,9 @@ export class RequestQueue<T> {
   private async process() {
     while (this.active < this.concurrency && this.queue.length > 0) {
       const item = this.queue.shift();
-      this.active+= 1;
+      this.active += 1;
       await this.execute(item).finally(() => {
-        this.active--;
+        this.active -= 1;
         this.process().catch(() => {});
       });
     }
@@ -39,7 +39,7 @@ export class RequestQueue<T> {
       item.resolve(result);
     } catch (err) {
       if (item.retries < this.maxRetries) {
-        item.retries+= 1;
+        item.retries += 1;
         const delay = this.baseDelayMs * 2 ** (item.retries - 1);
         await new Promise((r) => setTimeout(r, delay));
         await this.execute(item);

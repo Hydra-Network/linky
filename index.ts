@@ -1,7 +1,7 @@
 import {
   ActivityType,
-  Client,
   Collection,
+  Client as DiscordClient,
   Events,
   GatewayIntentBits,
 } from "discord.js";
@@ -28,7 +28,7 @@ await init();
 
 const token = process.env.token;
 
-const client = new Client({
+const client = new DiscordClient({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,

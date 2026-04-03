@@ -34,7 +34,11 @@ export function defineMessageEvent(
   return {
     name: Events.MessageCreate,
     once,
-    async execute(message: Message, _client: Client, container: AppContainer) {
+    async execute(
+      message: Message,
+      discordClient: Client,
+      container: AppContainer,
+    ) {
       if (!skipBotCheck && (message.author.bot || !message.guild)) {
         return;
       }
@@ -42,7 +46,7 @@ export function defineMessageEvent(
       const ctx: EventContext = {
         logger: container.get("logger"),
         db: container.get("db"),
-        client: _client as Client<true>,
+        client: discordClient as Client<true>,
         container,
       };
 

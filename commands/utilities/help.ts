@@ -65,13 +65,13 @@ export default {
       .setDescription("Here is a list of all available commands:")
       .setColor(0x00ae86);
 
-    commands.forEach((command) => {
+    for (const command of commands.values()) {
       embed.addFields({
         name: `/${command.data.name}`,
         value: command.data.description || "No description provided.",
         inline: false,
       });
-    });
+    }
 
     await interaction.reply({ embeds: [embed] });
   },
