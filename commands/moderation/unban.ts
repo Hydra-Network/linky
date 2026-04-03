@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
@@ -38,7 +39,7 @@ export default {
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -57,7 +58,7 @@ export default {
     if (!permCheck.ok) {
       return interaction.reply({
         content: ERROR_MESSAGES.UNBAN_PERMISSION,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -71,7 +72,7 @@ export default {
       content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "unbanned")
         .replace("{target}", target.tag)
         .replace("{reason}", reason),
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

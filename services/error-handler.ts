@@ -1,4 +1,5 @@
 import type { ChatInputCommandInteraction } from "discord.js";
+import { MessageFlags } from "discord.js";
 import type { Logger } from "pino";
 
 interface ErrorHandlerOptions {
@@ -22,7 +23,7 @@ export async function handleError(
         content:
           fallbackMessage ??
           `An error occurred while executing \`${context}\`. Please try again later.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } catch {
       logger.error({ context }, "Failed to send error follow-up");
@@ -35,7 +36,7 @@ export async function handleError(
       content:
         fallbackMessage ??
         `An error occurred while executing \`${context}\`. Please try again later.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   } catch {
     logger.error({ context }, "Failed to send error reply");

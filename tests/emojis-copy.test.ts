@@ -30,6 +30,7 @@ vi.mock("discord.js", () => {
       PrivateChannel: "PrivateChannel",
     },
     PermissionFlagsBits: { ManageGuildExpressions: "ManageGuildExpressions" },
+    MessageFlags: { Ephemeral: 64 },
   };
 });
 
@@ -66,7 +67,7 @@ describe("copy command", () => {
 
     expect(mockReply).toHaveBeenCalledWith({
       content: "Invalid emoji! Make sure it's a custom emoji from a server.",
-      ephemeral: true,
+      flags: 64,
     });
   });
 
@@ -82,7 +83,7 @@ describe("copy command", () => {
 
     expect(mockReply).toHaveBeenCalledWith({
       content: "Invalid emoji! Make sure it's a custom emoji from a server.",
-      ephemeral: true,
+      flags: 64,
     });
   });
 

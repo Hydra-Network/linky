@@ -1,5 +1,5 @@
 import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
-import { SlashCommandBuilder } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import { CHANNEL_PATTERNS, ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import { handleError } from "@/services/error-handler.js";
@@ -29,7 +29,7 @@ export default {
     if (!channel) {
       await interaction.reply({
         content: ERROR_MESSAGES.TICKET_ONLY_IN_CHANNEL,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -37,7 +37,7 @@ export default {
     if (!channel.name?.startsWith(CHANNEL_PATTERNS.TICKET)) {
       await interaction.reply({
         content: ERROR_MESSAGES.TICKET_ONLY_IN_CHANNEL,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }

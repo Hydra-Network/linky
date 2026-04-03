@@ -88,9 +88,12 @@ describe("nick command", () => {
         ownerId: "999",
       },
       user: { id: "456", tag: "mod#5678" },
-      member: { id: "456", roles: { highest: { position: 5 } } },
-      memberPermissions: {
-        has: vi.fn((perm) => perm !== PermissionFlagsBits.ManageNicknames),
+      member: {
+        id: "456",
+        roles: { highest: { position: 5 } },
+        permissions: {
+          has: vi.fn((perm) => perm !== PermissionFlagsBits.ManageNicknames),
+        },
       },
     };
 
@@ -130,9 +133,10 @@ describe("nick command", () => {
         ownerId: "999",
       },
       user: { id: "456", tag: "mod#5678" },
-      member: { id: "456", roles: { highest: { position: 5 } } },
-      memberPermissions: {
-        has: vi.fn().mockReturnValue(true),
+      member: {
+        id: "456",
+        roles: { highest: { position: 5 } },
+        permissions: { has: vi.fn().mockReturnValue(true) },
       },
     };
 
@@ -174,9 +178,10 @@ describe("nick command", () => {
         ownerId: "999",
       },
       user: { id: "456", tag: "mod#5678" },
-      member: { id: "456", roles: { highest: { position: 15 } } },
-      memberPermissions: {
-        has: vi.fn().mockReturnValue(true),
+      member: {
+        id: "456",
+        roles: { highest: { position: 15 } },
+        permissions: { has: vi.fn().mockReturnValue(true) },
       },
     };
 
@@ -187,7 +192,7 @@ describe("nick command", () => {
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
-    expect(callArg.content).toContain("I cannot change the nickname");
+    expect(callArg.content).toContain("role equal to or higher than the bot");
   });
 
   test("fails when target has role higher than or equal to user", async () => {
@@ -216,9 +221,10 @@ describe("nick command", () => {
         ownerId: "999",
       },
       user: { id: "456", tag: "mod#5678" },
-      member: { id: "456", roles: { highest: { position: 5 } } },
-      memberPermissions: {
-        has: vi.fn().mockReturnValue(true),
+      member: {
+        id: "456",
+        roles: { highest: { position: 5 } },
+        permissions: { has: vi.fn().mockReturnValue(true) },
       },
     };
 
@@ -229,7 +235,7 @@ describe("nick command", () => {
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
-    expect(callArg.content).toContain("You cannot change the nickname");
+    expect(callArg.content).toContain("role equal to or higher than your");
   });
 
   test("resets nickname when nickname is null", async () => {
@@ -258,9 +264,10 @@ describe("nick command", () => {
         ownerId: "999",
       },
       user: { id: "456", tag: "mod#5678" },
-      member: { id: "456", roles: { highest: { position: 15 } } },
-      memberPermissions: {
-        has: vi.fn().mockReturnValue(true),
+      member: {
+        id: "456",
+        roles: { highest: { position: 15 } },
+        permissions: { has: vi.fn().mockReturnValue(true) },
       },
     };
 
@@ -304,9 +311,10 @@ describe("nick command", () => {
         ownerId: "999",
       },
       user: { id: "456", tag: "mod#5678" },
-      member: { id: "456", roles: { highest: { position: 15 } } },
-      memberPermissions: {
-        has: vi.fn().mockReturnValue(true),
+      member: {
+        id: "456",
+        roles: { highest: { position: 15 } },
+        permissions: { has: vi.fn().mockReturnValue(true) },
       },
     };
 

@@ -15,21 +15,22 @@ import {
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("kick")
-    .setDescription("Kicks a member from the server.")
+    .setName("warn")
+    .setDescription("Warns a member in the server.")
     .addUserOption((option) =>
       option
         .setName("target")
-        .setDescription("The member to kick")
+        .setDescription("The member to warn")
         .setRequired(true),
     )
     .addStringOption((option) =>
       option
         .setName("reason")
-        .setDescription("Reason for kicking (optional)")
+        .setDescription("Reason for the warning")
+        .setRequired(true)
         .setMaxLength(512),
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .setIntegrationTypes([ApplicationIntegrationType.GuildInstall])
     .setContexts([
       InteractionContextType.Guild,
@@ -48,12 +49,12 @@ export default {
 
     const target = interaction.options.getUser("target");
     const reason =
-      interaction.options.getString("reason") ||
+      interaction.options.getString("reason") ??
       ERROR_MESSAGES.NO_REASON_PROVIDED;
 
     if (!target) {
       return interaction.reply({
-        content: ERROR_MESSAGES.VALID_MEMBER.replace("{action}", "kick"),
+        content: ERROR_MESSAGES.VALID_MEMBER.replace("{action}", "warn"),
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -72,11 +73,11 @@ export default {
     const permCheck = checkUserAndBotPermissions(
       interaction.memberPermissions,
       botMember.permissions,
-      PermissionFlagsBits.KickMembers,
+      PermissionFlagsBits.ModerateMembers,
     );
     if (!permCheck.ok) {
       return interaction.reply({
-        content: ERROR_MESSAGES.KICK_PERMISSION,
+        content: ERROR_MESSAGES.MODERATE_PERMISSION,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -86,27 +87,25 @@ export default {
       targetMember: member,
       executingMember: executor,
       guildOwnerId: interaction.guild.ownerId,
-      action: "kick",
+      action: "warn",
     });
     if (!hierarchyCheck.ok) {
       return interaction.reply({
         content: hierarchyCheck.targetAboveBot
-          ? ERROR_MESSAGES.HIERARCHY_BOT.replace("{action}", "kick")
-          : ERROR_MESSAGES.HIERARCHY_USER.replace("{action}", "kick"),
+          ? ERROR_MESSAGES.HIERARCHY_BOT.replace("{action}", "warn")
+          : ERROR_MESSAGES.HIERARCHY_USER.replace("{action}", "warn"),
         flags: MessageFlags.Ephemeral,
       });
     }
 
     await target
       .send(
-        `You have been kicked from ${interaction.guild.name}. Reason: ${reason}`,
+        `You have been warned in ${interaction.guild.name}. Reason: ${reason}`,
       )
       .catch(() => {});
-    await member.kick(reason);
+
     await interaction.reply({
-      content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "kicked")
-        .replace("{target}", target.tag)
-        .replace("{reason}", reason),
+      content: `Successfully warned ${target.tag}. Reason: ${reason}`,
       flags: MessageFlags.Ephemeral,
     });
   },

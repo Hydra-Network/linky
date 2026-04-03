@@ -7,6 +7,7 @@ import {
   ApplicationIntegrationType,
   EmbedBuilder,
   InteractionContextType,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
 
@@ -47,7 +48,7 @@ export default {
       if (!command) {
         return interaction.reply({
           content: `Command \`/${commandName}\` not found.`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 

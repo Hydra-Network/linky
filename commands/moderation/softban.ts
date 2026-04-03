@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
@@ -41,7 +42,7 @@ export default {
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -52,7 +53,7 @@ export default {
     if (!target) {
       return interaction.reply({
         content: ERROR_MESSAGES.VALID_MEMBER.replace("{action}", "softban"),
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -60,7 +61,7 @@ export default {
     if (!member) {
       return interaction.reply({
         content: ERROR_MESSAGES.NOT_IN_SERVER,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -75,7 +76,7 @@ export default {
     if (!permCheck.ok) {
       return interaction.reply({
         content: ERROR_MESSAGES.BAN_PERMISSION,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -91,7 +92,7 @@ export default {
         content: hierarchyCheck.targetAboveBot
           ? ERROR_MESSAGES.HIERARCHY_BOT.replace("{action}", "softban")
           : ERROR_MESSAGES.HIERARCHY_USER.replace("{action}", "softban"),
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -107,7 +108,7 @@ export default {
         "{action}",
         "softbanned",
       ).replace("{target}", target.tag),
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

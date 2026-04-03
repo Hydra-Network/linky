@@ -1,6 +1,7 @@
 # TODO
 
 - [x] invite command for invite link
+- [x] warn a user
 - [x] change nickname
 - [x] lock command for locking channels
 - [x] say
@@ -25,8 +26,5 @@
 - [ ] reaction roles
 - [ ] modlogs
 - [ ] set slowmode
-- [ ] warn a user
 - [ ] quarentine feature
-
----
 

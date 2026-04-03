@@ -3,6 +3,7 @@ import {
   ApplicationIntegrationType,
   ChannelType,
   InteractionContextType,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
@@ -46,7 +47,7 @@ export default {
     if (!interaction.guildId) {
       await interaction.reply({
         content: "This command can only be used in a server.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -59,7 +60,7 @@ export default {
     ) {
       await interaction.reply({
         content: ERROR_MESSAGES.ADMIN_REQUIRED,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -88,7 +89,7 @@ export default {
       if (!currentChannelId) {
         await interaction.reply({
           content: "No honeypot channel is currently set.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }
@@ -105,7 +106,7 @@ export default {
         await interaction.reply({
           content:
             "No honeypot channel is set. Use `/honeypot set` to configure one.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         return;
       }

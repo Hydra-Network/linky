@@ -1,5 +1,5 @@
 import type { ChatInputCommandInteraction } from "discord.js";
-import { ChannelType, SlashCommandBuilder } from "discord.js";
+import { ChannelType, MessageFlags, SlashCommandBuilder } from "discord.js";
 import {
   CHANNEL_PATTERNS,
   DATABASE_KEYS,
@@ -32,7 +32,7 @@ export default {
     if (!guild) {
       await interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -70,7 +70,7 @@ export default {
 
     await interaction.reply({
       content: `✅ Ticket created! Check your DMs or the channel list.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

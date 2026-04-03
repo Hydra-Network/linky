@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
 
@@ -22,7 +23,7 @@ export default {
     await interaction.reply({
       content:
         "Invite: https://discord.com/oauth2/authorize?client_id=1469170337810743478",
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

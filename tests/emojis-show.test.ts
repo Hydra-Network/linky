@@ -60,6 +60,7 @@ vi.mock("discord.js", () => {
     ActionRowBuilder: MockActionRowBuilder,
     ButtonBuilder: MockButtonBuilder,
     ButtonStyle: { Link: "Link" },
+    MessageFlags: { Ephemeral: 64 },
   };
 });
 
@@ -93,7 +94,7 @@ describe("show command", () => {
 
     expect(mockReply).toHaveBeenCalledWith({
       content: "Invalid emoji! Make sure it's a custom emoji from a server.",
-      ephemeral: true,
+      flags: 64,
     });
   });
 

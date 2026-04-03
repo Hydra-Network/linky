@@ -7,6 +7,7 @@ import {
   ApplicationIntegrationType,
   ChannelType,
   InteractionContextType,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
@@ -43,7 +44,7 @@ export default {
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -57,7 +58,7 @@ export default {
     if (!channel) {
       return interaction.reply({
         content: "Please provide a valid channel to lock.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -71,7 +72,7 @@ export default {
     if (!permCheck.ok) {
       return interaction.reply({
         content: "You need Manage Channels permission to use this command.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -86,7 +87,7 @@ export default {
     ) {
       return interaction.reply({
         content: `${channel} is already locked.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -98,7 +99,7 @@ export default {
 
     await interaction.reply({
       content: `🔒 Locked ${channel}. Reason: ${reason}`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

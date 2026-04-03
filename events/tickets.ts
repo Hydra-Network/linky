@@ -7,6 +7,7 @@ import {
   ChannelType,
   Events,
   LabelBuilder,
+  MessageFlags,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
@@ -52,12 +53,12 @@ export default defineEvent(
         if (interaction.replied || interaction.deferred) {
           await interaction.followUp({
             content: "There was an error while executing this command!",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         } else {
           await interaction.reply({
             content: "There was an error while executing this command!",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
       }
@@ -98,7 +99,7 @@ export default defineEvent(
         if (!guild) {
           await modalInteraction.reply({
             content: "This can only be used in a server.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
           return;
         }
@@ -136,7 +137,7 @@ export default defineEvent(
 
         await modalInteraction.reply({
           content: `✅ Ticket created: ${ticketChannel}`,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }

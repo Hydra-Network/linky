@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
@@ -53,7 +54,7 @@ export default {
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -70,14 +71,14 @@ export default {
     if (!durationValidation.valid) {
       return interaction.reply({
         content: `Invalid duration: ${durationValidation.errors[0]?.message || "Duration must be between 1 and 40320 minutes"}`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     if (!target) {
       return interaction.reply({
         content: ERROR_MESSAGES.VALID_MEMBER.replace("{action}", "mute"),
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -85,7 +86,7 @@ export default {
     if (!member) {
       return interaction.reply({
         content: ERROR_MESSAGES.NOT_IN_SERVER,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -100,7 +101,7 @@ export default {
     if (!permCheck.ok) {
       return interaction.reply({
         content: ERROR_MESSAGES.MODERATE_PERMISSION,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -116,7 +117,7 @@ export default {
         content: hierarchyCheck.targetAboveBot
           ? ERROR_MESSAGES.HIERARCHY_BOT.replace("{action}", "mute")
           : ERROR_MESSAGES.HIERARCHY_USER.replace("{action}", "mute"),
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -128,7 +129,7 @@ export default {
     await member.timeout(duration * 60 * 1000, reason);
     await interaction.reply({
       content: `Successfully muted ${target.tag} for ${duration} minute(s). Reason: ${reason}`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

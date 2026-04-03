@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
+  MessageFlags,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
@@ -9,7 +10,6 @@ import { ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import {
   checkRoleHierarchy,
-  checkUserAndBotPermissions,
   hasPermission,
 } from "@/utils/permissions.js";
 
@@ -45,7 +45,7 @@ export default {
     if (!interaction.guild) {
       return interaction.reply({
         content: ERROR_MESSAGES.GUILD_ONLY,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -63,7 +63,7 @@ export default {
       if (!targetMember) {
         return interaction.reply({
           content: ERROR_MESSAGES.NOT_IN_SERVER,
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -76,7 +76,7 @@ export default {
           return interaction.reply({
             content:
               "You need the **Manage Nicknames** permission to change other users' nicknames.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -84,7 +84,7 @@ export default {
           return interaction.reply({
             content:
               "I need the **Manage Nicknames** permission to change nicknames.",
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
 
@@ -98,7 +98,7 @@ export default {
         if (!hierarchyCheck.ok) {
           return interaction.reply({
             content: hierarchyCheck.reason,
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
         }
       }
@@ -109,7 +109,7 @@ export default {
       if (!targetMember) {
         return interaction.reply({
           content: "Could not fetch your member data.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
 
@@ -121,14 +121,14 @@ export default {
         return interaction.reply({
           content:
             "You don't have permission to change your nickname in this server.",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }
 
-    const displayName = newNick || targetMember!.user.username;
+    const displayName = newNick || targetMember?.user.username;
 
-    await targetMember!.setNickname(
+    await targetMember?.setNickname(
       newNick,
       `Nickname changed by ${interaction.user.tag}`,
     );
@@ -136,7 +136,7 @@ export default {
     const actionText = isResetting ? "Reset" : "Changed";
     await interaction.reply({
       content: `${actionText} ${targetUser ? targetUser.tag : "your"} nickname to **${displayName}**.`,
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };
