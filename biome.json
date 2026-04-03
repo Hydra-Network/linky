@@ -218,7 +218,7 @@
         "noUnsafeDeclarationMerging": "error",
         "noUnsafeNegation": "error",
         "noVar": "error",
-        "useAwait": "error",
+        "useAwait": "off",
         "useErrorMessage": "warn",
         "useGetterReturn": "error",
         "useIsArray": "error",
