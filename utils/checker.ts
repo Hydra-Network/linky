@@ -146,7 +146,7 @@ export const check = async (
 
 	const list = await queue.enqueue(() => fetchApi(url, blockerFilter));
 
-	for (let i = 0; i < list.length; i++) {
+	for (let i = 0; i < list.length; i+= 1) {
 		if (list[i].blocked === false) {
 			const blocker = list[i].blocker.toLowerCase();
 			unblocked.push(getBlockerName(blocker));
@@ -178,7 +178,7 @@ export const checkWithDetails = async (
 
 	const list = await queue.enqueue(() => fetchApi(url, "all"));
 
-	for (let i = 0; i < list.length; i++) {
+	for (let i = 0; i < list.length; i+= 1) {
 		const blocker = list[i].blocker.toLowerCase();
 
 		if (typeFilter && !typeFilter.includes(blocker)) {
