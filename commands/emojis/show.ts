@@ -43,7 +43,7 @@ export default {
     const id = match[3];
 
     const timestamp = Math.floor(
-      Number((BigInt(id) >> 22n) + 1420070400000n) / 1000,
+      (Number(BigInt(id) >> 22n) + 1420070400000) / 1000,
     );
     const discordTime = `<t:${timestamp}:F>`;
 

@@ -1,5 +1,5 @@
 import type { Client } from "discord.js";
-import type { Logger } from "pino";
+import type pino from "pino";
 import type { getItem as dbGetItem, setItem as dbSetItem } from "@/db/index.js";
 import type { CacheService } from "./cache.js";
 
@@ -9,7 +9,7 @@ interface DbMethods {
 }
 
 export interface AppContainer {
-  get(key: "logger"): Logger;
+  get(key: "logger"): pino.Logger;
   get(key: "client"): Client<true>;
   get(key: "db"): DbMethods;
   get(key: "cache"): CacheService;
@@ -23,7 +23,7 @@ class Container implements AppContainer {
     return this;
   }
 
-  get(key: "logger"): Logger;
+  get(key: "logger"): pino.Logger;
   get(key: "client"): Client<true>;
   get(key: "db"): DbMethods;
   get(key: "cache"): CacheService;

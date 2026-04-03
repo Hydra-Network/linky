@@ -1,9 +1,9 @@
 import type { ChatInputCommandInteraction } from "discord.js";
 import { MessageFlags } from "discord.js";
-import type { Logger } from "pino";
+import type pino from "pino";
 
 interface ErrorHandlerOptions {
-  logger: Logger;
+  logger: pino.Logger;
   interaction: ChatInputCommandInteraction;
   context: string;
   fallbackMessage?: string;

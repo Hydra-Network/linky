@@ -1,11 +1,11 @@
 import type { Client, Message } from "discord.js";
 import { Events } from "discord.js";
-import type { Logger } from "pino";
+import type pino from "pino";
 import type { getItem as dbGetItem, setItem as dbSetItem } from "@/db/index.js";
 import type { AppContainer } from "@/services/container.js";
 
 export interface EventContext {
-  logger: Logger;
+  logger: pino.Logger;
   db: {
     getItem: typeof dbGetItem;
     setItem: typeof dbSetItem;
@@ -35,7 +35,9 @@ export function defineMessageEvent(
     name: Events.MessageCreate,
     once,
     async execute(message: Message, _client: Client, container: AppContainer) {
-      if (!skipBotCheck && (message.author.bot || !message.guild)) { return; }
+      if (!skipBotCheck && (message.author.bot || !message.guild)) {
+        return;
+      }
 
       const ctx: EventContext = {
         logger: container.get("logger"),
