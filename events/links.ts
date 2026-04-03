@@ -1,4 +1,3 @@
-
 import { DATABASE_KEYS } from "@/config/index.js";
 import { defineMessageEvent } from "./base.js";
 
@@ -17,7 +16,9 @@ export default defineMessageEvent(
       linkChannelIds = dbData?.[message.guildId] || [];
       cache.set(message.guildId, linkChannelIds);
     }
-    if (!(linkChannelIds.length > 0&& linkChannelIds.includes(message.channelId))) {
+    if (
+      !(linkChannelIds.length > 0 && linkChannelIds.includes(message.channelId))
+    ) {
       return;
     }
 

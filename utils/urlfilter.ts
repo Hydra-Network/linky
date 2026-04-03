@@ -13,7 +13,9 @@ const MULTI_LEVEL_TLDS = new Set([
 ]);
 
 export const filterURL = (url: string): string | null => {
-  if (!url) { return null; }
+  if (!url) {
+    return null;
+  }
 
   try {
     const normalized = url.startsWith("http") ? url : `https://${url}`;
@@ -22,7 +24,9 @@ export const filterURL = (url: string): string | null => {
     const parts = hostname.replace(/^www\./, "").split(".");
     const len = parts.length;
 
-    if (len <= 2) { return parts.join("."); }
+    if (len <= 2) {
+      return parts.join(".");
+    }
 
     const lastTwo = `${parts[len - 2]}.${parts[len - 1]}`;
 

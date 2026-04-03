@@ -4,9 +4,9 @@ import { fileURLToPath } from "node:url";
 import { createClient } from "@libsql/client";
 import type { ChatInputCommandInteraction } from "discord.js";
 import {
-	ApplicationIntegrationType,
-	InteractionContextType,
-	SlashCommandBuilder,
+  ApplicationIntegrationType,
+  InteractionContextType,
+  SlashCommandBuilder,
 } from "discord.js";
 import type { AppContainer } from "@/services/container.js";
 
@@ -15,120 +15,128 @@ const Dirname = path.dirname(Filename);
 const dbPath = path.join(Dirname, "../../data/database.db");
 
 export default {
-	data: new SlashCommandBuilder()
-		.setName("health")
-		.setDescription("Check bot health status")
-		.setIntegrationTypes([
-			ApplicationIntegrationType.GuildInstall,
-			ApplicationIntegrationType.UserInstall,
-		])
-		.setContexts([
-			InteractionContextType.Guild,
-			InteractionContextType.BotDM,
-			InteractionContextType.PrivateChannel,
-		]),
-	async execute(
-		interaction: ChatInputCommandInteraction,
-		container: AppContainer,
-	) {
-		const client = container.get("client");
+  data: new SlashCommandBuilder()
+    .setName("health")
+    .setDescription("Check bot health status")
+    .setIntegrationTypes([
+      ApplicationIntegrationType.GuildInstall,
+      ApplicationIntegrationType.UserInstall,
+    ])
+    .setContexts([
+      InteractionContextType.Guild,
+      InteractionContextType.BotDM,
+      InteractionContextType.PrivateChannel,
+    ]),
+  async execute(
+    interaction: ChatInputCommandInteraction,
+    container: AppContainer,
+  ) {
+    const client = container.get("client");
 
-		const start = Date.now();
-		let dbStatus = "Unknown";
-		let dbSize = "Unknown";
-		const tableCounts: Record<string, number> = {};
+    const start = Date.now();
+    let dbStatus = "Unknown";
+    let dbSize = "Unknown";
+    const tableCounts: Record<string, number> = {};
 
-		try {
-			const db = createClient({ url: `file:${dbPath}` });
-			await db.execute("SELECT 1");
-			dbStatus = "Connected";
+    try {
+      const db = createClient({ url: `file:${dbPath}` });
+      await db.execute("SELECT 1");
+      dbStatus = "Connected";
 
-			const stats = await db.execute(
-				"SELECT name FROM sqlite_master WHERE type='table'",
-			);
-			for (const row of stats.rows) {
-				const countResult = await db.execute(
-					`SELECT COUNT(*) as count FROM ${row.name}`,
-				);
-				tableCounts[row.name as string] = countResult.rows[0].count as number;
-			}
+      const stats = await db.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'",
+      );
+      for (const row of stats.rows) {
+        const countResult = await db.execute(
+          `SELECT COUNT(*) as count FROM ${row.name}`,
+        );
+        tableCounts[row.name as string] = countResult.rows[0].count as number;
+      }
 
-			const fileStats = fs.statSync(dbPath);
-			dbSize = formatBytes(fileStats.size);
-		} catch {
-			dbStatus = "Error";
-		}
+      const fileStats = fs.statSync(dbPath);
+      dbSize = formatBytes(fileStats.size);
+    } catch {
+      dbStatus = "Error";
+    }
 
-		const latency = Date.now() - start;
-		const uptime = process.uptime();
-		const uptimeStr = formatUptime(uptime);
+    const latency = Date.now() - start;
+    const uptime = process.uptime();
+    const uptimeStr = formatUptime(uptime);
 
-		const totalRows = Object.values(tableCounts).reduce((a, b) => a + b, 0);
+    const totalRows = Object.values(tableCounts).reduce((a, b) => a + b, 0);
 
-		await interaction.reply({
-			embeds: [
-				{
-					title: "Health Status",
-					color: 0x00ff00,
-					fields: [
-						{
-							name: "Bot Latency",
-							value: `${client.ws.ping}ms`,
-							inline: true,
-						},
-						{
-							name: "Response Time",
-							value: `${latency}ms`,
-							inline: true,
-						},
-						{
-							name: "Uptime",
-							value: uptimeStr,
-							inline: true,
-						},
-						{
-							name: "Database",
-							value: `${dbStatus} (${dbSize})`,
-							inline: true,
-						},
-						{
-							name: "Total Rows",
-							value: `${totalRows}`,
-							inline: true,
-						},
-						{
-							name: "Tables",
-							value:
-								Object.entries(tableCounts)
-									.map(([name, count]) => `${name}: ${count}`)
-									.join("\n") || "None",
-							inline: false,
-						},
-					],
-					timestamp: new Date().toISOString(),
-				},
-			],
-		});
-	},
+    await interaction.reply({
+      embeds: [
+        {
+          title: "Health Status",
+          color: 0x00ff00,
+          fields: [
+            {
+              name: "Bot Latency",
+              value: `${client.ws.ping}ms`,
+              inline: true,
+            },
+            {
+              name: "Response Time",
+              value: `${latency}ms`,
+              inline: true,
+            },
+            {
+              name: "Uptime",
+              value: uptimeStr,
+              inline: true,
+            },
+            {
+              name: "Database",
+              value: `${dbStatus} (${dbSize})`,
+              inline: true,
+            },
+            {
+              name: "Total Rows",
+              value: `${totalRows}`,
+              inline: true,
+            },
+            {
+              name: "Tables",
+              value:
+                Object.entries(tableCounts)
+                  .map(([name, count]) => `${name}: ${count}`)
+                  .join("\n") || "None",
+              inline: false,
+            },
+          ],
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    });
+  },
 };
 
 function formatBytes(bytes: number): string {
-	if (bytes === 0) { return "0 B"; }
-	const k = 1024;
-	const sizes = ["B", "KB", "MB", "GB"];
-	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+  if (bytes === 0) {
+    return "0 B";
+  }
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
 }
 
 function formatUptime(seconds: number): string {
-	const days = Math.floor(seconds / 86400);
-	const hours = Math.floor((seconds % 86400) / 3600);
-	const minutes = Math.floor((seconds % 3600) / 60);
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
 
-	const parts: string[] = [];
-	if (days > 0) { parts.push(`${days}d`); }
-	if (hours > 0) { parts.push(`${hours}h`); }
-	if (minutes > 0) { parts.push(`${minutes}m`); }
+  const parts: string[] = [];
+  if (days > 0) {
+    parts.push(`${days}d`);
+  }
+  if (hours > 0) {
+    parts.push(`${hours}h`);
+  }
+  if (minutes > 0) {
+    parts.push(`${minutes}m`);
+  }
 
-	return parts.length > 0 ? parts.join(" ") : "< 1m";
+  return parts.length > 0 ? parts.join(" ") : "< 1m";
 }

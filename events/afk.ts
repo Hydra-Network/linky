@@ -1,4 +1,3 @@
-
 import { DATABASE_KEYS } from "@/config/index.js";
 import { defineMessageEvent } from "./base.js";
 

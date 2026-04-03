@@ -1,119 +1,133 @@
 import type { ChatInputCommandInteraction } from "discord.js";
 import {
-	ApplicationIntegrationType,
-	InteractionContextType,
-	SlashCommandBuilder,
+  ApplicationIntegrationType,
+  InteractionContextType,
+  SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import {
-	checkWithDetails,
-	getBlockerName,
-	NORMAL_BLOCKERS,
+  checkWithDetails,
+  getBlockerName,
+  NORMAL_BLOCKERS,
 } from "@/utils/checker.js";
 
-const CHOICES = [
-	{ name: "All", value: "normal" },
-	{ name: "All (Non-DNS)", value: "non_dns" },
-	{ name: "All (DNS)", value: "dns" },
-	...NORMAL_BLOCKERS.map((b) => ({ name: getBlockerName(b), value: b })),
-];
+async function handleCheck(
+  interaction: ChatInputCommandInteraction,
+  container: AppContainer,
+  url: string,
+  blockerFilter: string,
+) {
+  const { getItem } = container.get("db");
+  const cache = container.get("cache");
 
-export default {
-	data: new SlashCommandBuilder()
-		.setName("check")
-		.setDescription("Check blockers for a link")
-		.setIntegrationTypes([
-			ApplicationIntegrationType.GuildInstall,
-			ApplicationIntegrationType.UserInstall,
-		])
-		.setContexts([
-			InteractionContextType.Guild,
-			InteractionContextType.BotDM,
-			InteractionContextType.PrivateChannel,
-		])
-		.addStringOption((o) =>
-			o
-				.setName("blockers")
-				.addChoices(...CHOICES)
-				.setDescription("Comma-separated blockers or 'all'")
-				.setRequired(true),
-		)
-		.addStringOption((o) =>
-			o.setName("url").setDescription("The link to check").setRequired(true),
-		),
+  await interaction.deferReply();
 
-	async execute(
-		interaction: ChatInputCommandInteraction,
-		container: AppContainer,
-	) {
-		const { getItem } = container.get("db");
-		const cache = container.get("cache");
+  const cacheKey = `check:${url}:${blockerFilter}`;
+  let results = cache.get(cacheKey) as
+    | Awaited<ReturnType<typeof checkWithDetails>>
+    | undefined;
 
-		const url = interaction.options.getString("url");
-		const blockers = interaction.options.getString("blockers");
+  if (!results) {
+    try {
+      results = await checkWithDetails(url, blockerFilter);
+      cache.set(cacheKey, results);
+    } catch (err) {
+      return interaction.editReply({
+        content: `Error: ${(err as Error).message}`,
+      });
+    }
+  }
+  if (results.length === 0) {
+    return interaction.editReply({
+      content: "No results returned.",
+    });
+  }
 
-		await interaction.deferReply();
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+  const useEmojis = (settings as Record<string, unknown>).checkEmojis !== false;
 
-		const cacheKey = `check:${url}:${blockers.toLowerCase().trim()}`;
-		let results = cache.get(cacheKey) as
-			| Awaited<ReturnType<typeof checkWithDetails>>
-			| undefined;
+  const unblocked = results.filter((r) => !r.blocked);
+  const blocked = results.filter((r) => r.blocked);
 
-		if (!results) {
-			try {
-				results = await checkWithDetails(url, blockers.toLowerCase().trim());
-				cache.set(cacheKey, results);
-			} catch (err) {
-				return interaction.editReply({
-					content: `Error: ${(err as Error).message}`,
-				});
-			}
-		}
-		if (results.length === 0) {
-			return interaction.editReply({
-				content: "No results returned.",
-			});
-		}
+  const fmt = (list: typeof results) =>
+    list.length > 0
+      ? list
+          .map((r) =>
+            useEmojis
+              ? `${r.emoji} **${r.name}** (${r.category})`
+              : `**${r.name}** (${r.category})`,
+          )
+          .join("\n")
+      : "None";
 
-		const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
-			| Record<string, Record<string, unknown>>
-			| undefined;
-		const settings = allSettings?.[interaction.guildId] || {};
-		const useEmojis =
-			(settings as Record<string, unknown>).checkEmojis !== false;
-
-		const unblocked = results.filter((r) => !r.blocked);
-		const blocked = results.filter((r) => r.blocked);
-
-		const fmt = (list: typeof results) =>
-			list.length > 0
-				? list
-					.map((r) =>
-						useEmojis
-							? `${r.emoji} **${r.name}** (${r.category})`
-							: `**${r.name}** (${r.category})`,
-					)
-					.join("\n")
-				: "None";
-
-		await interaction.editReply({
-			embeds: [
-				{
-					color: 0x0099ff,
-					title: `Results for ${url}`,
-					timestamp: new Date().toISOString(),
-					description: `
+  await interaction.editReply({
+    embeds: [
+      {
+        color: 0x0099ff,
+        title: `Results for ${url}`,
+        timestamp: new Date().toISOString(),
+        description: `
  ${unblocked.length} unblocked • ${blocked.length} blocked
 ### :white_check_mark: **Unblocked (${unblocked.length})**
 ${fmt(unblocked)}
 ### :x: **Blocked (${blocked.length})**
 ${fmt(blocked)}`,
-					footer: {
-						text: `Credits to regentstew for Gaggle, NextDNS, and Barracuda. Credits to Beercat for Smoothwall.`,
-					},
-				},
-			],
-		});
-	},
+        footer: {
+          text: `Credits to regentstew for Gaggle, NextDNS, and Barracuda. Credits to Beercat for Smoothwall.`,
+        },
+      },
+    ],
+  });
+}
+
+const builder = new SlashCommandBuilder()
+  .setName("check")
+  .setDescription("Check blockers for a link")
+  .setIntegrationTypes([
+    ApplicationIntegrationType.GuildInstall,
+    ApplicationIntegrationType.UserInstall,
+  ])
+  .setContexts([
+    InteractionContextType.Guild,
+    InteractionContextType.BotDM,
+    InteractionContextType.PrivateChannel,
+  ])
+  .addSubcommand((sub) =>
+    sub
+      .setName("all")
+      .setDescription("Check all blockers for a link")
+      .addStringOption((o) =>
+        o.setName("url").setDescription("The link to check").setRequired(true),
+      ),
+  );
+
+for (const blocker of NORMAL_BLOCKERS) {
+  builder.addSubcommand((sub) =>
+    sub
+      .setName(blocker)
+      .setDescription(`Check ${getBlockerName(blocker)} for a link`)
+      .addStringOption((o) =>
+        o.setName("url").setDescription("The link to check").setRequired(true),
+      ),
+  );
+}
+
+export default {
+  data: builder,
+
+  async execute(
+    interaction: ChatInputCommandInteraction,
+    container: AppContainer,
+  ) {
+    const subcommand = interaction.options.getSubcommand();
+    const url = interaction.options.getString("url", true);
+
+    const blockerFilter = subcommand === "all" ? "normal" : subcommand;
+
+    await handleCheck(interaction, container, url, blockerFilter);
+  },
 };

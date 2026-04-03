@@ -15,8 +15,12 @@ const { getItem } = await import("@/db/index");
 
 const mockContainer = {
   get: vi.fn((key) => {
-    if (key === "logger") { return { error: vi.fn() }; }
-    if (key === "db") { return { getItem, setItem: vi.fn() }; }
+    if (key === "logger") {
+      return { error: vi.fn() };
+    }
+    if (key === "db") {
+      return { getItem, setItem: vi.fn() };
+    }
   }),
 };
 
@@ -40,9 +44,15 @@ describe("automod", () => {
     mockGetItem.mockReset();
 
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") { return Promise.resolve({}); }
-      if (key === "automodWords") { return Promise.resolve({}); }
-      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "sticky") {
+        return Promise.resolve({});
+      }
+      if (key === "automodWords") {
+        return Promise.resolve({});
+      }
+      if (key === "linkChannels") {
+        return Promise.resolve({});
+      }
       return Promise.resolve(null);
     });
 
@@ -59,11 +69,15 @@ describe("automod", () => {
   test("deletes message containing blocked word", async () => {
     const mockGetItem = vi.mocked(getItem);
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") { return Promise.resolve({}); }
+      if (key === "sticky") {
+        return Promise.resolve({});
+      }
       if (key === "automodWords") {
         return Promise.resolve({ 987654321: ["badword", "spam"] });
       }
-      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "linkChannels") {
+        return Promise.resolve({});
+      }
       return Promise.resolve(null);
     });
 
@@ -83,11 +97,15 @@ describe("automod", () => {
   test("does not delete message without blocked word", async () => {
     const mockGetItem = vi.mocked(getItem);
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") { return Promise.resolve({}); }
+      if (key === "sticky") {
+        return Promise.resolve({});
+      }
       if (key === "automodWords") {
         return Promise.resolve({ 987654321: ["badword", "spam"] });
       }
-      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "linkChannels") {
+        return Promise.resolve({});
+      }
       return Promise.resolve(null);
     });
 
@@ -101,11 +119,15 @@ describe("automod", () => {
   test("is case insensitive", async () => {
     const mockGetItem = vi.mocked(getItem);
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") { return Promise.resolve({}); }
+      if (key === "sticky") {
+        return Promise.resolve({});
+      }
       if (key === "automodWords") {
         return Promise.resolve({ 987654321: ["badword"] });
       }
-      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "linkChannels") {
+        return Promise.resolve({});
+      }
       return Promise.resolve(null);
     });
 
@@ -120,9 +142,15 @@ describe("automod", () => {
   test("does nothing when no automod words configured", async () => {
     const mockGetItem = vi.mocked(getItem);
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") { return Promise.resolve({}); }
-      if (key === "automodWords") { return Promise.resolve({}); }
-      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "sticky") {
+        return Promise.resolve({});
+      }
+      if (key === "automodWords") {
+        return Promise.resolve({});
+      }
+      if (key === "linkChannels") {
+        return Promise.resolve({});
+      }
       return Promise.resolve(null);
     });
 
@@ -136,9 +164,15 @@ describe("automod", () => {
   test("does nothing when guild has no automod config", async () => {
     const mockGetItem = vi.mocked(getItem);
     mockGetItem.mockImplementation((key) => {
-      if (key === "sticky") { return Promise.resolve({}); }
-      if (key === "automodWords") { return Promise.resolve(null); }
-      if (key === "linkChannels") { return Promise.resolve({}); }
+      if (key === "sticky") {
+        return Promise.resolve({});
+      }
+      if (key === "automodWords") {
+        return Promise.resolve(null);
+      }
+      if (key === "linkChannels") {
+        return Promise.resolve({});
+      }
       return Promise.resolve(null);
     });
 

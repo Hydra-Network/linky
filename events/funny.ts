@@ -1,4 +1,3 @@
-
 import { EMOJI_IDS, EMOJIS, LINKY_ID } from "@/config/index.js";
 import { defineMessageEvent } from "./base.js";
 

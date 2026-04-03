@@ -22,7 +22,9 @@ export class CacheService {
   invalidateByPrefix(prefix: string): number {
     const keys = this.cache.keys();
     const matchingKeys = keys.filter((key) => key.startsWith(prefix));
-    if (matchingKeys.length === 0) { return 0; }
+    if (matchingKeys.length === 0) {
+      return 0;
+    }
     return this.cache.del(matchingKeys);
   }
 

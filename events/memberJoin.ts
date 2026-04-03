@@ -8,7 +8,9 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 export default defineEvent(
   Events.GuildMemberAdd,
   async ([member]: [GuildMember], { logger, db }) => {
-    if (member.user.bot) { return; }
+    if (member.user.bot) {
+      return;
+    }
 
     const allSettings = (await db.getItem(DATABASE_KEYS.SETTINGS)) as
       | Record<string, Record<string, unknown>>
@@ -16,7 +18,9 @@ export default defineEvent(
     const settings = allSettings?.[member.guild.id] || {};
     const minAge = settings.minAge as number | undefined;
 
-    if (!minAge) { return; }
+    if (!minAge) {
+      return;
+    }
 
     const accountAgeDays =
       (Date.now() - member.user.createdTimestamp) / MILLISECONDS_PER_DAY;

@@ -106,14 +106,20 @@ const resolveConfig = (key: string): ResolvedConfig | null => {
 };
 
 export const getItem = (key: string, cache?: CacheService) => {
-  if (!client) { throw new Error("Database not initialized."); }
+  if (!client) {
+    throw new Error("Database not initialized.");
+  }
 
   const cfg = resolveConfig(key);
-  if (!cfg) { return ; }
+  if (!cfg) {
+    return;
+  }
 
   if (cache) {
     const cached = cache.get(key);
-    if (cached !== undefined) { return cached; }
+    if (cached !== undefined) {
+      return cached;
+    }
   }
 
   if (cfg.singleValue) {
@@ -155,10 +161,14 @@ export const setItem = async (
   value: unknown,
   cache?: CacheService,
 ) => {
-  if (!client) { throw new Error("Database not initialized."); }
+  if (!client) {
+    throw new Error("Database not initialized.");
+  }
 
   const cfg = resolveConfig(key);
-  if (!cfg) { return; }
+  if (!cfg) {
+    return;
+  }
 
   if (cfg.singleValue) {
     await client.execute({
@@ -194,7 +204,9 @@ export const setItem = async (
 };
 
 export const clear = async () => {
-  if (!client) { throw new Error("Database not initialized."); }
+  if (!client) {
+    throw new Error("Database not initialized.");
+  }
   await Promise.all(
     Object.values(SCHEMA).map(({ table }) =>
       client?.execute(`DELETE FROM ${table}`),
