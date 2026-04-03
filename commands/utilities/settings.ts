@@ -1,4 +1,8 @@
-import type { ChatInputCommandInteraction, GuildChannel } from "discord.js";
+import type {
+  ChatInputCommandInteraction,
+  GuildChannel,
+  GuildMember,
+} from "discord.js";
 import {
   ApplicationIntegrationType,
   ChannelType,
@@ -11,7 +15,8 @@ import {
   ERROR_MESSAGES,
   MIN_AGE_ERRORS,
 } from "@/config/index.js";
-import type { AppContainer, } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
+import { hasPermission } from "@/utils/permissions.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -116,7 +121,10 @@ export default {
         return;
       }
       if (
-        !interaction.memberPermissions.has(PermissionFlagsBits.Administrator)
+        !hasPermission(
+          interaction.member as GuildMember,
+          PermissionFlagsBits.Administrator,
+        )
       ) {
         await interaction.reply(ERROR_MESSAGES.ADMIN_REQUIRED);
         return;
@@ -137,7 +145,12 @@ export default {
       return;
     }
 
-    if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+    if (
+      !hasPermission(
+        interaction.member as GuildMember,
+        PermissionFlagsBits.Administrator,
+      )
+    ) {
       await interaction.reply(ERROR_MESSAGES.ADMIN_REQUIRED);
       return;
     }

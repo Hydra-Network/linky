@@ -7,6 +7,7 @@ import {
 } from "discord.js";
 import { ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
+import { checkUserAndBotPermissions } from "@/utils/permissions.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -46,12 +47,14 @@ export default {
       interaction.options.getString("reason") ||
       ERROR_MESSAGES.NO_REASON_PROVIDED;
 
-    const botMemberPermissions = interaction.guild.members.me.permissions;
+    const botMember = interaction.guild.members.me;
 
-    if (
-      !interaction.memberPermissions.has(PermissionFlagsBits.BanMembers) ||
-      !botMemberPermissions.has(PermissionFlagsBits.BanMembers)
-    ) {
+    const permCheck = checkUserAndBotPermissions(
+      interaction.memberPermissions,
+      botMember.permissions,
+      PermissionFlagsBits.BanMembers,
+    );
+    if (!permCheck.ok) {
       return interaction.reply({
         content: ERROR_MESSAGES.UNBAN_PERMISSION,
         ephemeral: true,

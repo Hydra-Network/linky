@@ -7,6 +7,11 @@ import {
 } from "discord.js";
 import { ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
+import {
+  checkRoleHierarchy,
+  checkUserAndBotPermissions,
+  hasPermission,
+} from "@/utils/permissions.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -63,49 +68,39 @@ export default {
       }
 
       const isSelf = targetUser.id === interaction.user.id;
-      const hasManageNicknames = interaction.memberPermissions!.has(
-        PermissionFlagsBits.ManageNicknames,
-      );
+      const executor = interaction.member as GuildMember;
+      const botMember = interaction.guild.members.me;
 
-      if (!isSelf && !hasManageNicknames) {
-        return interaction.reply({
-          content:
-            "You need the **Manage Nicknames** permission to change other users' nicknames.",
-          ephemeral: true,
-        });
-      }
+      if (!isSelf) {
+        if (!hasPermission(executor, PermissionFlagsBits.ManageNicknames)) {
+          return interaction.reply({
+            content:
+              "You need the **Manage Nicknames** permission to change other users' nicknames.",
+            ephemeral: true,
+          });
+        }
 
-      const botMember = interaction.guild.members.me!;
-      if (!botMember.permissions.has(PermissionFlagsBits.ManageNicknames)) {
-        return interaction.reply({
-          content:
-            "I need the **Manage Nicknames** permission to change nicknames.",
-          ephemeral: true,
-        });
-      }
+        if (!botMember.permissions.has(PermissionFlagsBits.ManageNicknames)) {
+          return interaction.reply({
+            content:
+              "I need the **Manage Nicknames** permission to change nicknames.",
+            ephemeral: true,
+          });
+        }
 
-      if (
-        !isSelf &&
-        targetMember.roles.highest.position >= botMember.roles.highest.position
-      ) {
-        return interaction.reply({
-          content:
-            "I cannot change the nickname of a member with a role equal to or higher than mine.",
-          ephemeral: true,
+        const hierarchyCheck = checkRoleHierarchy({
+          botMember,
+          targetMember,
+          executingMember: executor,
+          guildOwnerId: interaction.guild.ownerId,
+          action: "change the nickname of",
         });
-      }
-
-      if (
-        !isSelf &&
-        targetMember.roles.highest.position >=
-          (interaction.member as GuildMember).roles.highest.position &&
-        (interaction.member as GuildMember).id !== interaction.guild.ownerId
-      ) {
-        return interaction.reply({
-          content:
-            "You cannot change the nickname of a member with a role equal to or higher than yours.",
-          ephemeral: true,
-        });
+        if (!hierarchyCheck.ok) {
+          return interaction.reply({
+            content: hierarchyCheck.reason,
+            ephemeral: true,
+          });
+        }
       }
     } else {
       targetMember = await interaction.guild.members
@@ -118,7 +113,8 @@ export default {
         });
       }
 
-      const hasChangeNickname = interaction.memberPermissions!.has(
+      const hasChangeNickname = hasPermission(
+        interaction.member as GuildMember,
         PermissionFlagsBits.ChangeNickname,
       );
       if (!hasChangeNickname) {

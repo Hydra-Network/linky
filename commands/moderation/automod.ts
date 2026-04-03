@@ -1,4 +1,4 @@
-import type { ChatInputCommandInteraction } from "discord.js";
+import type { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import {
   ApplicationIntegrationType,
   InteractionContextType,
@@ -6,7 +6,8 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS, ERROR_MESSAGES } from "@/config/index.js";
-import type { AppContainer, } from "@/services/container.js";
+import type { AppContainer } from "@/services/container.js";
+import { hasPermission } from "@/utils/permissions.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -51,7 +52,10 @@ export default {
     container: AppContainer,
   ) {
     if (
-      !interaction.memberPermissions.has(PermissionFlagsBits.ManageMessages)
+      !hasPermission(
+        interaction.member as GuildMember,
+        PermissionFlagsBits.ManageMessages,
+      )
     ) {
       await interaction.reply(ERROR_MESSAGES.MANAGE_MESSAGES_REQUIRED);
       return;

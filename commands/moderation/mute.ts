@@ -8,6 +8,10 @@ import {
 import { ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import {
+  checkRoleHierarchy,
+  checkUserAndBotPermissions,
+} from "@/utils/permissions.js";
+import {
   TimeoutDurationSchema,
   validateWithSchema,
 } from "@/utils/validation.js";
@@ -85,35 +89,33 @@ export default {
       });
     }
 
-    const botMemberPermissions = interaction.guild.members.me.permissions;
+    const botMember = interaction.guild.members.me;
+    const executor = interaction.member as GuildMember;
 
-    if (
-      !interaction.memberPermissions.has(PermissionFlagsBits.ModerateMembers) ||
-      !botMemberPermissions.has(PermissionFlagsBits.ModerateMembers)
-    ) {
+    const permCheck = checkUserAndBotPermissions(
+      interaction.memberPermissions,
+      botMember.permissions,
+      PermissionFlagsBits.ModerateMembers,
+    );
+    if (!permCheck.ok) {
       return interaction.reply({
         content: ERROR_MESSAGES.MODERATE_PERMISSION,
         ephemeral: true,
       });
     }
 
-    if (
-      member.roles.highest.position >=
-      interaction.guild.members.me.roles.highest.position
-    ) {
+    const hierarchyCheck = checkRoleHierarchy({
+      botMember,
+      targetMember: member,
+      executingMember: executor,
+      guildOwnerId: interaction.guild.ownerId,
+      action: "mute",
+    });
+    if (!hierarchyCheck.ok) {
       return interaction.reply({
-        content: ERROR_MESSAGES.HIERARCHY_BOT.replace("{action}", "mute"),
-        ephemeral: true,
-      });
-    }
-
-    if (
-      member.roles.highest.position >=
-        (interaction.member as GuildMember).roles.highest.position &&
-      (interaction.member as GuildMember).id !== interaction.guild.ownerId
-    ) {
-      return interaction.reply({
-        content: ERROR_MESSAGES.HIERARCHY_USER.replace("{action}", "mute"),
+        content: hierarchyCheck.targetAboveBot
+          ? ERROR_MESSAGES.HIERARCHY_BOT.replace("{action}", "mute")
+          : ERROR_MESSAGES.HIERARCHY_USER.replace("{action}", "mute"),
         ephemeral: true,
       });
     }
