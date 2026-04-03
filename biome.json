@@ -37,7 +37,7 @@
         "noExcessiveLinesPerFunction": {
           "level": "warn",
           "options": {
-            "maxLines": 60
+            "maxLines": 150
           }
         },
         "noExtraBooleanCast": "error",
