@@ -170,21 +170,14 @@
           "options": {
             "conventions": [
               {
-                "formats": ["camelCase", "PascalCase"],
+                "formats": [
+                  "camelCase",
+                  "PascalCase",
+                  "CONSTANT_CASE",
+                  "snake_case"
+                ],
                 "selector": {
-                  "kind": "function"
-                }
-              },
-              {
-                "formats": ["PascalCase"],
-                "selector": {
-                  "kind": "typeLike"
-                }
-              },
-              {
-                "formats": ["camelCase", "PascalCase", "CONSTANT_CASE"],
-                "selector": {
-                  "kind": "const"
+                  "kind": "any"
                 }
               }
             ],
