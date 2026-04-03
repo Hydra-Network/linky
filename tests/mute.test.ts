@@ -61,6 +61,31 @@ describe("mute command", () => {
     const callArg = mockReply.mock.calls[0][0];
     expect(callArg.content).toBe("That member is not in this server.");
   });
+
+  test("fails when missing target user", async () => {
+    const interaction = {
+      reply: mockReply,
+      options: {
+        getUser: vi.fn().mockReturnValue(null),
+        getInteger: vi.fn().mockReturnValue(60),
+        getString: vi.fn().mockReturnValue(null),
+      },
+      guild: {
+        members: {
+          cache: new Map(),
+        },
+      },
+    };
+
+    await muteCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
+
+    expect(mockReply).toHaveBeenCalled();
+    const callArg = mockReply.mock.calls[0][0];
+    expect(callArg.content).toContain("mute");
+  });
 });
 
 describe("unmute command", () => {
@@ -106,5 +131,29 @@ describe("unmute command", () => {
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
     expect(callArg.content).toBe("That member is not in this server.");
+  });
+
+  test("fails when missing target user", async () => {
+    const interaction = {
+      reply: mockReply,
+      options: {
+        getUser: vi.fn().mockReturnValue(null),
+        getString: vi.fn().mockReturnValue(null),
+      },
+      guild: {
+        members: {
+          cache: new Map(),
+        },
+      },
+    };
+
+    await unmuteCommand.execute(
+      interaction as unknown as ChatInputCommandInteraction,
+      mockContainer,
+    );
+
+    expect(mockReply).toHaveBeenCalled();
+    const callArg = mockReply.mock.calls[0][0];
+    expect(callArg.content).toContain("unmute");
   });
 });

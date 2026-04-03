@@ -1,9 +1,11 @@
 # TODO
 
 - [x] invite command for invite link
+- [x] change nickname
 - [x] lock command for locking channels
 - [x] say
 - [x] honey pot that softbans people who send messages in a channel for hacked people who are being used to raid
+- [x] softban feature(bans people for time and then unbans them right after that)
 - [x] afk
 - [x] honey pot
 - [x] moderating words
@@ -11,7 +13,6 @@
 - [ ] music bot feature
 - [ ] invite tracker alternatives
 - [ ] ability to give cusom people permision for a command possibly temporary too?
-- [ ] softban feature(bans people for time and then unbans them right after that)
 - [ ] verification for people non humans
 - [ ] invite link for server
 - [ ] avatar command for fetching your avatar or someone elses avatar
@@ -26,7 +27,6 @@
 - [ ] set slowmode
 - [ ] warn a user
 - [ ] quarentine feature
-- [ ] change nickname
 
 ---
 
