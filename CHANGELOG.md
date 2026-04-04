@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/Hydra-Network/linky/compare/v1.2.0...v1.3.0) (2026-04-04)
+
+
+### Features
+
+* **fun:** rock paper scissors ([c7a3bd0](https://github.com/Hydra-Network/linky/commit/c7a3bd0bb5308fe198c2fa89defef5fa0f55608f))
+
+
+
 # [1.2.0](https://github.com/Hydra-Network/linky/compare/v1.1.1...v1.2.0) (2026-04-04)
 
 
