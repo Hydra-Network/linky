@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/Hydra-Network/linky/compare/v1.3.0...v1.3.1) (2026-04-04)
+
+
+### Bug Fixes
+
+* **rps:** an import was only used as a type but wasnt type imported ([2852db4](https://github.com/Hydra-Network/linky/commit/2852db4167c1d018a4e97aa0cf264f239d23fbf1))
+
+
+
 # [1.3.0](https://github.com/Hydra-Network/linky/compare/v1.2.0...v1.3.0) (2026-04-04)
 
 
