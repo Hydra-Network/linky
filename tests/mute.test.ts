@@ -47,7 +47,7 @@ describe("mute command", () => {
       options: {
         getUser: vi.fn().mockReturnValue({ id: "123", tag: "user#1234" }),
         getInteger: vi.fn().mockReturnValue(60),
-        getString: vi.fn().mockReturnValue(null),
+        getString: vi.fn((name) => (name === "duration" ? "30m" : null)),
       },
       guild: {
         members: {
@@ -72,7 +72,7 @@ describe("mute command", () => {
       options: {
         getUser: vi.fn().mockReturnValue(null),
         getInteger: vi.fn().mockReturnValue(60),
-        getString: vi.fn().mockReturnValue(null),
+        getString: vi.fn((name) => (name === "duration" ? "30m" : null)),
       },
       guild: {
         members: {
