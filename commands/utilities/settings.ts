@@ -179,6 +179,30 @@ async function handleMinAge(
   );
 }
 
+async function handleTriggerWords(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  if (!interaction.guildId) {
+    await interaction.reply("This setting can only be used in a server.");
+    return;
+  }
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+  const currentValue =
+    (settings as Record<string, unknown>).triggerWords !== false;
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...allSettings,
+    [interaction.guildId]: { ...settings, triggerWords: !currentValue },
+  });
+  await interaction.reply(
+    `Trigger words ${!currentValue ? "enabled" : "disabled"} for this server`,
+  );
+}
+
 export default {
   data: new SlashCommandBuilder()
     .setName("settings")
@@ -265,6 +289,11 @@ export default {
             .setMaxValue(365)
             .setRequired(false),
         ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("trigger-words")
+        .setDescription("Toggle trigger words feature"),
     ),
 
   async execute(
@@ -314,6 +343,10 @@ export default {
 
     if (subcommand === "min-age") {
       await handleMinAge(interaction, getItem, setItem);
+    }
+
+    if (subcommand === "trigger-words") {
+      await handleTriggerWords(interaction, getItem, setItem);
     }
   },
 };

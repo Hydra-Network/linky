@@ -10,7 +10,7 @@
 - [x] afk
 - [x] honey pot
 - [x] moderating words
-- [ ] trigger words
+- [x] trigger words
 - [ ] music bot feature
 - [ ] invite tracker alternatives
 - [ ] ability to give cusom people permision for a command possibly temporary too?

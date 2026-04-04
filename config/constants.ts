@@ -56,6 +56,7 @@ export const DATABASE_KEYS = {
   AFK: "afk",
   HONEYPOT_CHANNEL: "honeypotChannel",
   MIN_AGE: "minAge",
+  TRIGGER_WORDS: "triggerWords",
 } as const;
 
 export const LINKY_ID = "1469170337810743478" as const;

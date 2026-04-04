@@ -76,6 +76,12 @@ const SCHEMA: Record<string, SchemaConfig> = {
     valCol: "channel_id",
     parse: (v) => v,
   },
+  [DATABASE_KEYS.TRIGGER_WORDS]: {
+    table: "trigger_words",
+    keyCol: "guild_id",
+    valCol: "data",
+    parse: JSON.parse,
+  },
 };
 
 export const init = async () => {
