@@ -69,7 +69,7 @@ export default {
     const durationResult = parseDuration(durationInput);
     if (!durationResult.ok) {
       return interaction.reply({
-        content: durationResult.error,
+        content: (durationResult as { ok: false; error: string }).error,
         flags: MessageFlags.Ephemeral,
       });
     }
