@@ -12,10 +12,7 @@ import {
   checkRoleHierarchy,
   checkUserAndBotPermissions,
 } from "@/utils/permissions.js";
-import {
-  TimeoutDurationSchema,
-  validateWithSchema,
-} from "@/utils/validation.js";
+import { parseDuration } from "@/utils/validation.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -27,13 +24,11 @@ export default {
         .setDescription("The member to mute")
         .setRequired(true),
     )
-    .addIntegerOption((option) =>
+    .addStringOption((option) =>
       option
         .setName("duration")
-        .setDescription("Duration of mute in minutes (1-40320, max 28 days)")
-        .setRequired(true)
-        .setMinValue(1)
-        .setMaxValue(40320),
+        .setDescription("Duration of mute (e.g., 30s, 5m, 1h, 2d, 1w)")
+        .setRequired(true),
     )
     .addStringOption((option) =>
       option
@@ -59,21 +54,27 @@ export default {
     }
 
     const target = interaction.options.getUser("target");
-    const duration = interaction.options.getInteger("duration");
+    const durationInput = interaction.options.getString("duration");
     const reason =
       interaction.options.getString("reason") ||
       ERROR_MESSAGES.NO_REASON_PROVIDED;
 
-    const durationValidation = validateWithSchema(
-      TimeoutDurationSchema,
-      duration,
-    );
-    if (!durationValidation.valid) {
+    if (!durationInput) {
       return interaction.reply({
-        content: `Invalid duration: ${durationValidation.errors[0]?.message || "Duration must be between 1 and 40320 minutes"}`,
+        content: "Duration is required.",
         flags: MessageFlags.Ephemeral,
       });
     }
+
+    const durationResult = parseDuration(durationInput);
+    if (!durationResult.ok) {
+      return interaction.reply({
+        content: durationResult.error,
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    const duration = durationResult.minutes;
 
     if (!target) {
       return interaction.reply({
@@ -123,12 +124,12 @@ export default {
 
     await target
       .send(
-        `You have been muted in ${interaction.guild.name} for ${duration} minute(s). Reason: ${reason}`,
+        `You have been muted in ${interaction.guild.name} for ${durationInput}. Reason: ${reason}`,
       )
       .catch(() => {});
     await member.timeout(duration * 60 * 1000, reason);
     await interaction.reply({
-      content: `Successfully muted ${target.tag} for ${duration} minute(s). Reason: ${reason}`,
+      content: `Successfully muted ${target.tag} for ${durationInput}. Reason: ${reason}`,
       flags: MessageFlags.Ephemeral,
     });
   },
