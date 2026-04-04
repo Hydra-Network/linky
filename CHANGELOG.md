@@ -1,3 +1,12 @@
+# [1.2.0](https://github.com/Hydra-Network/linky/compare/v1.1.1...v1.2.0) (2026-04-04)
+
+
+### Features
+
+* **utilities:** `/uptime` command ([f72b6ce](https://github.com/Hydra-Network/linky/commit/f72b6ce51f6fc3fe295f1e9889d6ffde08db1b10))
+
+
+
 ## [1.1.1](https://github.com/Hydra-Network/linky/compare/v1.1.0...v1.1.1) (2026-04-04)
 
 
