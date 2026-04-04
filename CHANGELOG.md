@@ -1,4 +1,13 @@
-# 1.1.0 (2026-04-04)
+## [1.1.1](https://github.com/Hydra-Network/linky/compare/v1.1.0...v1.1.1) (2026-04-04)
+
+
+### Bug Fixes
+
+* update .env.example values and remove redundant files ([6ff64b2](https://github.com/Hydra-Network/linky/commit/6ff64b23b1bf9faf1a638522d558873c170eb065))
+
+
+
+# [1.1.0](https://github.com/Hydra-Network/linky/compare/2fc5b9bccad5293ae391b2d032c3fb663605ec93...v1.1.0) (2026-04-04)
 
 
 ### Bug Fixes
