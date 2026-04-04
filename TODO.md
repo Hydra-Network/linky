@@ -2,6 +2,7 @@
 
 - [x] invite command for invite link
 - [x] warn a user
+- [x] avatar command for fetching your avatar or someone elses avatar
 - [x] change nickname
 - [x] lock command for locking channels
 - [x] say
@@ -16,7 +17,6 @@
 - [ ] ability to give cusom people permision for a command possibly temporary too?
 - [ ] verification for people non humans
 - [ ] invite link for server
-- [ ] avatar command for fetching your avatar or someone elses avatar
 - [ ] role info /perms
 - [ ] rock paper siscors
 - [ ] ai
