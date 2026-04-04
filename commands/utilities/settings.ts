@@ -14,6 +14,7 @@ import {
   DATABASE_KEYS,
   ERROR_MESSAGES,
   MIN_AGE_ERRORS,
+  STATUS_MESSAGES,
 } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import { hasPermission } from "@/utils/permissions.js";
@@ -203,6 +204,77 @@ async function handleTriggerWords(
   );
 }
 
+async function handleWelcomeChannel(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const channel = interaction.options.getChannel("channel") as GuildChannel;
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...allSettings,
+    [interaction.guildId]: {
+      ...settings,
+      welcomeChannel: channel.id,
+    },
+  });
+  await interaction.reply(
+    STATUS_MESSAGES.WELCOME_CHANNEL_SET.replace("{channel}", channel.name),
+  );
+}
+
+async function handleWelcomeChannelRemove(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+  settings.welcomeChannel = undefined;
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...allSettings,
+    [interaction.guildId]: settings,
+  });
+  await interaction.reply(STATUS_MESSAGES.WELCOME_DISABLED);
+}
+
+async function handleWelcomeMessage(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const message = interaction.options.getString("message");
+  const reset = interaction.options.getBoolean("reset");
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+
+  if (reset) {
+    settings.welcomeMessage = undefined;
+    await setItem(DATABASE_KEYS.SETTINGS, {
+      ...allSettings,
+      [interaction.guildId]: settings,
+    });
+    await interaction.reply(STATUS_MESSAGES.WELCOME_RESET);
+    return;
+  }
+
+  if (message) {
+    settings.welcomeMessage = message;
+    await setItem(DATABASE_KEYS.SETTINGS, {
+      ...allSettings,
+      [interaction.guildId]: settings,
+    });
+    await interaction.reply(STATUS_MESSAGES.WELCOME_MESSAGE_SET);
+  }
+}
+
 export default {
   data: new SlashCommandBuilder()
     .setName("settings")
@@ -294,6 +366,49 @@ export default {
       subcommand
         .setName("trigger-words")
         .setDescription("Toggle trigger words feature"),
+    )
+    .addSubcommandGroup((group) =>
+      group
+        .setName("welcome")
+        .setDescription("Manage welcome messages")
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("set-channel")
+            .setDescription(
+              "Set welcome message channel (enables welcome messages)",
+            )
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Channel for welcome messages")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("remove-channel")
+            .setDescription(
+              "Remove welcome channel (disables welcome messages)",
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("set-message")
+            .setDescription("Set custom welcome message template")
+            .addStringOption((option) =>
+              option
+                .setName("message")
+                .setDescription(
+                  "Message template ({member}, {server}, {count}, {tag})",
+                ),
+            )
+            .addBooleanOption((option) =>
+              option
+                .setName("reset")
+                .setDescription("Reset to default message"),
+            ),
+        ),
     ),
 
   async execute(
@@ -347,6 +462,16 @@ export default {
 
     if (subcommand === "trigger-words") {
       await handleTriggerWords(interaction, getItem, setItem);
+    }
+
+    if (subcommandGroup === "welcome") {
+      if (subcommand === "set-channel") {
+        await handleWelcomeChannel(interaction, getItem, setItem);
+      } else if (subcommand === "remove-channel") {
+        await handleWelcomeChannelRemove(interaction, getItem, setItem);
+      } else if (subcommand === "set-message") {
+        await handleWelcomeMessage(interaction, getItem, setItem);
+      }
     }
   },
 };

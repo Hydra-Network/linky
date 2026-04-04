@@ -39,6 +39,11 @@ export const STATUS_MESSAGES = {
   NO_RESULTS: "No results returned.",
   NONE: "None",
   CLOSED: "Channel closed by {user}. Reason: {reason}",
+  WELCOME_CHANNEL_SET: "Welcome channel set to {channel}.",
+  WELCOME_MESSAGE_SET: "Welcome message updated.",
+  WELCOME_ENABLED: "Welcome messages enabled.",
+  WELCOME_DISABLED: "Welcome messages disabled.",
+  WELCOME_RESET: "Welcome message reset to default.",
 } as const;
 
 export const CHANNEL_PATTERNS = {
@@ -57,6 +62,7 @@ export const DATABASE_KEYS = {
   HONEYPOT_CHANNEL: "honeypotChannel",
   MIN_AGE: "minAge",
   TRIGGER_WORDS: "triggerWords",
+  WELCOME_MESSAGES: "welcomeMessages",
 } as const;
 
 export const LINKY_ID = "1469170337810743478" as const;
