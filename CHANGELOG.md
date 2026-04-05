@@ -1,3 +1,12 @@
+# [1.6.0](https://github.com/Hydra-Network/linky/compare/v1.5.0...v1.6.0) (2026-04-05)
+
+
+### Features
+
+* **moderation:** modlogs ([07e0176](https://github.com/Hydra-Network/linky/commit/07e01761097866c4268938368759af876641a884))
+
+
+
 # [1.5.0](https://github.com/Hydra-Network/linky/compare/v1.4.0...v1.5.0) (2026-04-05)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **fun:** rock paper scissors ([c7a3bd0](https://github.com/Hydra-Network/linky/commit/c7a3bd0bb5308fe198c2fa89defef5fa0f55608f))
-
-
-
-# [1.2.0](https://github.com/Hydra-Network/linky/compare/v1.1.1...v1.2.0) (2026-04-04)
-
-
-### Features
-
-* **utilities:** `/uptime` command ([f72b6ce](https://github.com/Hydra-Network/linky/commit/f72b6ce51f6fc3fe295f1e9889d6ffde08db1b10))
 
 
 
