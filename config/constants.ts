@@ -63,6 +63,7 @@ export const DATABASE_KEYS = {
   MIN_AGE: "minAge",
   TRIGGER_WORDS: "triggerWords",
   WELCOME_MESSAGES: "welcomeMessages",
+  MODERATION_LOGS: "moderationLogs",
 } as const;
 
 export const LINKY_ID = "1469170337810743478" as const;

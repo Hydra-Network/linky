@@ -13,6 +13,7 @@ import {
 } from "discord.js";
 import { ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
+import type { ModerationLogTarget } from "@/services/moderation-log.js";
 import { checkUserAndBotPermissions } from "@/utils/permissions.js";
 
 export default {
@@ -36,7 +37,7 @@ export default {
     .setContexts([InteractionContextType.Guild]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    _container: AppContainer,
+    container: AppContainer,
   ) {
     if (!interaction.guild) {
       return interaction.reply({
@@ -95,6 +96,17 @@ export default {
       SendMessagesInThreads: null,
       AddReactions: null,
     } as PermissionOverwriteOptions);
+
+    const modLogs = container.get("modLogs");
+    await modLogs.log({
+      id: modLogs.generateId(),
+      guildId: interaction.guild.id,
+      action: "Unlock",
+      moderator: interaction.user,
+      target: { id: channel.id, tag: channel.name } as ModerationLogTarget,
+      reason,
+      timestamp: new Date(),
+    });
 
     await interaction.reply({
       content: `🔓 Unlocked ${channel}. Reason: ${reason}`,

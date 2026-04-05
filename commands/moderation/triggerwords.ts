@@ -16,6 +16,7 @@ interface TriggerWord {
 
 interface TriggerWordsContext {
   interaction: ChatInputCommandInteraction;
+  container: AppContainer;
   setItem: (key: string, value: unknown) => Promise<void>;
   guildWords: TriggerWord[];
   triggerWords: Record<string, TriggerWord[]> | undefined;
@@ -43,6 +44,16 @@ async function handleAdd(ctx: TriggerWordsContext) {
     ...ctx.triggerWords,
     [ctx.guildId]: [...ctx.guildWords, { word, response }],
   });
+  const modLogs = ctx.container.get("modLogs");
+  await modLogs.log({
+    id: modLogs.generateId(),
+    guildId: ctx.guildId,
+    action: "Trigger Word Add",
+    moderator: ctx.interaction.user,
+    target: { id: "triggerwords", tag: `Word: ${word}` },
+    reason: `Added trigger word "${word}" with response: "${response}"`,
+    timestamp: new Date(),
+  });
   await ctx.interaction.reply(`Added trigger word "${word}" with response.`);
 }
 
@@ -56,9 +67,20 @@ async function handleRemove(ctx: TriggerWordsContext) {
     await ctx.interaction.reply(`"${word}" is not a trigger word.`);
     return;
   }
+  const triggerEntry = ctx.guildWords.find((tw) => tw.word === word);
   await ctx.setItem(DATABASE_KEYS.TRIGGER_WORDS, {
     ...ctx.triggerWords,
     [ctx.guildId]: ctx.guildWords.filter((tw) => tw.word !== word),
+  });
+  const modLogs = ctx.container.get("modLogs");
+  await modLogs.log({
+    id: modLogs.generateId(),
+    guildId: ctx.guildId,
+    action: "Trigger Word Remove",
+    moderator: ctx.interaction.user,
+    target: { id: "triggerwords", tag: `Word: ${word}` },
+    reason: `Removed trigger word "${word}" with response: "${triggerEntry?.response}"`,
+    timestamp: new Date(),
   });
   await ctx.interaction.reply(`Removed "${word}" from trigger words.`);
 }
@@ -81,9 +103,23 @@ async function handleClear(ctx: TriggerWordsContext) {
     await ctx.interaction.reply("No trigger words to clear.");
     return;
   }
+  const previousWords = [...ctx.guildWords];
   await ctx.setItem(DATABASE_KEYS.TRIGGER_WORDS, {
     ...ctx.triggerWords,
     [ctx.guildId]: [],
+  });
+  const modLogs = ctx.container.get("modLogs");
+  await modLogs.log({
+    id: modLogs.generateId(),
+    guildId: ctx.guildId,
+    action: "Trigger Word Clear",
+    moderator: ctx.interaction.user,
+    target: {
+      id: "triggerwords",
+      tag: `${previousWords.length} words cleared`,
+    },
+    reason: `Cleared ${previousWords.length} trigger words: ${previousWords.map((tw) => tw.word).join(", ")}`,
+    timestamp: new Date(),
   });
   await ctx.interaction.reply("Cleared all trigger words.");
 }
@@ -156,6 +192,7 @@ export default {
 
     const ctx: TriggerWordsContext = {
       interaction,
+      container,
       setItem,
       guildWords,
       triggerWords,

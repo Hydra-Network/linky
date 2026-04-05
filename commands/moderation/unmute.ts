@@ -37,7 +37,7 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    _container: AppContainer,
+    container: AppContainer,
   ) {
     if (!interaction.guild) {
       return interaction.reply({
@@ -110,6 +110,18 @@ export default {
       )
       .catch(() => {});
     await member.timeout(null, reason);
+
+    const modLogs = container.get("modLogs");
+    await modLogs.log({
+      id: modLogs.generateId(),
+      guildId: interaction.guild.id,
+      action: "Unmute",
+      moderator: interaction.user,
+      target,
+      reason,
+      timestamp: new Date(),
+    });
+
     await interaction.reply({
       content: `Successfully unmuted ${target.tag}. Reason: ${reason}`,
       flags: MessageFlags.Ephemeral,

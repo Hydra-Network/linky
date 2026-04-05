@@ -275,6 +275,25 @@ async function handleWelcomeMessage(
   }
 }
 
+async function handleModLog(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const channel = interaction.options.getChannel("channel") as GuildChannel;
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...allSettings,
+    [interaction.guildId]: {
+      ...(allSettings?.[interaction.guildId] || {}),
+      modLogChannel: channel.id,
+    },
+  });
+  await interaction.reply(`Moderation log channel set to ${channel.name}`);
+}
+
 export default {
   data: new SlashCommandBuilder()
     .setName("settings")
@@ -409,6 +428,18 @@ export default {
                 .setDescription("Reset to default message"),
             ),
         ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("mod-log")
+        .setDescription("Set the moderation log channel")
+        .addChannelOption((option) =>
+          option
+            .setName("channel")
+            .setDescription("Channel for moderation logs")
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true),
+        ),
     ),
 
   async execute(
@@ -467,6 +498,7 @@ export default {
       "boost-channel": () => handleBoostChannel(interaction, getItem, setItem),
       "min-age": () => handleMinAge(interaction, getItem, setItem),
       "trigger-words": () => handleTriggerWords(interaction, getItem, setItem),
+      "mod-log": () => handleModLog(interaction, getItem, setItem),
     };
 
     const directHandler = directHandlers[subcommand];

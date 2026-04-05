@@ -138,7 +138,7 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    _container: AppContainer,
+    container: AppContainer,
   ) {
     if (!interaction.guild) {
       return interaction.reply({
@@ -169,6 +169,19 @@ export default {
       newNick,
       `Nickname changed by ${interaction.user.tag}`,
     );
+
+    const modLogs = container.get("modLogs");
+    await modLogs.log({
+      id: modLogs.generateId(),
+      guildId: interaction.guild.id,
+      action: isResetting ? "Nick Reset" : "Nick Change",
+      moderator: interaction.user,
+      target: targetUser,
+      reason: isResetting
+        ? `Reset nickname to ${targetUser.username}`
+        : `Changed nickname to ${newNick}`,
+      timestamp: new Date(),
+    });
 
     const actionText = isResetting ? "Reset" : "Changed";
     await interaction.reply({

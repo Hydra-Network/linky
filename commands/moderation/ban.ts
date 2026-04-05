@@ -37,7 +37,7 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    _container: AppContainer,
+    container: AppContainer,
   ) {
     if (!interaction.guild) {
       return interaction.reply({
@@ -103,6 +103,18 @@ export default {
       )
       .catch(() => {});
     await member.ban({ reason: reason });
+
+    const modLogs = container.get("modLogs");
+    await modLogs.log({
+      id: modLogs.generateId(),
+      guildId: interaction.guild.id,
+      action: "Ban",
+      moderator: interaction.user,
+      target,
+      reason,
+      timestamp: new Date(),
+    });
+
     await interaction.reply({
       content: ERROR_MESSAGES.ACTION_SUCCESS.replace("{action}", "banned")
         .replace("{target}", target.tag)

@@ -33,7 +33,7 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    _container: AppContainer,
+    container: AppContainer,
   ) {
     if (!interaction.guild) {
       return interaction.reply({
@@ -65,6 +65,18 @@ export default {
     }
 
     const messages = await targetChannel.bulkDelete(amount, true);
+
+    const modLogs = container.get("modLogs");
+    await modLogs.log({
+      id: modLogs.generateId(),
+      guildId: interaction.guild.id,
+      action: "Purge",
+      moderator: interaction.user,
+      target: { id: targetChannel.id, tag: targetChannel.name },
+      reason: `Purged ${messages.size} messages`,
+      timestamp: new Date(),
+    });
+
     await interaction.reply({
       content: `Successfully purged ${messages.size} messages.`,
       flags: MessageFlags.Ephemeral,

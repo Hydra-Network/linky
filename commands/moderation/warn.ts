@@ -38,7 +38,7 @@ export default {
     ]),
   async execute(
     interaction: ChatInputCommandInteraction,
-    _container: AppContainer,
+    container: AppContainer,
   ) {
     if (!interaction.guild) {
       return interaction.reply({
@@ -103,6 +103,17 @@ export default {
         `You have been warned in ${interaction.guild.name}. Reason: ${reason}`,
       )
       .catch(() => {});
+
+    const modLogs = container.get("modLogs");
+    await modLogs.log({
+      id: modLogs.generateId(),
+      guildId: interaction.guild.id,
+      action: "Warn",
+      moderator: interaction.user,
+      target,
+      reason,
+      timestamp: new Date(),
+    });
 
     await interaction.reply({
       content: `Successfully warned ${target.tag}. Reason: ${reason}`,

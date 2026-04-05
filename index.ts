@@ -12,6 +12,7 @@ import { loadCommands } from "./services/command-loader.js";
 import { container } from "./services/container.js";
 import { loadEvents } from "./services/event-loader.js";
 import logger from "./services/logger.js";
+import { ModerationLogService } from "./services/moderation-log.js";
 import { setupShutdown } from "./services/shutdown.js";
 
 process.on("uncaughtException", (error, origin) => {
@@ -70,6 +71,7 @@ container.register("db", {
   setItem: (key: string, value: unknown) => setItem(key, value, cache),
 });
 container.register("cache", cache);
+container.register("modLogs", new ModerationLogService(container));
 
 await loadCommands(client, container);
 await loadEvents(client, container);
