@@ -435,43 +435,43 @@ export default {
       return;
     }
 
-    if (subcommand === "ticket-category") {
-      await handleTicketCategory(interaction, setItem);
+    const subcommandHandlers: Record<
+      string,
+      Record<string, () => Promise<void>>
+    > = {
+      "link-channel": {
+        add: () => handleLinkChannelAdd(interaction, getItem, setItem),
+        remove: () => handleLinkChannelRemove(interaction, getItem, setItem),
+        list: () => handleLinkChannelList(interaction, getItem),
+      },
+      welcome: {
+        "set-channel": () =>
+          handleWelcomeChannel(interaction, getItem, setItem),
+        "remove-channel": () =>
+          handleWelcomeChannelRemove(interaction, getItem, setItem),
+        "set-message": () =>
+          handleWelcomeMessage(interaction, getItem, setItem),
+      },
+    };
+
+    const groupHandler = subcommandGroup
+      ? subcommandHandlers[subcommandGroup]?.[subcommand]
+      : undefined;
+    if (groupHandler) {
+      await groupHandler();
       return;
     }
 
-    if (subcommandGroup === "link-channel") {
-      if (subcommand === "add") {
-        await handleLinkChannelAdd(interaction, getItem, setItem);
-      } else if (subcommand === "remove") {
-        await handleLinkChannelRemove(interaction, getItem, setItem);
-      } else if (subcommand === "list") {
-        await handleLinkChannelList(interaction, getItem);
-      }
-      return;
-    }
+    const directHandlers: Record<string, () => Promise<void>> = {
+      "ticket-category": () => handleTicketCategory(interaction, setItem),
+      "boost-channel": () => handleBoostChannel(interaction, getItem, setItem),
+      "min-age": () => handleMinAge(interaction, getItem, setItem),
+      "trigger-words": () => handleTriggerWords(interaction, getItem, setItem),
+    };
 
-    if (subcommand === "boost-channel") {
-      await handleBoostChannel(interaction, getItem, setItem);
-      return;
-    }
-
-    if (subcommand === "min-age") {
-      await handleMinAge(interaction, getItem, setItem);
-    }
-
-    if (subcommand === "trigger-words") {
-      await handleTriggerWords(interaction, getItem, setItem);
-    }
-
-    if (subcommandGroup === "welcome") {
-      if (subcommand === "set-channel") {
-        await handleWelcomeChannel(interaction, getItem, setItem);
-      } else if (subcommand === "remove-channel") {
-        await handleWelcomeChannelRemove(interaction, getItem, setItem);
-      } else if (subcommand === "set-message") {
-        await handleWelcomeMessage(interaction, getItem, setItem);
-      }
+    const directHandler = directHandlers[subcommand];
+    if (directHandler) {
+      await directHandler();
     }
   },
 };
