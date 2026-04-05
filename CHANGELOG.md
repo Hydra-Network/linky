@@ -1,3 +1,12 @@
+# [1.5.0](https://github.com/Hydra-Network/linky/compare/v1.4.0...v1.5.0) (2026-04-05)
+
+
+### Features
+
+* **moderation:** new role command ([78616fb](https://github.com/Hydra-Network/linky/commit/78616fb2ff63dc950fe7f25d1590cbe3efdbe507))
+
+
+
 # [1.4.0](https://github.com/Hydra-Network/linky/compare/v1.3.1...v1.4.0) (2026-04-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **utilities:** `/uptime` command ([f72b6ce](https://github.com/Hydra-Network/linky/commit/f72b6ce51f6fc3fe295f1e9889d6ffde08db1b10))
-
-
-
-## [1.1.1](https://github.com/Hydra-Network/linky/compare/v1.1.0...v1.1.1) (2026-04-04)
-
-
-### Bug Fixes
-
-* update .env.example values and remove redundant files ([6ff64b2](https://github.com/Hydra-Network/linky/commit/6ff64b23b1bf9faf1a638522d558873c170eb065))
 
 
 
