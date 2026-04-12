@@ -7,7 +7,6 @@
   "scripts": {
     "dev": "NODE_ENV=development bun run deploy-commands.ts && NODE_ENV=development bun run index.ts",
     "start": "bun run deploy-commands.ts && bun run index.ts",
-    "bench": "vitest bench",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "lint": "biome lint .",
@@ -28,7 +27,6 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.10",
     "@types/node": "^25.5.2",
-    "typescript": "^6.0.2",
-    "vitest": "^4.1.2"
+    "typescript": "^6.0.2"
   }
 }
