@@ -1,3 +1,14 @@
+## [1.8.1](https://github.com/Hydra-Network/linky/compare/v1.8.0...v1.8.1) (2026-04-12)
+
+
+### Bug Fixes
+
+* **linting:** bun test runner compatibility ([6c36430](https://github.com/Hydra-Network/linky/commit/6c36430b241c6d5ead0a759ac45d136679aad0ad))
+* **tsc:** typescript type checks dont work with bun test syntax ([5268e4e](https://github.com/Hydra-Network/linky/commit/5268e4ebe493ccb37dccebae11ff53dd0995cbbc))
+* **types:** bun types compatibility  ([79b6395](https://github.com/Hydra-Network/linky/commit/79b63959bf4a46a7907ddea1f08999615178dccf))
+
+
+
 # [1.8.0](https://github.com/Hydra-Network/linky/compare/v1.7.1...v1.8.0) (2026-04-12)
 
 
@@ -32,15 +43,6 @@
 ### Features
 
 * **moderation:** modlogs ([07e0176](https://github.com/Hydra-Network/linky/commit/07e01761097866c4268938368759af876641a884))
-
-
-
-# [1.5.0](https://github.com/Hydra-Network/linky/compare/v1.4.0...v1.5.0) (2026-04-05)
-
-
-### Features
-
-* **moderation:** new role command ([78616fb](https://github.com/Hydra-Network/linky/commit/78616fb2ff63dc950fe7f25d1590cbe3efdbe507))
 
 
 
