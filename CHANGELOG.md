@@ -1,3 +1,12 @@
+# [1.8.0](https://github.com/Hydra-Network/linky/compare/v1.7.1...v1.8.0) (2026-04-12)
+
+
+### Features
+
+* bun tests ([6b2ef7e](https://github.com/Hydra-Network/linky/commit/6b2ef7ecbc7648836488efedd047ba63dc9aed7f))
+
+
+
 ## [1.7.1](https://github.com/Hydra-Network/linky/compare/v1.7.0...v1.7.1) (2026-04-12)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **moderation:** new role command ([78616fb](https://github.com/Hydra-Network/linky/commit/78616fb2ff63dc950fe7f25d1590cbe3efdbe507))
-
-
-
-# [1.4.0](https://github.com/Hydra-Network/linky/compare/v1.3.1...v1.4.0) (2026-04-04)
-
-
-### Features
-
-* **events:** welcome messages ([1384180](https://github.com/Hydra-Network/linky/commit/1384180dae49d8a22c1aa6ddf9d18df3ead760bb))
 
 
 
