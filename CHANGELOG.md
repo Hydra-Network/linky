@@ -1,3 +1,13 @@
+# [1.7.0](https://github.com/Hydra-Network/linky/compare/v1.6.0...v1.7.0) (2026-04-12)
+
+
+### Features
+
+* lessen 15s timeout in `fetchApi()` to 1s ([4ed4d04](https://github.com/Hydra-Network/linky/commit/4ed4d0482ee0fb7394da0f9392392d819dc887a4))
+* make /dns-check use cache ([255529e](https://github.com/Hydra-Network/linky/commit/255529ed5c94df78e738355abf24e4e5f980d244))
+
+
+
 # [1.6.0](https://github.com/Hydra-Network/linky/compare/v1.5.0...v1.6.0) (2026-04-05)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * **rps:** an import was only used as a type but wasnt type imported ([2852db4](https://github.com/Hydra-Network/linky/commit/2852db4167c1d018a4e97aa0cf264f239d23fbf1))
-
-
-
-# [1.3.0](https://github.com/Hydra-Network/linky/compare/v1.2.0...v1.3.0) (2026-04-04)
-
-
-### Features
-
-* **fun:** rock paper scissors ([c7a3bd0](https://github.com/Hydra-Network/linky/commit/c7a3bd0bb5308fe198c2fa89defef5fa0f55608f))
 
 
 
