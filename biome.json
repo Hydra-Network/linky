@@ -27,6 +27,9 @@
       "includes": ["tests/**"],
       "linter": {
         "rules": {
+          "correctness": {
+            "noUnresolvedImports": "off"
+          },
           "style": {
             "useNamingConvention": "off"
           },
