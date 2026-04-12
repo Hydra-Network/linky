@@ -117,7 +117,7 @@ export interface BlockerDetail {
 
 const fetchApi = async (url: string, blockerFilter: string) => {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
+  const timeout = setTimeout(() => controller.abort(), 1000);
   try {
     const res = await fetch(`${API_URL}?link=${url}&blocker=${blockerFilter}`, {
       signal: controller.signal,
