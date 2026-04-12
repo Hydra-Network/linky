@@ -1,39 +1,26 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, test, expect, beforeEach, jest } from "bun:test";
 
-const mockSend = vi.fn();
-const mockGetItem = vi.fn();
+const mockSend = jest.fn();
+
+const mockGetBoostChannel = jest.fn();
+
+jest.mock("../db.js", () => ({
+  getBoostChannel: mockGetBoostChannel,
+}));
 
 const mockChannel = {
   send: mockSend,
 };
 
-vi.mock("@/db/index", () => {
-  return {
-    __esModule: true,
-    getItem: (...args) => mockGetItem(...args),
-  };
-});
-
-const mockContainer = {
-  get: vi.fn((key) => {
-    if (key === "logger") {
-      return { error: vi.fn() };
-    }
-    if (key === "db") {
-      return { getItem: mockGetItem, setItem: vi.fn() };
-    }
-  }),
-};
-
-import boostEvent from "@/events/boost";
+import boostEvent from "../events/boost.js";
 
 describe("boost event", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   test("sends boost message when member starts boosting", async () => {
-    mockGetItem.mockReturnValue({ guild123: { boostChannel: "123456789" } });
+    mockGetBoostChannel.mockReturnValue("123456789");
 
     const oldMember = { premiumSince: null };
     const newMember = {
@@ -43,46 +30,48 @@ describe("boost event", () => {
         id: "guild123",
         premiumSubscriptionCount: 5,
         channels: {
-          fetch: vi.fn().mockResolvedValue(mockChannel),
+          fetch: jest.fn().mockResolvedValue(mockChannel),
         },
       },
       toString: () => "<@123>",
       displayAvatarURL: () => "https://example.com/avatar.png",
     };
 
-    await boostEvent.execute(oldMember, newMember, {}, mockContainer);
+    await boostEvent.execute(oldMember, newMember);
 
-    expect(mockGetItem).toHaveBeenCalledWith("settings");
+    expect(mockGetBoostChannel).toHaveBeenCalledWith("guild123");
     expect(mockChannel.send).toHaveBeenCalled();
     const sentEmbed = mockChannel.send.mock.calls[0][0].embeds[0];
     expect(sentEmbed.title).toBe("🎉 Thank You for Boosting!");
   });
 
   test("does nothing when member was already boosting", async () => {
+    mockGetBoostChannel.mockReturnValue("123456789");
+
     const oldMember = { premiumSince: new Date("2023-01-01") };
     const newMember = {
       premiumSince: new Date("2024-01-01"),
-      guild: { id: "guild123", channels: { fetch: vi.fn() } },
+      guild: { id: "guild123", channels: { fetch: jest.fn() } },
     };
 
-    await boostEvent.execute(oldMember, newMember, {}, mockContainer);
+    await boostEvent.execute(oldMember, newMember);
 
-    expect(mockGetItem).not.toHaveBeenCalled();
+    expect(mockGetBoostChannel).not.toHaveBeenCalled();
   });
 
   test("does nothing when no boost channel configured", async () => {
-    mockGetItem.mockReturnValue({});
+    mockGetBoostChannel.mockReturnValue(null);
 
     const oldMember = { premiumSince: null };
     const newMember = {
       premiumSince: new Date(),
       guild: {
         id: "guild123",
-        channels: { fetch: vi.fn() },
+        channels: { fetch: jest.fn() },
       },
     };
 
-    await boostEvent.execute(oldMember, newMember, {}, mockContainer);
+    await boostEvent.execute(oldMember, newMember);
 
     expect(newMember.guild.channels.fetch).not.toHaveBeenCalled();
   });

@@ -1,31 +1,28 @@
-import type { ChatInputCommandInteraction } from "discord.js";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, test, expect, jest, beforeEach } from "bun:test";
 
-vi.mock("@/db/index", () => ({ getItem: vi.fn() }));
+jest.mock("../db.js", () => ({}));
 
-import helpCommand from "@/commands/utilities/help";
+import helpCommand from "../commands/utilities/help.js";
 
-const mockReply = vi.fn();
+const mockReply = jest.fn();
 
 describe("help command", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   test("replies with help embed", async () => {
     const interaction = {
       reply: mockReply,
       options: {
-        getString: vi.fn().mockReturnValue(null),
+        getString: jest.fn().mockReturnValue(null),
       },
       client: {
         commands: new Map(),
       },
     };
 
-    await helpCommand.execute(
-      interaction as unknown as ChatInputCommandInteraction,
-    );
+    await helpCommand.execute(interaction);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -44,16 +41,14 @@ describe("help command", () => {
     const interaction = {
       reply: mockReply,
       options: {
-        getString: vi.fn().mockReturnValue("ping"),
+        getString: jest.fn().mockReturnValue("ping"),
       },
       client: {
         commands: new Map([["ping", mockCommand]]),
       },
     };
 
-    await helpCommand.execute(
-      interaction as unknown as ChatInputCommandInteraction,
-    );
+    await helpCommand.execute(interaction);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

@@ -1,15 +1,14 @@
-import type { ChatInputCommandInteraction } from "discord.js";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { describe, test, expect, jest, beforeEach } from "bun:test";
 
-const mockReply = vi.fn();
+const mockReply = jest.fn();
 
-vi.mock("@/db/index", () => ({ getItem: vi.fn() }));
+jest.mock("../db.js", () => ({}));
 
-import ticketpanelCommand from "@/commands/tickets/ticketpanel";
+import ticketpanelCommand from "../commands/tickets/ticketpanel.js";
 
 describe("ticketpanel command", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   test("sends ticket panel", async () => {
@@ -17,9 +16,7 @@ describe("ticketpanel command", () => {
       reply: mockReply,
     };
 
-    await ticketpanelCommand.execute(
-      interaction as unknown as ChatInputCommandInteraction,
-    );
+    await ticketpanelCommand.execute(interaction);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
