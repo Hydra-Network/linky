@@ -23,7 +23,8 @@
     },
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "exactOptionalPropertyTypes": false
+    "exactOptionalPropertyTypes": false,
+    "types": ["bun-types"]
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.js"]
