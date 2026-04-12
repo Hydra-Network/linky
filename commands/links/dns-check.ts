@@ -19,10 +19,25 @@ async function handleDnsCheck(
   blockerFilter: string,
 ) {
   const { getItem } = container.get("db");
+  const cache = container.get("cache");
 
   await interaction.deferReply();
 
-  const results = await checkWithDetails(url, blockerFilter);
+  const cacheKey = `dns-check:${url}:${blockerFilter}`;
+  let results = cache.get(cacheKey) as
+    | Awaited<ReturnType<typeof checkWithDetails>>
+    | undefined;
+
+  if (!results) {
+    try {
+      results = await checkWithDetails(url, blockerFilter);
+      cache.set(cacheKey, results);
+    } catch (err) {
+      return interaction.editReply({
+        content: `Error: ${(err as Error).message}`,
+      });
+    }
+  }
   if (results.length === 0) {
     return interaction.editReply({
       content: "No results returned.",
