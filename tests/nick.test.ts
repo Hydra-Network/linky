@@ -13,6 +13,9 @@ const mockContainer = {
     if (key === "db") {
       return { getItem: vi.fn(), setItem: vi.fn() };
     }
+    if (key === "modLogs") {
+      return { log: vi.fn(), generateId: vi.fn().mockReturnValue("123") };
+    }
   }),
 } as unknown as AppContainer;
 
