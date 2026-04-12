@@ -1,28 +1,24 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, beforeEach, mock } from "bun:test";
 
-jest.mock("../db.js", () => ({}));
-
-import helpCommand from "../commands/utilities/help.js";
-
-const mockReply = jest.fn();
+const mockReply = mock(() => {});
 
 describe("help command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockReply.mockClear();
   });
 
   test("replies with help embed", async () => {
-    const interaction = {
-      reply: mockReply,
-      options: {
-        getString: jest.fn().mockReturnValue(null),
-      },
-      client: {
-        commands: new Map(),
-      },
-    };
+    const { default: helpCommand } = await import(
+      "../commands/utilities/help.js"
+    );
 
-    await helpCommand.execute(interaction);
+    const mockClient = { commands: new Map() };
+
+    await helpCommand.execute({
+      reply: mockReply,
+      options: { getString: mock(() => null) },
+      client: mockClient,
+    } as any);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];
@@ -31,24 +27,23 @@ describe("help command", () => {
   });
 
   test("shows specific command help when command option provided", async () => {
+    const { default: helpCommand } = await import(
+      "../commands/utilities/help.js"
+    );
+
     const mockCommand = {
       data: {
         name: "ping",
         description: "Replies with Pong!",
       },
     };
+    const mockClient = { commands: new Map([["ping", mockCommand]]) };
 
-    const interaction = {
+    await helpCommand.execute({
       reply: mockReply,
-      options: {
-        getString: jest.fn().mockReturnValue("ping"),
-      },
-      client: {
-        commands: new Map([["ping", mockCommand]]),
-      },
-    };
-
-    await helpCommand.execute(interaction);
+      options: { getString: mock(() => "ping") },
+      client: mockClient,
+    } as any);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

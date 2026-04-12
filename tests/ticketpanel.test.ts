@@ -1,22 +1,18 @@
-import { describe, test, expect, jest, beforeEach } from "bun:test";
+import { describe, test, expect, beforeEach, mock } from "bun:test";
 
-const mockReply = jest.fn();
-
-jest.mock("../db.js", () => ({}));
-
-import ticketpanelCommand from "../commands/tickets/ticketpanel.js";
+const mockReply = mock(() => {});
 
 describe("ticketpanel command", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockReply.mockClear();
   });
 
   test("sends ticket panel", async () => {
-    const interaction = {
-      reply: mockReply,
-    };
+    const { default: ticketpanelCommand } = await import(
+      "../commands/tickets/ticketpanel.js"
+    );
 
-    await ticketpanelCommand.execute(interaction);
+    await ticketpanelCommand.execute({ reply: mockReply } as any, {} as any);
 
     expect(mockReply).toHaveBeenCalled();
     const callArg = mockReply.mock.calls[0][0];

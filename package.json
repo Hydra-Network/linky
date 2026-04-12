@@ -7,7 +7,6 @@
   "scripts": {
     "dev": "NODE_ENV=development bun run deploy-commands.ts && NODE_ENV=development bun run index.ts",
     "start": "bun run deploy-commands.ts && bun run index.ts",
-    "test": "vitest",
     "bench": "vitest bench",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
