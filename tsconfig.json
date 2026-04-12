@@ -27,5 +27,5 @@
     "types": ["bun-types"]
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/*.js"]
+  "exclude": ["node_modules", "dist", "**/*.js", "tests"]
 }
