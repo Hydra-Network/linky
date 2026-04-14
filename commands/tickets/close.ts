@@ -1,8 +1,26 @@
 import type { ChatInputCommandInteraction, TextChannel } from "discord.js";
-import { MessageFlags, SlashCommandBuilder } from "discord.js";
+import {
+  MessageFlags,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from "discord.js";
 import { CHANNEL_PATTERNS, ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import { handleError } from "@/services/error-handler.js";
+
+async function findTicketParticipant(channel: TextChannel) {
+  const overwrites = channel.permissionOverwrites.cache;
+  for (const [id, overwrite] of overwrites) {
+    if (
+      overwrite.allow.has(PermissionFlagsBits.ViewChannel) &&
+      id !== channel.guild.id &&
+      id !== channel.client.user?.id
+    ) {
+      return id;
+    }
+  }
+  return null;
+}
 
 export default {
   data: new SlashCommandBuilder()
@@ -40,6 +58,20 @@ export default {
         flags: MessageFlags.Ephemeral,
       });
       return;
+    }
+
+    const participantId = await findTicketParticipant(channel);
+    if (participantId) {
+      const participant = await channel.guild.client.users
+        .fetch(participantId)
+        .catch(() => null);
+      if (participant) {
+        await participant
+          .send(
+            `🔒 Your ticket has been closed by a moderator.\n📝 Reason: ${reason}`,
+          )
+          .catch(() => {});
+      }
     }
 
     await interaction.reply({
