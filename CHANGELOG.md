@@ -1,3 +1,12 @@
+# [1.9.0](https://github.com/Hydra-Network/linky/compare/v1.8.1...v1.9.0) (2026-04-14)
+
+
+### Features
+
+* better close ([6dd3e63](https://github.com/Hydra-Network/linky/commit/6dd3e639fffe92f23375e761c97207ce1bfe43c5))
+
+
+
 ## [1.8.1](https://github.com/Hydra-Network/linky/compare/v1.8.0...v1.8.1) (2026-04-12)
 
 
@@ -34,15 +43,6 @@
 
 * lessen 15s timeout in `fetchApi()` to 1s ([4ed4d04](https://github.com/Hydra-Network/linky/commit/4ed4d0482ee0fb7394da0f9392392d819dc887a4))
 * make /dns-check use cache ([255529e](https://github.com/Hydra-Network/linky/commit/255529ed5c94df78e738355abf24e4e5f980d244))
-
-
-
-# [1.6.0](https://github.com/Hydra-Network/linky/compare/v1.5.0...v1.6.0) (2026-04-05)
-
-
-### Features
-
-* **moderation:** modlogs ([07e0176](https://github.com/Hydra-Network/linky/commit/07e01761097866c4268938368759af876641a884))
 
 
 
