@@ -1,3 +1,12 @@
+## [1.9.1](https://github.com/Hydra-Network/linky/compare/v1.9.0...v1.9.1) (2026-04-17)
+
+
+### Bug Fixes
+
+* **db:** automod  ([7f987f0](https://github.com/Hydra-Network/linky/commit/7f987f02d98e55b5285e1b9a430924f42ffc9783))
+
+
+
 # [1.9.0](https://github.com/Hydra-Network/linky/compare/v1.8.1...v1.9.0) (2026-04-14)
 
 
@@ -33,16 +42,6 @@
 ### Bug Fixes
 
 * 3 tests dont have the `modLogs` mock ([a83f139](https://github.com/Hydra-Network/linky/commit/a83f139627a859b750dd9599fbdc7934856e4997))
-
-
-
-# [1.7.0](https://github.com/Hydra-Network/linky/compare/v1.6.0...v1.7.0) (2026-04-12)
-
-
-### Features
-
-* lessen 15s timeout in `fetchApi()` to 1s ([4ed4d04](https://github.com/Hydra-Network/linky/commit/4ed4d0482ee0fb7394da0f9392392d819dc887a4))
-* make /dns-check use cache ([255529e](https://github.com/Hydra-Network/linky/commit/255529ed5c94df78e738355abf24e4e5f980d244))
 
 
 
