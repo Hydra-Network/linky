@@ -176,6 +176,8 @@ export const setItem = async (
     return;
   }
 
+  cache?.del(key);
+
   if (cfg.singleValue) {
     await client.execute({
       sql: `INSERT OR REPLACE INTO ${cfg.table} (key, value) VALUES (?, ?)`,

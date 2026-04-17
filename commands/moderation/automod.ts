@@ -29,7 +29,7 @@ async function handleAdd(ctx: AutomodContext) {
     return;
   }
   await ctx.setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
-    ...ctx.automodWords,
+    ...(ctx.automodWords || {}),
     [ctx.guildId]: [...ctx.guildWords, word],
   });
   const modLogs = ctx.container.get("modLogs");
@@ -52,7 +52,7 @@ async function handleRemove(ctx: AutomodContext) {
     return;
   }
   await ctx.setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
-    ...ctx.automodWords,
+    ...(ctx.automodWords || {}),
     [ctx.guildId]: ctx.guildWords.filter((w) => w !== word),
   });
   const modLogs = ctx.container.get("modLogs");
@@ -85,7 +85,7 @@ async function handleClear(ctx: AutomodContext) {
   }
   const previousWords = [...ctx.guildWords];
   await ctx.setItem(DATABASE_KEYS.AUTOMOD_WORDS, {
-    ...ctx.automodWords,
+    ...(ctx.automodWords || {}),
     [ctx.guildId]: [],
   });
   const modLogs = ctx.container.get("modLogs");
@@ -154,8 +154,9 @@ export default {
     }
 
     const { getItem, setItem } = container.get("db");
+    const cache = container.get("cache");
     const subcommand = interaction.options.getSubcommand();
-    const automodWords = (await getItem(DATABASE_KEYS.AUTOMOD_WORDS)) as
+    const automodWords = (await getItem(DATABASE_KEYS.AUTOMOD_WORDS, cache)) as
       | Record<string, string[]>
       | undefined;
     const guildWords = automodWords?.[interaction.guildId] || [];
