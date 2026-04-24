@@ -1,3 +1,12 @@
+## [1.11.5](https://github.com/Hydra-Network/linky/compare/v1.11.4...v1.11.5) (2026-04-24)
+
+
+### Bug Fixes
+
+* linky ([a9b53a1](https://github.com/Hydra-Network/linky/commit/a9b53a1ce1f96e7b70534b0cb9a183f6dde9b4f7))
+
+
+
 ## [1.11.4](https://github.com/Hydra-Network/linky/compare/v1.11.3...v1.11.4) (2026-04-24)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **biome:** stuff ([1c98a3f](https://github.com/Hydra-Network/linky/commit/1c98a3fe899f545df4fa43ad80c23d57ffa1c68c))
-
-
-
-# [1.11.0](https://github.com/Hydra-Network/linky/compare/v1.10.0...v1.11.0) (2026-04-24)
-
-
-### Features
-
-* updat devbox ([c9b2937](https://github.com/Hydra-Network/linky/commit/c9b2937789dbcc6561e6eccd52394f61b1940608))
 
 
 
