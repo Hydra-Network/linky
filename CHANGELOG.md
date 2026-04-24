@@ -1,3 +1,12 @@
+## [1.11.1](https://github.com/Hydra-Network/linky/compare/v1.11.0...v1.11.1) (2026-04-24)
+
+
+### Bug Fixes
+
+* **biome:** stuff ([1c98a3f](https://github.com/Hydra-Network/linky/commit/1c98a3fe899f545df4fa43ad80c23d57ffa1c68c))
+
+
+
 # [1.11.0](https://github.com/Hydra-Network/linky/compare/v1.10.0...v1.11.0) (2026-04-24)
 
 
@@ -31,17 +40,6 @@
 ### Features
 
 * better close ([6dd3e63](https://github.com/Hydra-Network/linky/commit/6dd3e639fffe92f23375e761c97207ce1bfe43c5))
-
-
-
-## [1.8.1](https://github.com/Hydra-Network/linky/compare/v1.8.0...v1.8.1) (2026-04-12)
-
-
-### Bug Fixes
-
-* **linting:** bun test runner compatibility ([6c36430](https://github.com/Hydra-Network/linky/commit/6c36430b241c6d5ead0a759ac45d136679aad0ad))
-* **tsc:** typescript type checks dont work with bun test syntax ([5268e4e](https://github.com/Hydra-Network/linky/commit/5268e4ebe493ccb37dccebae11ff53dd0995cbbc))
-* **types:** bun types compatibility  ([79b6395](https://github.com/Hydra-Network/linky/commit/79b63959bf4a46a7907ddea1f08999615178dccf))
 
 
 
