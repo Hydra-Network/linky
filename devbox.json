@@ -1,13 +1,9 @@
 {
-  "$schema": "https://raw.githubusercontent.com/cocogithub/coco/refs/heads/main/coco_schema.json",
   "name": "linky",
-  "run": "bun run typecheck",
+  "shell": {
+    "init_hook": "bun i"
+  },
   "packages": [
     "bun"
-  ],
-  "kernel": {
-    "os": "ubuntu",
-    "arch": "x86_64"
-  },
-  "env": {}
+  ]
 }
