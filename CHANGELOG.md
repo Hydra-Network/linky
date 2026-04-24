@@ -1,3 +1,12 @@
+# [1.10.0](https://github.com/Hydra-Network/linky/compare/v1.9.1...v1.10.0) (2026-04-24)
+
+
+### Features
+
+* fix linky ([d6a85d2](https://github.com/Hydra-Network/linky/commit/d6a85d24f473524a72a6f328fc3c7ce222a5d2c3))
+
+
+
 ## [1.9.1](https://github.com/Hydra-Network/linky/compare/v1.9.0...v1.9.1) (2026-04-17)
 
 
@@ -33,15 +42,6 @@
 ### Features
 
 * bun tests ([6b2ef7e](https://github.com/Hydra-Network/linky/commit/6b2ef7ecbc7648836488efedd047ba63dc9aed7f))
-
-
-
-## [1.7.1](https://github.com/Hydra-Network/linky/compare/v1.7.0...v1.7.1) (2026-04-12)
-
-
-### Bug Fixes
-
-* 3 tests dont have the `modLogs` mock ([a83f139](https://github.com/Hydra-Network/linky/commit/a83f139627a859b750dd9599fbdc7934856e4997))
 
 
 
