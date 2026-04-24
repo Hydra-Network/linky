@@ -1,3 +1,12 @@
+## [1.11.4](https://github.com/Hydra-Network/linky/compare/v1.11.3...v1.11.4) (2026-04-24)
+
+
+### Bug Fixes
+
+* handler ([978fadf](https://github.com/Hydra-Network/linky/commit/978fadf4db86f34e547192f1c7688a4f3955ab3b))
+
+
+
 ## [1.11.3](https://github.com/Hydra-Network/linky/compare/v1.11.2...v1.11.3) (2026-04-24)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * updat devbox ([c9b2937](https://github.com/Hydra-Network/linky/commit/c9b2937789dbcc6561e6eccd52394f61b1940608))
-
-
-
-# [1.10.0](https://github.com/Hydra-Network/linky/compare/v1.9.1...v1.10.0) (2026-04-24)
-
-
-### Features
-
-* fix linky ([d6a85d2](https://github.com/Hydra-Network/linky/commit/d6a85d24f473524a72a6f328fc3c7ce222a5d2c3))
 
 
 
