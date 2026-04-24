@@ -1,3 +1,12 @@
+# [1.11.0](https://github.com/Hydra-Network/linky/compare/v1.10.0...v1.11.0) (2026-04-24)
+
+
+### Features
+
+* updat devbox ([c9b2937](https://github.com/Hydra-Network/linky/commit/c9b2937789dbcc6561e6eccd52394f61b1940608))
+
+
+
 # [1.10.0](https://github.com/Hydra-Network/linky/compare/v1.9.1...v1.10.0) (2026-04-24)
 
 
@@ -33,15 +42,6 @@
 * **linting:** bun test runner compatibility ([6c36430](https://github.com/Hydra-Network/linky/commit/6c36430b241c6d5ead0a759ac45d136679aad0ad))
 * **tsc:** typescript type checks dont work with bun test syntax ([5268e4e](https://github.com/Hydra-Network/linky/commit/5268e4ebe493ccb37dccebae11ff53dd0995cbbc))
 * **types:** bun types compatibility  ([79b6395](https://github.com/Hydra-Network/linky/commit/79b63959bf4a46a7907ddea1f08999615178dccf))
-
-
-
-# [1.8.0](https://github.com/Hydra-Network/linky/compare/v1.7.1...v1.8.0) (2026-04-12)
-
-
-### Features
-
-* bun tests ([6b2ef7e](https://github.com/Hydra-Network/linky/commit/6b2ef7ecbc7648836488efedd047ba63dc9aed7f))
 
 
 
