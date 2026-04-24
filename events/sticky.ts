@@ -9,8 +9,6 @@ interface StickyData {
 }
 
 const processingSticky = new Set<string>();
-const debounceTimers = new Map<string, NodeJS.Timeout>();
-const DEBOUNCE_MS = 10000;
 
 async function saveStickiesToDb(
   cache: { keys: () => string[]; get: (key: string) => unknown },
@@ -28,45 +26,33 @@ async function saveStickiesToDb(
     await db.setItem(DATABASE_KEYS.STICKY, allStickies);
   } catch (err) {
     logger.error({ err }, "Sticky DB Write Error");
-  } finally {
-    debounceTimers.delete(channelId);
   }
 }
 
-function scheduleDebounceSave(
+async function persistSticky(
   channelId: string,
   cache: { keys: () => string[]; get: (key: string) => unknown },
   db: { setItem: (key: string, value: unknown) => void },
   logger: { error: (data: { err: unknown }, msg: string) => void },
 ) {
-  if (debounceTimers.has(channelId)) {
-    clearTimeout(debounceTimers.get(channelId));
-  }
-
-  debounceTimers.set(
-    channelId,
-    setTimeout(async () => {
-      await saveStickiesToDb(cache, db, logger, channelId);
-    }, DEBOUNCE_MS),
-  );
+  await saveStickiesToDb(cache, db, logger, channelId);
 }
 
 export default defineMessageEvent(
   async (message, { logger, db, container }) => {
     const cache = container.get("cache");
 
-    if (cache.keys().length === 0) {
+    let sticky = cache.get(message.channelId) as StickyData | undefined;
+    if (!sticky) {
       const dbData = (await db.getItem(DATABASE_KEYS.STICKY)) as
         | Record<string, StickyData>
         | undefined;
-      if (dbData) {
-        for (const [key, value] of Object.entries(dbData)) {
-          cache.set(key, value);
-        }
+      if (dbData && dbData[message.channelId]) {
+        sticky = dbData[message.channelId];
+        cache.set(message.channelId, sticky);
       }
     }
 
-    const sticky = cache.get(message.channelId) as StickyData | undefined;
     if (!sticky) {
       return;
     }
@@ -101,7 +87,7 @@ export default defineMessageEvent(
         lastMessageId: newStickyMessage.id,
       });
 
-      scheduleDebounceSave(message.channelId, cache, db, logger);
+      persistSticky(message.channelId, cache, db, logger);
     } catch (error) {
       logger.error(
         {
