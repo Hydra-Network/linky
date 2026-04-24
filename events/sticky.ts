@@ -14,7 +14,7 @@ async function saveStickiesToDb(
   cache: { keys: () => string[]; get: (key: string) => unknown },
   db: { setItem: (key: string, value: unknown) => void },
   logger: { error: (data: { err: unknown }, msg: string) => void },
-  channelId: string,
+  _channelId: string,
 ) {
   try {
     const allStickies = cache
@@ -47,7 +47,7 @@ export default defineMessageEvent(
       const dbData = (await db.getItem(DATABASE_KEYS.STICKY)) as
         | Record<string, StickyData>
         | undefined;
-      if (dbData && dbData[message.channelId]) {
+      if (dbData?.[message.channelId]) {
         sticky = dbData[message.channelId];
         cache.set(message.channelId, sticky);
       }

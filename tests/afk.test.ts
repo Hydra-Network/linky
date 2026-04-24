@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, mock } from "bun:test";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 
 const mockReply = mock(() => {});
 
@@ -18,7 +18,7 @@ describe("afk command", () => {
     const mockMember = {
       nickname: "TestUser",
       user: { username: "testuser" },
-      setNickname: async (nickname: string) => {},
+      setNickname: async (_nickname: string) => {},
     };
 
     await afkCommand.execute(

@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, mock } from "bun:test";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 
 const mockReply = mock(() => {});
 const mockDefer = mock(() => {});
@@ -18,8 +18,12 @@ describe("check command", () => {
 
     const mockContainer = {
       get: (key: string) => {
-        if (key === "db") return { getItem: async () => ({}) };
-        if (key === "cache") return { get: () => undefined, set: () => {} };
+        if (key === "db") {
+          return { getItem: async () => ({}) };
+        }
+        if (key === "cache") {
+          return { get: () => undefined, set: () => {} };
+        }
         return {};
       },
     };
@@ -31,7 +35,7 @@ describe("check command", () => {
         editReply: mockEdit,
         options: {
           getSubcommand: () => "normal",
-          getString: (name: string, required?: boolean) =>
+          getString: (name: string, _required?: boolean) =>
             name === "url" ? "not-a-url" : null,
         },
         guildId: "123",

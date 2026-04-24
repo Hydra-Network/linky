@@ -1,6 +1,20 @@
 {
   "lockfile_version": "1",
   "packages": {
+    "biome": {
+      "resolved": "github:NixOS/nixpkgs/b86751bc4085f48661017fa226dee99fab6c651b?narHash=sha256-a8BYi3mzoJ%2FAcJP8UldOx8emoPRLeWqALZWu4ZvjPXw%3D#biome",
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "path": "/nix/store/sd58kvl7w6zlj3zjiq9brakyv7khk5s8-biome-2.4.11",
+              "default": true
+            }
+          ]
+        }
+      }
+    },
     "bun": {
       "resolved": "github:NixOS/nixpkgs/b86751bc4085f48661017fa226dee99fab6c651b?narHash=sha256-a8BYi3mzoJ%2FAcJP8UldOx8emoPRLeWqALZWu4ZvjPXw%3D#bun",
       "source": "nixpkg",
