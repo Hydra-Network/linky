@@ -1,12 +1,19 @@
 import { DATABASE_KEYS } from "@/config/index.js";
-import { defineMessageEvent } from "./base.js";
+import type { EventContext } from "../base.js";
 
 interface TriggerWord {
   word: string;
   response: string;
 }
 
-export default defineMessageEvent(async (message, ctx) => {
+export async function handleTriggerWords(
+  message: {
+    guildId: string;
+    content: string;
+    reply: (content: string) => Promise<void>;
+  },
+  ctx: EventContext,
+): Promise<void> {
   try {
     const settings = (await ctx.db.getItem(DATABASE_KEYS.SETTINGS)) as
       | Record<string, Record<string, unknown>>
@@ -41,4 +48,4 @@ export default defineMessageEvent(async (message, ctx) => {
       "Trigger words event error",
     );
   }
-});
+}

@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import type { Client } from "discord.js";
+import type { Client, Message } from "discord.js";
 import type { AppContainer } from "./container.js";
 import logger from "./logger.js";
+import type { EventContext } from "../events/base.js";
 
 export async function loadEvents(
   client: Client,
@@ -20,22 +21,60 @@ export async function loadEvents(
       file !== "base.ts" &&
       file !== "base.js",
   );
+
+  const eventGroups = new Map<string, Array<{ handler: (...args: unknown[]) => Promise<void>; once?: boolean }>>();
+
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const eventModule = await import(pathToFileURL(filePath).href);
+
+    if (Array.isArray(eventModule.messageHandlers)) {
+      for (const h of eventModule.messageHandlers) {
+        const ctx = createContext(client, container);
+        const wrapped = async (message: Message) => {
+          if (message.author.bot || !message.guild) return;
+          await h.handler(message, ctx);
+        };
+        const group = eventGroups.get(h.name) || [];
+        group.push({ handler: wrapped });
+        eventGroups.set(h.name, group);
+      }
+    }
+
+    if (Array.isArray(eventModule.guildMemberHandlers)) {
+      for (const h of eventModule.guildMemberHandlers) {
+        const group = eventGroups.get(h.name) || [];
+        group.push(h);
+        eventGroups.set(h.name, group);
+      }
+    }
+
     const event = eventModule.default || eventModule;
     if (event.name && event.execute) {
-      const wrappedExecute = (...args: unknown[]) =>
-        event.execute(...args, client, container);
-      if (event.once) {
-        client.once(event.name, wrappedExecute);
-      } else {
-        client.on(event.name, wrappedExecute);
-      }
-    } else {
-      logger.warn(
-        `The event at ${filePath} is missing a required "name" or "execute" property.`,
-      );
+      const group = eventGroups.get(event.name) || [];
+      group.push(event);
+      eventGroups.set(event.name, group);
     }
   }
+
+  for (const [eventName, handlers] of eventGroups) {
+    for (const { handler, once } of handlers) {
+      const wrappedExecute = (...args: unknown[]) =>
+        handler(...args, client, container);
+      if (once) {
+        client.once(eventName, wrappedExecute);
+      } else {
+        client.on(eventName, wrappedExecute);
+      }
+    }
+  }
+}
+
+function createContext(client: Client, container: AppContainer): EventContext {
+  return {
+    logger: container.get("logger"),
+    db: container.get("db"),
+    client: client as Client<true>,
+    container,
+  };
 }

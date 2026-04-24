@@ -25,34 +25,11 @@ interface MessageEventOptions {
   skipBotCheck?: boolean;
 }
 
-export function defineMessageEvent(
+export function defineMessageHandler(
+  name: string,
   handler: (message: Message, ctx: EventContext) => Promise<void>,
-  options: MessageEventOptions = {},
-): DiscordEvent<typeof Events.MessageCreate> {
-  const { once = false, skipBotCheck = false } = options;
-
-  return {
-    name: Events.MessageCreate,
-    once,
-    async execute(
-      message: Message,
-      discordClient: Client,
-      container: AppContainer,
-    ) {
-      if (!skipBotCheck && (message.author.bot || !message.guild)) {
-        return;
-      }
-
-      const ctx: EventContext = {
-        logger: container.get("logger"),
-        db: container.get("db"),
-        client: discordClient as Client<true>,
-        container,
-      };
-
-      await handler(message, ctx);
-    },
-  };
+): { name: string; handler: (message: Message, ctx: EventContext) => Promise<void> } {
+  return { name, handler };
 }
 
 export function defineEvent<TName extends string, TArgs extends unknown[]>(

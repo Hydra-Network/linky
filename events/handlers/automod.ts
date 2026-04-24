@@ -1,10 +1,19 @@
 import { DATABASE_KEYS } from "@/config/index.js";
-import { defineMessageEvent } from "./base.js";
+import type { EventContext } from "../base.js";
 
-export default defineMessageEvent(async (message, { logger, db }) => {
+export async function handleAutoMod(
+  message: {
+    author: { id: string; send: (opts: { content: string }) => Promise<void> };
+    content: string;
+    guildId: string;
+    channelId: string;
+    delete: () => Promise<void>;
+  },
+  ctx: EventContext,
+): Promise<void> {
   const messageContent = message.content.toLowerCase();
 
-  const dbData = (await db.getItem(DATABASE_KEYS.AUTOMOD_WORDS)) as
+  const dbData = (await ctx.db.getItem(DATABASE_KEYS.AUTOMOD_WORDS)) as
     | Record<string, string[]>
     | undefined;
   const automodWords = dbData?.[message.guildId] || [];
@@ -20,7 +29,7 @@ export default defineMessageEvent(async (message, { logger, db }) => {
           content: `Your message in ${message.channel} was deleted because it contained a blocked word.`,
         });
       } catch (error) {
-        logger.error(
+        ctx.logger.error(
           {
             err: error,
             channelId: message.channelId,
@@ -32,4 +41,4 @@ export default defineMessageEvent(async (message, { logger, db }) => {
       }
     }
   }
-});
+}
