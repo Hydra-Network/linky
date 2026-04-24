@@ -87,7 +87,7 @@ export default defineMessageEvent(
         lastMessageId: newStickyMessage.id,
       });
 
-      persistSticky(message.channelId, cache, db, logger);
+      await persistSticky(message.channelId, cache, db, logger);
     } catch (error) {
       logger.error(
         {

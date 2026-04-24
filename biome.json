@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.10/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.11/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -10,7 +10,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!dist"]
+    "includes": ["**", "!tests", "!node_modules", "!dist"]
   },
   "overrides": [
     {
@@ -19,22 +19,6 @@
         "rules": {
           "performance": {
             "noBarrelFile": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["tests/**"],
-      "linter": {
-        "rules": {
-          "correctness": {
-            "noUnresolvedImports": "off"
-          },
-          "style": {
-            "useNamingConvention": "off"
-          },
-          "complexity": {
-            "noExcessiveLinesPerFunction": "off"
           }
         }
       }
