@@ -44,7 +44,7 @@ export async function loadEvents(
     if (Array.isArray(eventModule.guildMemberHandlers)) {
       for (const h of eventModule.guildMemberHandlers) {
         const group = eventGroups.get(h.name) || [];
-        group.push(h);
+        group.push({ handler: h.execute, once: h.once });
         eventGroups.set(h.name, group);
       }
     }
