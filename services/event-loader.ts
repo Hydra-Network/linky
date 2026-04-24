@@ -52,7 +52,7 @@ export async function loadEvents(
     const event = eventModule.default || eventModule;
     if (event.name && event.execute) {
       const group = eventGroups.get(event.name) || [];
-      group.push(event);
+      group.push({ handler: event.execute, once: event.once });
       eventGroups.set(event.name, group);
     }
   }
