@@ -1,8 +1,8 @@
 import type { ChatInputCommandInteraction } from "discord.js";
 import {
   ApplicationIntegrationType,
-  MessageFlags,
   InteractionContextType,
+  MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
@@ -129,7 +129,7 @@ export default {
       input,
     );
 
-    if (!isUrl && !isDomain) {
+    if (!(isUrl || isDomain)) {
       await interaction.reply({
         content: "Input must be a valid domain or URL.",
         flags: MessageFlags.Ephemeral,

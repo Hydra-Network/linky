@@ -8,13 +8,19 @@ export async function handleLeaveMessage(
       id: string;
       name: string;
       memberCount: number;
-      channels: { fetch: (id: string) => Promise<{ send: (content: string) => Promise<void> } | null> };
+      channels: {
+        fetch: (
+          id: string,
+        ) => Promise<{ send: (content: string) => Promise<void> } | null>;
+      };
     };
     user: { tag: string; bot: boolean };
   },
   ctx: EventContext,
 ): Promise<void> {
-  if (member.user.bot) return;
+  if (member.user.bot) {
+    return;
+  }
 
   const allSettings = (await ctx.db.getItem(DATABASE_KEYS.SETTINGS)) as
     | Record<string, Record<string, unknown>>
@@ -22,11 +28,15 @@ export async function handleLeaveMessage(
   const settings = allSettings?.[member.guild.id] || {};
 
   const leaveChannelId = settings.leaveChannel as string | undefined;
-  if (!leaveChannelId) return;
+  if (!leaveChannelId) {
+    return;
+  }
 
   try {
     const channel = await member.guild.channels.fetch(leaveChannelId);
-    if (!(channel && "send" in channel)) return;
+    if (!(channel && "send" in channel)) {
+      return;
+    }
 
     const leaveMessage =
       (settings.leaveMessage as string | undefined) ??

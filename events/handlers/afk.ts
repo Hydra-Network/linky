@@ -8,7 +8,11 @@ interface AfkData {
 }
 
 export async function handleAfkReturn(
-  message: { author: { id: string }; member?: { setNickname: (nick: string) => Promise<void> }; reply: (opts: { content: string }) => Promise<void> },
+  message: {
+    author: { id: string };
+    member?: { setNickname: (nick: string) => Promise<void> };
+    reply: (opts: { content: string }) => Promise<void>;
+  },
   ctx: EventContext,
 ): Promise<void> {
   const afkData = (await ctx.db.getItem(DATABASE_KEYS.AFK)) as

@@ -521,9 +521,7 @@ export default {
         .addSubcommand((subcommand) =>
           subcommand
             .setName("remove-channel")
-            .setDescription(
-              "Remove leave channel (disables leave messages)",
-            ),
+            .setDescription("Remove leave channel (disables leave messages)"),
         )
         .addSubcommand((subcommand) =>
           subcommand
@@ -532,9 +530,7 @@ export default {
             .addStringOption((option) =>
               option
                 .setName("message")
-                .setDescription(
-                  "Message template ({member}, {server}, {tag})",
-                ),
+                .setDescription("Message template ({member}, {server}, {tag})"),
             )
             .addBooleanOption((option) =>
               option
@@ -598,12 +594,10 @@ export default {
           handleWelcomeMessage(interaction, getItem, setItem),
       },
       leave: {
-        "set-channel": () =>
-          handleLeaveChannel(interaction, getItem, setItem),
+        "set-channel": () => handleLeaveChannel(interaction, getItem, setItem),
         "remove-channel": () =>
           handleLeaveChannelRemove(interaction, getItem, setItem),
-        "set-message": () =>
-          handleLeaveMessage(interaction, getItem, setItem),
+        "set-message": () => handleLeaveMessage(interaction, getItem, setItem),
       },
     };
 

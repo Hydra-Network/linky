@@ -1,5 +1,4 @@
 import type { Client, Message } from "discord.js";
-import { Events } from "discord.js";
 import type pino from "pino";
 import type { getItem as dbGetItem, setItem as dbSetItem } from "@/db/index.js";
 import type { AppContainer } from "@/services/container.js";
@@ -20,15 +19,18 @@ export interface DiscordEvent<TName extends string = string> {
   execute: (...args: unknown[]) => Promise<void>;
 }
 
-interface MessageEventOptions {
-  once?: boolean;
-  skipBotCheck?: boolean;
-}
+// interface MessageEventOptions {
+//   once?: boolean;
+//   skipBotCheck?: boolean;
+// }
 
 export function defineMessageHandler(
   name: string,
   handler: (message: Message, ctx: EventContext) => Promise<void>,
-): { name: string; handler: (message: Message, ctx: EventContext) => Promise<void> } {
+): {
+  name: string;
+  handler: (message: Message, ctx: EventContext) => Promise<void>;
+} {
   return { name, handler };
 }
 

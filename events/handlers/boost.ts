@@ -6,7 +6,11 @@ interface GuildMember {
   guild: {
     id: string;
     premiumSubscriptionCount: number | null;
-    channels: { fetch: (id: string) => Promise<{ send: (opts: object) => Promise<void> } | null> };
+    channels: {
+      fetch: (
+        id: string,
+      ) => Promise<{ send: (opts: object) => Promise<void> } | null>;
+    };
   };
   id: string;
   displayAvatarURL: () => string;
@@ -18,7 +22,7 @@ export async function handleBoost(
   ctx: EventContext,
 ): Promise<void> {
   const { DATABASE_KEYS } = await import("@/config/index.js");
-  
+
   const oldWasBoosting = Boolean(oldMember.premiumSince);
   const newIsBoosting = newMember.premiumSince;
 
@@ -29,11 +33,15 @@ export async function handleBoost(
       | undefined;
     const boostChannelId = allSettings?.[guildId]?.boostChannel;
 
-    if (!boostChannelId) return;
+    if (!boostChannelId) {
+      return;
+    }
 
     try {
       const channel = await newMember.guild.channels.fetch(boostChannelId);
-      if (!(channel && "send" in channel)) return;
+      if (!(channel && "send" in channel)) {
+        return;
+      }
 
       const months = newMember.premiumSinceTimestamp
         ? Math.floor(

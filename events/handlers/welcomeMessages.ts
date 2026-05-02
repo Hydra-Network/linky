@@ -8,13 +8,19 @@ export async function handleWelcomeMessage(
       id: string;
       name: string;
       memberCount: number;
-      channels: { fetch: (id: string) => Promise<{ send: (content: string) => Promise<void> } | null> };
+      channels: {
+        fetch: (
+          id: string,
+        ) => Promise<{ send: (content: string) => Promise<void> } | null>;
+      };
     };
     user: { tag: string; bot: boolean };
   },
   ctx: EventContext,
 ): Promise<void> {
-  if (member.user.bot) return;
+  if (member.user.bot) {
+    return;
+  }
 
   const allSettings = (await ctx.db.getItem(DATABASE_KEYS.SETTINGS)) as
     | Record<string, Record<string, unknown>>
@@ -22,11 +28,15 @@ export async function handleWelcomeMessage(
   const settings = allSettings?.[member.guild.id] || {};
 
   const welcomeChannelId = settings.welcomeChannel as string | undefined;
-  if (!welcomeChannelId) return;
+  if (!welcomeChannelId) {
+    return;
+  }
 
   try {
     const channel = await member.guild.channels.fetch(welcomeChannelId);
-    if (!(channel && "send" in channel)) return;
+    if (!(channel && "send" in channel)) {
+      return;
+    }
 
     const welcomeMessage =
       (settings.welcomeMessage as string | undefined) ??

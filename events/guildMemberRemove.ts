@@ -1,5 +1,5 @@
-import { Events } from "discord.js";
 import type { GuildMember } from "discord.js";
+import { Events } from "discord.js";
 import { defineEvent } from "./base.js";
 import { handleLeaveMessage } from "./handlers/leaveMessages.js";
 
