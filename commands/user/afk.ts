@@ -7,6 +7,8 @@ import {
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
+import { validateWithSchema, AfkDataSchema } from "@/utils/validation.js";
+import * as v from "valibot";
 
 interface AfkData {
   nickname: string;
@@ -45,13 +47,26 @@ export default {
 
     await user.setNickname(`[afk] ${originalNickname}`);
 
+    const existingAfkData = (await getItem(DATABASE_KEYS.AFK)) as Record<string, unknown> || {};
+    
+    const newAfkEntry = {
+      nickname: originalNickname,
+      reason,
+      timestamp: Date.now(),
+    };
+    
+    const validatedEntry = validateWithSchema(AfkDataSchema, newAfkEntry);
+    if (!validatedEntry.valid) {
+      await interaction.reply({
+        content: `Failed to set AFK: ${validatedEntry.errors[0]?.message || "Validation failed"}`,
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
     const afkData = {
-      ...((await getItem(DATABASE_KEYS.AFK)) as Record<string, AfkData>),
-      [interaction.user.id]: {
-        nickname: originalNickname,
-        reason,
-        timestamp: Date.now(),
-      },
+      ...existingAfkData,
+      [interaction.user.id]: validatedEntry.data,
     };
 
     await setItem(DATABASE_KEYS.AFK, afkData);

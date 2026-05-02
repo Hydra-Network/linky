@@ -6,12 +6,17 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { z } from "zod";
 import { ERROR_MESSAGES } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
-import { validateWithSchema } from "@/utils/validation.js";
+import { validateWithSchema, TimeoutDurationSchema } from "@/utils/validation.js";
+import * as v from "valibot";
 
-const PurgeAmountSchema = z.number().int().min(1).max(100);
+const PurgeAmountSchema = v.pipe(
+  v.number(),
+  v.integer(),
+  v.minValue(1),
+  v.maxValue(100),
+);
 
 export default {
   data: new SlashCommandBuilder()

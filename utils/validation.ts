@@ -1,17 +1,22 @@
-import { z } from "zod";
+import * as v from "valibot";
 
-export const LinkSchema = z.object({
-  url: z.string().url(),
-  site: z.enum(["galaxy", "glint", "bromine"]),
-  userId: z.string(),
-  timestamp: z.string(),
-  blocker: z.boolean(),
-  role: z.string().optional(),
+export const LinkSchema = v.object({
+  url: v.string(),
+  site: v.picklist(["galaxy", "glint", "bromine"]),
+  userId: v.string(),
+  timestamp: v.string(),
+  blocker: v.boolean(),
+  role: v.optional(v.string()),
 });
 
-export const SiteSchema = z.enum(["galaxy", "glint", "bromine"]);
+export const SiteSchema = v.picklist(["galaxy", "glint", "bromine"]);
 
-export const TimeoutDurationSchema = z.number().int().min(1).max(40320);
+export const TimeoutDurationSchema = v.pipe(
+  v.number(),
+  v.integer(),
+  v.minValue(1),
+  v.maxValue(40320),
+);
 
 const durationRegex = /^(\d+)(s|m|h|d|w)$/i;
 
@@ -53,23 +58,65 @@ export function parseDuration(
   return { ok: true, minutes };
 }
 
-export const LinkInputSchema = z.string().min(1);
+export const LinkInputSchema = v.pipe(
+  v.string(),
+  v.minLength(1),
+);
 
-export const ReasonSchema = z.string().max(512).optional();
+export const UrlOrDomainSchema = v.pipe(
+  v.string(),
+  v.check((input) => {
+    const isUrl = /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(input);
+    const isDomain = /^(?!-)(?:[a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,}$/i.test(input);
+    return isUrl || isDomain;
+  }, "Input must be a valid domain or URL"),
+);
 
-export function validateWithSchema<T extends z.ZodType>(
+export const ReasonSchema = v.optional(v.string());
+
+export const AfkDataSchema = v.object({
+  nickname: v.string(),
+  reason: v.string(),
+  timestamp: v.number(),
+});
+
+export const SettingsSchema = v.object({
+  checkEmojis: v.optional(v.boolean()),
+  boostChannel: v.optional(v.string()),
+  minAge: v.optional(v.number()),
+  triggerWords: v.optional(v.boolean()),
+  welcomeChannel: v.optional(v.string()),
+  welcomeMessage: v.optional(v.string()),
+  leaveChannel: v.optional(v.string()),
+  leaveMessage: v.optional(v.string()),
+  modLogChannel: v.optional(v.string()),
+});
+
+export const GuildSettingsSchema = v.record(
+  v.string(),
+  SettingsSchema,
+);
+
+export const ChannelIdSchema = v.string();
+
+export const WelcomeMessageSchema = v.pipe(
+  v.string(),
+  v.maxLength(1000),
+);
+
+export function validateWithSchema<T extends v.GenericSchema>(
   schema: T,
   data: unknown,
 ) {
-  const result = schema.safeParse(data);
+  const result = v.safeParse(schema, data);
   if (!result.success) {
     return {
       valid: false,
-      errors: result.error.issues.map((e) => ({
-        path: e.path.join("."),
+      errors: result.issues.map((e) => ({
+        path: e.path?.map((p) => p.key).join(".") || "",
         message: e.message,
       })),
     };
   }
-  return { valid: true, data: result.data };
+  return { valid: true, data: result.output };
 }

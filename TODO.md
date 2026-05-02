@@ -36,4 +36,5 @@
 - [ ] unlock command
 - [ ] quarentine feature
 - [ ] heat filte rlike wick https://docs.wickbot.com/intro/features/
+- [ ] back up bot
 - [ ] moderate action on people joining with specific req like no avatar, new account, regex in username, etc.

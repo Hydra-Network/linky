@@ -18,6 +18,8 @@ import {
 } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import { hasPermission } from "@/utils/permissions.js";
+import { validateWithSchema, SettingsSchema, GuildSettingsSchema, WelcomeMessageSchema } from "@/utils/validation.js";
+import * as v from "valibot";
 
 type DbGetItem = (key: string) => unknown;
 type DbSetItem = (key: string, value: unknown) => void;
@@ -40,16 +42,17 @@ async function handleCheckEmoji(
     await interaction.reply(ERROR_MESSAGES.ADMIN_REQUIRED);
     return;
   }
-  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
-    | Record<string, Record<string, unknown>>
-    | undefined;
-  const settings = allSettings?.[interaction.guildId] || {};
-  const currentValue =
-    (settings as Record<string, unknown>).checkEmojis !== false;
-  await setItem(DATABASE_KEYS.SETTINGS, {
-    ...allSettings,
+  const allSettings = validateWithSchema(
+    GuildSettingsSchema,
+    (await getItem(DATABASE_KEYS.SETTINGS)) || {},
+  );
+  const settings = allSettings.valid ? allSettings.data[interaction.guildId] || {} : {};
+  const currentValue = settings.checkEmojis !== false;
+  const updatedSettings = {
+    ...(allSettings.valid ? allSettings.data : {}),
     [interaction.guildId]: { ...settings, checkEmojis: !currentValue },
-  });
+  };
+  await setItem(DATABASE_KEYS.SETTINGS, updatedSettings);
   await interaction.reply(
     `Check emojis ${!currentValue ? "enabled" : "disabled"} for this server`,
   );
@@ -143,14 +146,14 @@ async function handleMinAge(
   setItem: DbSetItem,
 ) {
   const days = interaction.options.getInteger("days");
-  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
-    | Record<string, Record<string, unknown>>
-    | undefined;
-  const settings: Record<string, unknown> =
-    allSettings?.[interaction.guildId] || {};
+  const allSettings = validateWithSchema(
+    GuildSettingsSchema,
+    (await getItem(DATABASE_KEYS.SETTINGS)) || {},
+  );
+  const settings = allSettings.valid ? (allSettings.data[interaction.guildId] || {}) : {};
 
   if (days === null || days === undefined) {
-    const currentAge = settings.minAge as number | undefined;
+    const currentAge = (settings as Record<string, unknown>).minAge as number | undefined;
     if (currentAge) {
       await interaction.reply(
         `Current minimum account age: ${currentAge} days`,
@@ -162,19 +165,20 @@ async function handleMinAge(
   }
 
   if (days === 0) {
-    settings.minAge = undefined;
-    await setItem(DATABASE_KEYS.SETTINGS, {
-      ...allSettings,
-      [interaction.guildId]: settings,
-    });
+    const updatedSettings = {
+      ...(allSettings.valid ? allSettings.data : {}),
+      [interaction.guildId]: { ...settings, minAge: undefined },
+    };
+    await setItem(DATABASE_KEYS.SETTINGS, updatedSettings);
     await interaction.reply(MIN_AGE_ERRORS.MIN_AGE_REMOVED);
     return;
   }
 
-  await setItem(DATABASE_KEYS.SETTINGS, {
-    ...allSettings,
+  const updatedSettings = {
+    ...(allSettings.valid ? allSettings.data : {}),
     [interaction.guildId]: { ...settings, minAge: days },
-  });
+  };
+  await setItem(DATABASE_KEYS.SETTINGS, updatedSettings);
   await interaction.reply(
     MIN_AGE_ERRORS.MIN_AGE_SET.replace("{minAge}", String(days)),
   );
@@ -250,27 +254,33 @@ async function handleWelcomeMessage(
 ) {
   const message = interaction.options.getString("message");
   const reset = interaction.options.getBoolean("reset");
-  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
-    | Record<string, Record<string, unknown>>
-    | undefined;
-  const settings = allSettings?.[interaction.guildId] || {};
+  const allSettings = validateWithSchema(
+    GuildSettingsSchema,
+    (await getItem(DATABASE_KEYS.SETTINGS)) || {},
+  );
+  const settings = allSettings.valid ? (allSettings.data[interaction.guildId] || {}) : {};
 
   if (reset) {
-    settings.welcomeMessage = undefined;
-    await setItem(DATABASE_KEYS.SETTINGS, {
-      ...allSettings,
-      [interaction.guildId]: settings,
-    });
+    const updatedSettings = {
+      ...(allSettings.valid ? allSettings.data : {}),
+      [interaction.guildId]: { ...settings, welcomeMessage: undefined },
+    };
+    await setItem(DATABASE_KEYS.SETTINGS, updatedSettings);
     await interaction.reply(STATUS_MESSAGES.WELCOME_RESET);
     return;
   }
 
   if (message) {
-    settings.welcomeMessage = message;
-    await setItem(DATABASE_KEYS.SETTINGS, {
-      ...allSettings,
-      [interaction.guildId]: settings,
-    });
+    const validation = validateWithSchema(WelcomeMessageSchema, message);
+    if (!validation.valid) {
+      await interaction.reply(`Invalid message: ${validation.errors[0]?.message || "Validation failed"}`);
+      return;
+    }
+    const updatedSettings = {
+      ...(allSettings.valid ? allSettings.data : {}),
+      [interaction.guildId]: { ...settings, welcomeMessage: message },
+    };
+    await setItem(DATABASE_KEYS.SETTINGS, updatedSettings);
     await interaction.reply(STATUS_MESSAGES.WELCOME_MESSAGE_SET);
   }
 }
@@ -340,27 +350,33 @@ async function handleLeaveMessage(
 ) {
   const message = interaction.options.getString("message");
   const reset = interaction.options.getBoolean("reset");
-  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
-    | Record<string, Record<string, unknown>>
-    | undefined;
-  const settings = allSettings?.[interaction.guildId] || {};
+  const allSettings = validateWithSchema(
+    GuildSettingsSchema,
+    (await getItem(DATABASE_KEYS.SETTINGS)) || {},
+  );
+  const settings = allSettings.valid ? (allSettings.data[interaction.guildId] || {}) : {};
 
   if (reset) {
-    settings.leaveMessage = undefined;
-    await setItem(DATABASE_KEYS.SETTINGS, {
-      ...allSettings,
-      [interaction.guildId]: settings,
-    });
+    const updatedSettings = {
+      ...(allSettings.valid ? allSettings.data : {}),
+      [interaction.guildId]: { ...settings, leaveMessage: undefined },
+    };
+    await setItem(DATABASE_KEYS.SETTINGS, updatedSettings);
     await interaction.reply(STATUS_MESSAGES.LEAVE_RESET);
     return;
   }
 
   if (message) {
-    settings.leaveMessage = message;
-    await setItem(DATABASE_KEYS.SETTINGS, {
-      ...allSettings,
-      [interaction.guildId]: settings,
-    });
+    const validation = validateWithSchema(WelcomeMessageSchema, message);
+    if (!validation.valid) {
+      await interaction.reply(`Invalid message: ${validation.errors[0]?.message || "Validation failed"}`);
+      return;
+    }
+    const updatedSettings = {
+      ...(allSettings.valid ? allSettings.data : {}),
+      [interaction.guildId]: { ...settings, leaveMessage: message },
+    };
+    await setItem(DATABASE_KEYS.SETTINGS, updatedSettings);
     await interaction.reply(STATUS_MESSAGES.LEAVE_MESSAGE_SET);
   }
 }

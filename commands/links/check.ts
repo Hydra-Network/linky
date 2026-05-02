@@ -8,6 +8,7 @@ import {
 import { DATABASE_KEYS } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
 import { check, getBlockers } from "@/utils/checker.js";
+import { validateWithSchema, UrlOrDomainSchema } from "@/utils/validation.js";
 
 async function handleCheck(
   interaction: ChatInputCommandInteraction,
@@ -123,15 +124,10 @@ export default {
     const filter = interaction.options.getSubcommand();
     const input = interaction.options.getString("url", true);
 
-    const isUrl = /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(input);
-
-    const isDomain = /^(?!-)(?:[a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,}$/i.test(
-      input,
-    );
-
-    if (!(isUrl || isDomain)) {
+    const validation = validateWithSchema(UrlOrDomainSchema, input);
+    if (!validation.valid) {
       await interaction.reply({
-        content: "Input must be a valid domain or URL.",
+        content: validation.errors[0]?.message || "Input must be a valid domain or URL.",
         flags: MessageFlags.Ephemeral,
       });
       return;
