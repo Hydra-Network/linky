@@ -1,3 +1,12 @@
+# [1.12.0](https://github.com/Hydra-Network/linky/compare/v1.11.5...v1.12.0) (2026-05-02)
+
+
+### Features
+
+* removed stupid dns-check blockers ([3555679](https://github.com/Hydra-Network/linky/commit/3555679c353dc00626d14297c8037ff54494a15c))
+
+
+
 ## [1.11.5](https://github.com/Hydra-Network/linky/compare/v1.11.4...v1.11.5) (2026-04-24)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **biome:** stuff ([57e45b9](https://github.com/Hydra-Network/linky/commit/57e45b9120309424782df67b1796bcbce6a3680f))
-
-
-
-## [1.11.1](https://github.com/Hydra-Network/linky/compare/v1.11.0...v1.11.1) (2026-04-24)
-
-
-### Bug Fixes
-
-* **biome:** stuff ([1c98a3f](https://github.com/Hydra-Network/linky/commit/1c98a3fe899f545df4fa43ad80c23d57ffa1c68c))
 
 
 
