@@ -1,3 +1,12 @@
+# [1.14.0](https://github.com/Hydra-Network/linky/compare/v1.13.0...v1.14.0) (2026-05-02)
+
+
+### Features
+
+* leave messages ([43571bb](https://github.com/Hydra-Network/linky/commit/43571bb1a6e0f45500973bf8486b39fdfd74f8b6))
+
+
+
 # [1.13.0](https://github.com/Hydra-Network/linky/compare/v1.12.0...v1.13.0) (2026-05-02)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * handler ([978fadf](https://github.com/Hydra-Network/linky/commit/978fadf4db86f34e547192f1c7688a4f3955ab3b))
-
-
-
-## [1.11.3](https://github.com/Hydra-Network/linky/compare/v1.11.2...v1.11.3) (2026-04-24)
-
-
-### Bug Fixes
-
-* **events:** everything ([af7269e](https://github.com/Hydra-Network/linky/commit/af7269eafea4e736a71d0199d22145e9018cb8b4))
 
 
 
