@@ -27,4 +27,13 @@
 - [ ] modlogs
 - [ ] set slowmode
 - [ ] quarentine feature
-
+- [ ] giveaways
+- [ ] leveling system
+- [ ] messages leaderboard
+- [ ] lock all chanenls
+- [ ] purge from a user
+- [ ] ban for a time
+- [ ] unlock command
+- [ ] quarentine feature
+- [ ] heat filte rlike wick https://docs.wickbot.com/intro/features/
+- [ ] moderate action on people joining with specific req like no avatar, new account, regex in username, etc.
