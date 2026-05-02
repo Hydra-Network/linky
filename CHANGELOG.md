@@ -1,3 +1,12 @@
+# [1.16.0](https://github.com/Hydra-Network/linky/compare/v1.15.0...v1.16.0) (2026-05-02)
+
+
+### Features
+
+* valibot ([71bcf29](https://github.com/Hydra-Network/linky/commit/71bcf294e375881e24cface31ae7c6c0feba1f86))
+
+
+
 # [1.15.0](https://github.com/Hydra-Network/linky/compare/v1.14.1...v1.15.0) (2026-05-02)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * added example env ([e1f50cc](https://github.com/Hydra-Network/linky/commit/e1f50cc52327b8430d041311c4ae3cef207c577e))
-
-
-
-# [1.12.0](https://github.com/Hydra-Network/linky/compare/v1.11.5...v1.12.0) (2026-05-02)
-
-
-### Features
-
-* removed stupid dns-check blockers ([3555679](https://github.com/Hydra-Network/linky/commit/3555679c353dc00626d14297c8037ff54494a15c))
 
 
 
