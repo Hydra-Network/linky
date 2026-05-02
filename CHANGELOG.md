@@ -1,3 +1,12 @@
+# [1.13.0](https://github.com/Hydra-Network/linky/compare/v1.12.0...v1.13.0) (2026-05-02)
+
+
+### Features
+
+* added example env ([e1f50cc](https://github.com/Hydra-Network/linky/commit/e1f50cc52327b8430d041311c4ae3cef207c577e))
+
+
+
 # [1.12.0](https://github.com/Hydra-Network/linky/compare/v1.11.5...v1.12.0) (2026-05-02)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **events:** everything ([af7269e](https://github.com/Hydra-Network/linky/commit/af7269eafea4e736a71d0199d22145e9018cb8b4))
-
-
-
-## [1.11.2](https://github.com/Hydra-Network/linky/compare/v1.11.1...v1.11.2) (2026-04-24)
-
-
-### Bug Fixes
-
-* **biome:** stuff ([57e45b9](https://github.com/Hydra-Network/linky/commit/57e45b9120309424782df67b1796bcbce6a3680f))
 
 
 
