@@ -1,16 +1,13 @@
 import type { ChatInputCommandInteraction } from "discord.js";
 import {
   ApplicationIntegrationType,
+  MessageFlags,
   InteractionContextType,
   SlashCommandBuilder,
 } from "discord.js";
 import { DATABASE_KEYS } from "@/config/index.js";
 import type { AppContainer } from "@/services/container.js";
-import {
-  checkWithDetails,
-  getBlockerName,
-  NORMAL_BLOCKERS,
-} from "@/utils/checker.js";
+import { check, getBlockers } from "@/utils/checker.js";
 
 async function handleCheck(
   interaction: ChatInputCommandInteraction,
@@ -25,12 +22,12 @@ async function handleCheck(
 
   const cacheKey = `check:${url}:${blockerFilter}`;
   let results = cache.get(cacheKey) as
-    | Awaited<ReturnType<typeof checkWithDetails>>
+    | Awaited<ReturnType<typeof check>>
     | undefined;
 
   if (!results) {
     try {
-      results = await checkWithDetails(url, blockerFilter);
+      results = await check(url, blockerFilter);
       cache.set(cacheKey, results);
     } catch (err) {
       return interaction.editReply({
@@ -105,11 +102,11 @@ const builder = new SlashCommandBuilder()
       ),
   );
 
-for (const blocker of NORMAL_BLOCKERS) {
+for (const blocker of getBlockers()) {
   builder.addSubcommand((sub) =>
     sub
       .setName(blocker)
-      .setDescription(`Check ${getBlockerName(blocker)} for a link`)
+      .setDescription(`Check ${blocker} for a link`)
       .addStringOption((o) =>
         o.setName("url").setDescription("The link to check").setRequired(true),
       ),
@@ -123,11 +120,23 @@ export default {
     interaction: ChatInputCommandInteraction,
     container: AppContainer,
   ) {
-    const subcommand = interaction.options.getSubcommand();
-    const url = interaction.options.getString("url", true);
+    const filter = interaction.options.getSubcommand();
+    const input = interaction.options.getString("url", true);
 
-    const blockerFilter = subcommand === "all" ? "normal" : subcommand;
+    const isUrl = /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(input);
 
-    await handleCheck(interaction, container, url, blockerFilter);
+    const isDomain = /^(?!-)(?:[a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,}$/i.test(
+      input,
+    );
+
+    if (!isUrl && !isDomain) {
+      await interaction.reply({
+        content: "Input must be a valid domain or URL.",
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    await handleCheck(interaction, container, input, filter);
   },
 };

@@ -1,13 +1,11 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 
 const mockReply = mock(() => {});
-const mockDefer = mock(() => {});
 const mockEdit = mock(() => {});
 
 describe("check command", () => {
   beforeEach(() => {
     mockReply.mockClear();
-    mockDefer.mockClear();
     mockEdit.mockClear();
   });
 
@@ -31,10 +29,9 @@ describe("check command", () => {
     await checkCommand.execute(
       {
         reply: mockReply,
-        deferReply: mockDefer,
         editReply: mockEdit,
         options: {
-          getSubcommand: () => "normal",
+          getSubcommand: () => "all",
           getString: (name: string, _required?: boolean) =>
             name === "url" ? "not-a-url" : null,
         },
@@ -43,6 +40,6 @@ describe("check command", () => {
       mockContainer as any,
     );
 
-    expect(mockDefer).toHaveBeenCalled();
+    expect(mockReply).toHaveBeenCalled();
   });
 });
