@@ -294,6 +294,77 @@ async function handleModLog(
   await interaction.reply(`Moderation log channel set to ${channel.name}`);
 }
 
+async function handleLeaveChannel(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const channel = interaction.options.getChannel("channel") as GuildChannel;
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...allSettings,
+    [interaction.guildId]: {
+      ...settings,
+      leaveChannel: channel.id,
+    },
+  });
+  await interaction.reply(
+    STATUS_MESSAGES.LEAVE_CHANNEL_SET.replace("{channel}", channel.name),
+  );
+}
+
+async function handleLeaveChannelRemove(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+  settings.leaveChannel = undefined;
+  await setItem(DATABASE_KEYS.SETTINGS, {
+    ...allSettings,
+    [interaction.guildId]: settings,
+  });
+  await interaction.reply(STATUS_MESSAGES.LEAVE_DISABLED);
+}
+
+async function handleLeaveMessage(
+  interaction: ChatInputCommandInteraction,
+  getItem: DbGetItem,
+  setItem: DbSetItem,
+) {
+  const message = interaction.options.getString("message");
+  const reset = interaction.options.getBoolean("reset");
+  const allSettings = (await getItem(DATABASE_KEYS.SETTINGS)) as
+    | Record<string, Record<string, unknown>>
+    | undefined;
+  const settings = allSettings?.[interaction.guildId] || {};
+
+  if (reset) {
+    settings.leaveMessage = undefined;
+    await setItem(DATABASE_KEYS.SETTINGS, {
+      ...allSettings,
+      [interaction.guildId]: settings,
+    });
+    await interaction.reply(STATUS_MESSAGES.LEAVE_RESET);
+    return;
+  }
+
+  if (message) {
+    settings.leaveMessage = message;
+    await setItem(DATABASE_KEYS.SETTINGS, {
+      ...allSettings,
+      [interaction.guildId]: settings,
+    });
+    await interaction.reply(STATUS_MESSAGES.LEAVE_MESSAGE_SET);
+  }
+}
+
 export default {
   data: new SlashCommandBuilder()
     .setName("settings")
@@ -429,6 +500,49 @@ export default {
             ),
         ),
     )
+    .addSubcommandGroup((group) =>
+      group
+        .setName("leave")
+        .setDescription("Manage leave messages")
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("set-channel")
+            .setDescription(
+              "Set leave message channel (enables leave messages)",
+            )
+            .addChannelOption((option) =>
+              option
+                .setName("channel")
+                .setDescription("Channel for leave messages")
+                .addChannelTypes(ChannelType.GuildText)
+                .setRequired(true),
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("remove-channel")
+            .setDescription(
+              "Remove leave channel (disables leave messages)",
+            ),
+        )
+        .addSubcommand((subcommand) =>
+          subcommand
+            .setName("set-message")
+            .setDescription("Set custom leave message template")
+            .addStringOption((option) =>
+              option
+                .setName("message")
+                .setDescription(
+                  "Message template ({member}, {server}, {tag})",
+                ),
+            )
+            .addBooleanOption((option) =>
+              option
+                .setName("reset")
+                .setDescription("Reset to default message"),
+            ),
+        ),
+    )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("mod-log")
@@ -482,6 +596,14 @@ export default {
           handleWelcomeChannelRemove(interaction, getItem, setItem),
         "set-message": () =>
           handleWelcomeMessage(interaction, getItem, setItem),
+      },
+      leave: {
+        "set-channel": () =>
+          handleLeaveChannel(interaction, getItem, setItem),
+        "remove-channel": () =>
+          handleLeaveChannelRemove(interaction, getItem, setItem),
+        "set-message": () =>
+          handleLeaveMessage(interaction, getItem, setItem),
       },
     };
 

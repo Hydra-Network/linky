@@ -1,7 +1,7 @@
 import { DATABASE_KEYS } from "@/config/index.js";
 import type { EventContext } from "../base.js";
 
-export async function handleWelcomeMessage(
+export async function handleLeaveMessage(
   member: {
     id: string;
     guild: {
@@ -21,29 +21,27 @@ export async function handleWelcomeMessage(
     | undefined;
   const settings = allSettings?.[member.guild.id] || {};
 
-  const welcomeChannelId = settings.welcomeChannel as string | undefined;
-  if (!welcomeChannelId) return;
+  const leaveChannelId = settings.leaveChannel as string | undefined;
+  if (!leaveChannelId) return;
 
   try {
-    const channel = await member.guild.channels.fetch(welcomeChannelId);
+    const channel = await member.guild.channels.fetch(leaveChannelId);
     if (!(channel && "send" in channel)) return;
 
-    const welcomeMessage =
-      (settings.welcomeMessage as string | undefined) ??
-      "Welcome {member} to {server}! You are member #{count}.";
+    const leaveMessage =
+      (settings.leaveMessage as string | undefined) ??
+      "{member} has left {server}. Farewell!";
 
-    const memberCount = member.guild.memberCount;
-    const message = welcomeMessage
+    const message = leaveMessage
       .replace("{member}", `<@${member.id}>`)
       .replace("{server}", member.guild.name)
-      .replace("{count}", String(memberCount))
       .replace("{tag}", member.user.tag);
 
     await channel.send(message);
   } catch (error) {
     ctx.logger.error(
       { err: error, guildId: member.guild.id, userId: member.id },
-      "Welcome message error",
+      "Leave message error",
     );
   }
 }

@@ -44,6 +44,11 @@ export const STATUS_MESSAGES = {
   WELCOME_ENABLED: "Welcome messages enabled.",
   WELCOME_DISABLED: "Welcome messages disabled.",
   WELCOME_RESET: "Welcome message reset to default.",
+  LEAVE_CHANNEL_SET: "Leave channel set to {channel}.",
+  LEAVE_MESSAGE_SET: "Leave message updated.",
+  LEAVE_ENABLED: "Leave messages enabled.",
+  LEAVE_DISABLED: "Leave messages disabled.",
+  LEAVE_RESET: "Leave message reset to default.",
 } as const;
 
 export const CHANNEL_PATTERNS = {
