@@ -1,3 +1,12 @@
+# [1.15.0](https://github.com/Hydra-Network/linky/compare/v1.14.1...v1.15.0) (2026-05-02)
+
+
+### Features
+
+* update todos ([17fa3a4](https://github.com/Hydra-Network/linky/commit/17fa3a4a80e8e7e92c6eaaab00d149a795e04045))
+
+
+
 ## [1.14.1](https://github.com/Hydra-Network/linky/compare/v1.14.0...v1.14.1) (2026-05-02)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * removed stupid dns-check blockers ([3555679](https://github.com/Hydra-Network/linky/commit/3555679c353dc00626d14297c8037ff54494a15c))
-
-
-
-## [1.11.5](https://github.com/Hydra-Network/linky/compare/v1.11.4...v1.11.5) (2026-04-24)
-
-
-### Bug Fixes
-
-* linky ([a9b53a1](https://github.com/Hydra-Network/linky/commit/a9b53a1ce1f96e7b70534b0cb9a183f6dde9b4f7))
 
 
 
